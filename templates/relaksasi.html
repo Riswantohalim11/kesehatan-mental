@@ -1,0 +1,701 @@
+{% extends "base.html" %}
+
+{% block title %}Ruang Relaksasi & Meditasi Mandiri — MindHaven{% endblock %}
+
+{% block extra_css %}
+<style>
+
+
+  /* BREATHING CIRCLE & RIPPLE */
+  .breathe-stage-container {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem auto;
+  }
+
+  .breathe-glow-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 181, 181, 0.25) 0%, rgba(99, 102, 241, 0.08) 70%);
+    transform: scale(0.85);
+    transition: transform 1s ease, opacity 0.5s ease;
+    opacity: 0.6;
+  }
+
+  .breathe-glow-ring.pulsing {
+    animation: ringPulse 2s infinite ease-in-out alternate;
+  }
+
+  @keyframes ringPulse {
+    from { opacity: 0.4; transform: scale(0.85); }
+    to { opacity: 0.9; transform: scale(1.1); }
+  }
+
+  .breathe-circle-inner {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: var(--grad-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    box-shadow: 0 12px 30px rgba(0, 181, 181, 0.4);
+    z-index: 3;
+    position: relative;
+    user-select: none;
+    transition: transform 1s ease;
+  }
+
+  .instruction-text {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--primary-600);
+    min-height: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .affirmation-box {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px dashed rgba(99, 102, 241, 0.3);
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    font-style: italic;
+    color: var(--gray-700);
+    text-align: center;
+    transition: opacity 0.6s ease;
+  }
+
+  /* MOOD RECOMMENDATION CHIPS */
+  .mood-chip {
+    background: #ffffff;
+    border: 1px solid var(--gray-200);
+    border-radius: 99px;
+    padding: 0.45rem 1rem;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  }
+  .mood-chip:hover, .mood-chip.active {
+    background: var(--grad-primary);
+    color: #ffffff;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 181, 181, 0.3);
+  }
+
+  /* AUDIO CARDS & EQUALIZER */
+  .audio-card {
+    border-radius: 16px;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    transition: all 0.25s ease;
+    background: white;
+    cursor: pointer;
+  }
+  .audio-card:hover {
+    border-color: var(--primary-400);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+  .audio-card.active-track {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.08) !important;
+  }
+
+  /* EQUALIZER ANIMATION */
+  .eq-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 16px;
+  }
+  .eq-bar {
+    width: 3px;
+    background: #6366f1;
+    border-radius: 2px;
+    animation: eqAnim 1s infinite ease-in-out alternate;
+  }
+  .eq-bar:nth-child(1) { height: 30%; animation-delay: 0.1s; }
+  .eq-bar:nth-child(2) { height: 80%; animation-delay: 0.3s; }
+  .eq-bar:nth-child(3) { height: 50%; animation-delay: 0.2s; }
+  .eq-bar:nth-child(4) { height: 100%; animation-delay: 0.4s; }
+
+  @keyframes eqAnim {
+    0% { height: 20%; }
+    100% { height: 100%; }
+  }
+
+  /* GROUNDING STEPS */
+  .grounding-step-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 18px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .grounding-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--grad-primary);
+    color: white;
+    font-weight: 800;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(0, 181, 181, 0.3);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="page-title text-dark mb-1 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-spa" style="color:var(--primary-500);"></i> Ruang Relaksasi &amp; Ketenangan
+        </h2>
+        <p class="page-subtitle mb-0" style="color:var(--gray-600);">Lepaskan beban pikiran, atur pernapasan, dan nikmati audio penenang batin.</p>
+    </div>
+
+</div>
+
+<!-- Mood Quick Recommendation Bar -->
+<div class="card glass-card p-3 mb-4 border" style="background:white;">
+    <div class="d-flex align-items-center flex-wrap gap-2">
+        <span class="small font-weight-bold text-dark me-2 d-flex align-items-center gap-1">
+            <i class="fa-solid fa-wand-magic-sparkles text-primary"></i> Apa yang sedang Anda rasakan saat ini?
+        </span>
+        <button class="mood-chip" onclick="recommendForMood('cemas', event)">
+            <span>😨 Cemas &amp; Panik</span>
+        </button>
+        <button class="mood-chip" onclick="recommendForMood('stres', event)">
+            <span>🤯 Stres &amp; Beban Berat</span>
+        </button>
+        <button class="mood-chip" onclick="recommendForMood('tidur', event)">
+            <span>😴 Sulit Tidur</span>
+        </button>
+        <button class="mood-chip" onclick="recommendForMood('lelah', event)">
+            <span>😔 Lelah Emosi</span>
+        </button>
+    </div>
+</div>
+
+<!-- Main Grid Layout -->
+<div class="row g-4 mb-4">
+    <!-- Left Column: Breathing Exercise Engine -->
+    <div class="col-lg-7">
+        <div class="glass-card p-4 h-100 d-flex flex-column" style="background:white; border:1px solid var(--gray-200);">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h4 class="font-weight-bold mb-1 text-dark">Panduan Pernapasan Visual</h4>
+                    <p class="small mb-0 text-muted">Latihan terpandu untuk menenangkan sistem saraf parasimpatik Anda.</p>
+                </div>
+                <div class="timer-display font-weight-bold fs-5 text-primary d-none" id="countdownTimer">00:00</div>
+            </div>
+
+            <!-- Settings Bar -->
+            <div class="exercise-settings p-3 rounded-3 mb-3" style="background:var(--gray-50); border:1px solid var(--gray-200);">
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label for="techniqueSelect" class="form-label small font-weight-bold text-dark mb-1">Teknik Pernapasan</label>
+                        <select id="techniqueSelect" class="form-select form-select-sm shadow-none" style="background:white; border:1px solid var(--gray-300);">
+                            <option value="478">Teknik 4-7-8 (Relaksasi Mendalam &amp; Tidur)</option>
+                            <option value="box">Box Breathing / 4-4-4-4 (Fokus &amp; Penenang Saraf)</option>
+                            <option value="55">Pernapasan Seimbang / 5-5 (Harmoni Emosi)</option>
+                            <option value="sigh">Physiological Sigh / 2-2-6 (Reset Cepat Panik)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="durationSelect" class="form-label small font-weight-bold text-dark mb-1">Durasi Sesi</label>
+                        <select id="durationSelect" class="form-select form-select-sm shadow-none" style="background:white; border:1px solid var(--gray-300);">
+                            <option value="0">Tanpa Batas Waktu</option>
+                            <option value="60">1 Menit</option>
+                            <option value="180">3 Menit</option>
+                            <option value="300">5 Menit</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breathing Stage Visualizer -->
+            <div class="breathe-stage-container my-auto">
+                <div id="glowRing" class="breathe-glow-ring"></div>
+                <div id="breatheCircle" class="breathe-circle-inner">Mulai</div>
+            </div>
+
+            <div id="instructionText" class="instruction-text mb-2">Pilih teknik di atas &amp; klik Mulai</div>
+            <div id="cycleCountText" class="small text-muted text-center mb-3">Sesi belum dimulai</div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <button id="startBtn" class="btn btn-primary rounded-pill px-4 py-2 font-weight-bold shadow-xs">
+                    <i class="fa-solid fa-play me-2"></i> Mulai Latihan
+                </button>
+                <button id="stopBtn" class="btn btn-danger rounded-pill px-4 py-2 font-weight-bold d-none shadow-xs">
+                    <i class="fa-solid fa-stop me-2"></i> Berhenti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Ambient Soundscapes Player -->
+    <div class="col-lg-5">
+        <div class="glass-card p-4 h-100 d-flex flex-column" style="background:white; border:1px solid var(--gray-200);">
+            <h4 class="font-weight-bold mb-1 text-dark">Suara Alam &amp; Ambient</h4>
+            <p class="small text-muted mb-3">Pengiring musik relaksasi untuk menemani latihan Anda.</p>
+
+            <!-- Main Audio Control Card -->
+            <div class="p-3.5 mb-3 rounded-4 d-flex flex-column align-items-center border position-relative overflow-hidden" style="background: var(--gray-50);">
+                <div id="playerIcon" class="audio-icon mb-2 shadow-sm rounded-circle d-flex align-items-center justify-content-center text-primary" style="width: 64px; height: 64px; font-size: 2rem; background: #ffffff; border:1px solid var(--primary-200);">
+                    <i class="fa-solid fa-cloud-showers-heavy"></i>
+                </div>
+                
+                <h6 id="playerTitle" class="font-weight-bold mb-0 text-center text-dark fs-6">Rintik Hujan Deras</h6>
+                <p id="playerSubtitle" class="small text-muted text-center mb-3" style="font-size:0.8rem;">Relaksasi &amp; Ketenangan</p>
+
+                <audio id="mainAudioPlayer" loop class="d-none">
+                    <source src="https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg" type="audio/ogg" id="mainAudioSource">
+                </audio>
+
+                <div class="d-flex align-items-center w-100 gap-3 px-2">
+                    <button id="mainPlayBtn" class="btn btn-primary rounded-circle d-flex justify-content-center align-items-center shadow-sm" style="width:46px;height:46px;flex-shrink:0;background:var(--grad-primary);border:none;">
+                        <i class="fa-solid fa-play" style="margin-left:3px; font-size:1.05rem;color:white;"></i>
+                    </button>
+                    <div class="flex-grow-1 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-volume-low small text-muted"></i>
+                        <input type="range" id="volumeSlider" class="form-range flex-grow-1" min="0" max="1" step="0.01" value="0.6">
+                        <i class="fa-solid fa-volume-high small text-muted"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Playlist -->
+            <h6 class="font-weight-bold mb-2 small text-uppercase text-muted" style="letter-spacing:0.04em;">Daftar Suara Penenang</h6>
+            <div class="d-flex flex-column gap-2 flex-grow-1 overflow-auto pe-1" id="playlistContainer" style="max-height: 280px;">
+                
+                <div class="audio-card playlist-item active-track" data-src="https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg" data-title="Rintik Hujan Deras" data-subtitle="Relaksasi &amp; Ketenangan" data-icon="fa-cloud-showers-heavy">
+                    <div class="audio-icon rounded-3 p-2 bg-primary-subtle text-primary" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
+                    <div class="flex-grow-1">
+                        <h6 class="font-weight-bold mb-0 text-dark" style="font-size:0.9rem;">Rintik Hujan Deras</h6>
+                        <span class="small text-muted" style="font-size:0.75rem;">Suara hujan lebat malam hari</span>
+                    </div>
+                    <div class="eq-bars d-none">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                </div>
+
+                <div class="audio-card playlist-item" data-src="https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg" data-title="Hujan di Atap Rumah" data-subtitle="Kenyamanan &amp; Kedamaian" data-icon="fa-house-chimney-crack">
+                    <div class="audio-icon rounded-3 p-2 bg-primary-subtle text-primary" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;"><i class="fa-solid fa-house-chimney-crack"></i></div>
+                    <div class="flex-grow-1">
+                        <h6 class="font-weight-bold mb-0 text-dark" style="font-size:0.9rem;">Hujan di Atap Rumah</h6>
+                        <span class="small text-muted" style="font-size:0.75rem;">Suara gemericik atap lembut</span>
+                    </div>
+                    <div class="eq-bars d-none">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                </div>
+
+                <div class="audio-card playlist-item" data-src="https://actions.google.com/sounds/v1/water/waves_crashing_on_rock_beach.ogg" data-title="Ombak Pantai &amp; Karang" data-subtitle="Pelepas Stres &amp; Cemas" data-icon="fa-water">
+                    <div class="audio-icon rounded-3 p-2 bg-info-subtle text-info" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;"><i class="fa-solid fa-water"></i></div>
+                    <div class="flex-grow-1">
+                        <h6 class="font-weight-bold mb-0 text-dark" style="font-size:0.9rem;">Ombak Pantai &amp; Karang</h6>
+                        <span class="small text-muted" style="font-size:0.75rem;">Deburan ombak pesisir laut</span>
+                    </div>
+                    <div class="eq-bars d-none">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                </div>
+
+                <div class="audio-card playlist-item" data-src="https://actions.google.com/sounds/v1/ambiences/fire.ogg" data-title="Api Unggun Malam" data-subtitle="Kehangatan &amp; Kedamaian" data-icon="fa-fire">
+                    <div class="audio-icon rounded-3 p-2 bg-danger-subtle text-danger" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;"><i class="fa-solid fa-fire"></i></div>
+                    <div class="flex-grow-1">
+                        <h6 class="font-weight-bold mb-0 text-dark" style="font-size:0.9rem;">Api Unggun Malam</h6>
+                        <span class="small text-muted" style="font-size:0.75rem;">Kehangatan nyala kayu api</span>
+                    </div>
+                    <div class="eq-bars d-none">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                </div>
+
+                <div class="audio-card playlist-item" data-src="https://actions.google.com/sounds/v1/weather/thunderstorm.ogg" data-title="Gemuruh Hujan Badai" data-subtitle="Sensasi Alam &amp; Tidur Nyenyak" data-icon="fa-bolt">
+                    <div class="audio-icon rounded-3 p-2 bg-warning-subtle text-warning" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="flex-grow-1">
+                        <h6 class="font-weight-bold mb-0 text-dark" style="font-size:0.9rem;">Badai &amp; Guntur Soft</h6>
+                        <span class="small text-muted" style="font-size:0.75rem;">Gemuruh hujan badai lembut</span>
+                    </div>
+                    <div class="eq-bars d-none">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Daily Affirmation Card -->
+<div class="row">
+    <div class="col-12">
+        <div class="affirmation-box shadow-xs d-flex flex-column align-items-center gap-2">
+            <i class="fa-solid fa-quote-left text-primary fs-4 opacity-50"></i>
+            <p id="affirmationTextQuote" class="mb-1 font-weight-bold text-dark fs-5" style="font-style:normal;">"Anda tidak harus menyelesaikan segalanya hari ini. Cukup bernapas dan melangkah satu demi satu."</p>
+            <div class="d-flex align-items-center gap-2 mt-1">
+                <button class="btn btn-xs btn-outline-primary rounded-pill px-3 py-1 font-weight-bold small" onclick="shuffleAffirmation()">
+                    <i class="fa-solid fa-arrows-rotate me-1"></i> Acak Afirmasi Lain
+                </button>
+                <button class="btn btn-xs btn-outline-secondary rounded-pill px-3 py-1 font-weight-bold small" onclick="copyAffirmation()">
+                    <i class="fa-solid fa-copy me-1"></i> Salin
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+
+    // --- BREATHING ENGINE ---
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const circle = document.getElementById('breatheCircle');
+    const glowRing = document.getElementById('glowRing');
+    const text = document.getElementById('instructionText');
+    const cycleCountText = document.getElementById('cycleCountText');
+    const techniqueSelect = document.getElementById('techniqueSelect');
+    const durationSelect = document.getElementById('durationSelect');
+    const countdownTimer = document.getElementById('countdownTimer');
+
+    let isBreathing = false;
+    let globalTimerInterval = null;
+    let remainingSeconds = 0;
+    let cycleCount = 0;
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const formatTime = (totalSeconds) => {
+        const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+        const s = (totalSeconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    };
+
+    const runBreathingCycle = async () => {
+        const tech = techniqueSelect.value;
+        cycleCount = 0;
+
+        while (isBreathing) {
+            cycleCount++;
+            cycleCountText.innerText = `Sesi Pernapasan Putaran ke-${cycleCount}`;
+
+            if (tech === '478') {
+                text.innerText = "Tarik Napas... (4 detik)";
+                circle.innerText = "Tarik";
+                circle.style.transition = "transform 4s cubic-bezier(0.4, 0, 0.2, 1)";
+                circle.style.transform = "scale(2.1)";
+                glowRing.classList.add('pulsing');
+                await sleep(4000);
+                if (!isBreathing) break;
+
+                text.innerText = "Tahan Napas... (7 detik)";
+                circle.innerText = "Tahan";
+                circle.style.transition = "none";
+                await sleep(7000);
+                if (!isBreathing) break;
+
+                text.innerText = "Hembuskan perlahan... (8 detik)";
+                circle.innerText = "Hembus";
+                circle.style.transition = "transform 8s cubic-bezier(0.4, 0, 0.2, 1)";
+                circle.style.transform = "scale(1)";
+                glowRing.classList.remove('pulsing');
+                await sleep(8000);
+
+            } else if (tech === 'box') {
+                text.innerText = "Tarik Napas... (4 detik)";
+                circle.innerText = "Tarik";
+                circle.style.transition = "transform 4s linear";
+                circle.style.transform = "scale(2.1)";
+                glowRing.classList.add('pulsing');
+                await sleep(4000);
+                if (!isBreathing) break;
+
+                text.innerText = "Tahan Napas... (4 detik)";
+                circle.innerText = "Tahan";
+                await sleep(4000);
+                if (!isBreathing) break;
+
+                text.innerText = "Hembuskan... (4 detik)";
+                circle.innerText = "Hembus";
+                circle.style.transition = "transform 4s linear";
+                circle.style.transform = "scale(1)";
+                glowRing.classList.remove('pulsing');
+                await sleep(4000);
+                if (!isBreathing) break;
+
+                text.innerText = "Tahan Kosong... (4 detik)";
+                circle.innerText = "Kosong";
+                await sleep(4000);
+
+            } else if (tech === '55') {
+                text.innerText = "Tarik Napas... (5 detik)";
+                circle.innerText = "Tarik";
+                circle.style.transition = "transform 5s ease-in-out";
+                circle.style.transform = "scale(2.1)";
+                glowRing.classList.add('pulsing');
+                await sleep(5000);
+                if (!isBreathing) break;
+
+                text.innerText = "Hembuskan... (5 detik)";
+                circle.innerText = "Hembus";
+                circle.style.transition = "transform 5s ease-in-out";
+                circle.style.transform = "scale(1)";
+                glowRing.classList.remove('pulsing');
+                await sleep(5000);
+
+            } else if (tech === 'sigh') {
+                text.innerText = "Tarik Napas Pertama... (2s)";
+                circle.innerText = "Tarik 1";
+                circle.style.transition = "transform 2s ease";
+                circle.style.transform = "scale(1.6)";
+                await sleep(2000);
+                if (!isBreathing) break;
+
+                text.innerText = "Tarik Lagi Dalam-dalam! (2s)";
+                circle.innerText = "Tarik 2";
+                circle.style.transition = "transform 2s ease";
+                circle.style.transform = "scale(2.2)";
+                glowRing.classList.add('pulsing');
+                await sleep(2000);
+                if (!isBreathing) break;
+
+                text.innerText = "Hembuskan Panjang Melalui Mulut... (6s)";
+                circle.innerText = "Hembus";
+                circle.style.transition = "transform 6s ease-out";
+                circle.style.transform = "scale(1)";
+                glowRing.classList.remove('pulsing');
+                await sleep(6000);
+            }
+        }
+    };
+
+    const stopSession = () => {
+        isBreathing = false;
+        if (globalTimerInterval) clearInterval(globalTimerInterval);
+
+        stopBtn.classList.add('d-none');
+        startBtn.classList.remove('d-none');
+        techniqueSelect.disabled = false;
+        durationSelect.disabled = false;
+        countdownTimer.classList.add('d-none');
+
+        circle.style.transition = "transform 1s ease";
+        circle.style.transform = "scale(1)";
+        circle.innerText = "Mulai";
+        glowRing.classList.remove('pulsing');
+
+        text.innerText = "Sesi selesai. Luar biasa, Anda hebat!";
+        cycleCountText.innerText = `Total diselesaikan: ${cycleCount} putaran pernapasan.`;
+    };
+
+    startBtn.addEventListener('click', () => {
+        isBreathing = true;
+        startBtn.classList.add('d-none');
+        stopBtn.classList.remove('d-none');
+        techniqueSelect.disabled = true;
+        durationSelect.disabled = true;
+
+        const totalDuration = parseInt(durationSelect.value);
+        if (totalDuration > 0) {
+            remainingSeconds = totalDuration;
+            countdownTimer.innerText = formatTime(remainingSeconds);
+            countdownTimer.classList.remove('d-none');
+
+            globalTimerInterval = setInterval(() => {
+                remainingSeconds--;
+                countdownTimer.innerText = formatTime(remainingSeconds);
+                if (remainingSeconds <= 0) {
+                    stopSession();
+                }
+            }, 1000);
+        }
+
+        runBreathingCycle();
+    });
+
+    stopBtn.addEventListener('click', stopSession);
+
+    // --- AMBIENT AUDIO PLAYER LOGIC ---
+    const mainAudioPlayer = document.getElementById('mainAudioPlayer');
+    const mainAudioSource = document.getElementById('mainAudioSource');
+    const mainPlayBtn = document.getElementById('mainPlayBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const playerTitle = document.getElementById('playerTitle');
+    const playerSubtitle = document.getElementById('playerSubtitle');
+    const playerIcon = document.getElementById('playerIcon');
+    const playlistItems = document.querySelectorAll('.playlist-item');
+
+    let isAudioPlaying = false;
+
+    function setPlayingState(playing) {
+        isAudioPlaying = playing;
+        if (playing) {
+            mainPlayBtn.innerHTML = '<i class="fa-solid fa-pause" style="font-size:1.05rem;color:white;"></i>';
+            const activeEq = document.querySelector('.active-track .eq-bars');
+            if (activeEq) activeEq.classList.remove('d-none');
+        } else {
+            mainPlayBtn.innerHTML = '<i class="fa-solid fa-play" style="margin-left:3px; font-size:1.05rem;color:white;"></i>';
+            document.querySelectorAll('.eq-bars').forEach(el => el.classList.add('d-none'));
+        }
+    }
+
+    function playTrack(item) {
+        if (!item) return;
+
+        playlistItems.forEach(el => {
+            el.classList.remove('active-track');
+            const eq = el.querySelector('.eq-bars');
+            if (eq) eq.classList.add('d-none');
+        });
+
+        item.classList.add('active-track');
+        playerTitle.innerText = item.dataset.title || 'Suara Alam';
+        playerSubtitle.innerText = item.dataset.subtitle || '';
+        if (item.dataset.icon) {
+            playerIcon.innerHTML = `<i class="fa-solid ${item.dataset.icon}"></i>`;
+        }
+
+        const src = item.dataset.src;
+        if (src) {
+            mainAudioSource.src = src;
+            mainAudioPlayer.load();
+            mainAudioPlayer.volume = volumeSlider.value;
+            mainAudioPlayer.play().then(() => {
+                setPlayingState(true);
+            }).catch(err => {
+                console.log("Audio play error:", err);
+                setPlayingState(false);
+            });
+        }
+    }
+
+    mainPlayBtn.addEventListener('click', () => {
+        if (isAudioPlaying) {
+            mainAudioPlayer.pause();
+            setPlayingState(false);
+        } else {
+            const activeItem = document.querySelector('.active-track') || playlistItems[0];
+            if (activeItem) {
+                if (mainAudioSource.src && mainAudioSource.src !== window.location.href) {
+                    mainAudioPlayer.play().then(() => {
+                        setPlayingState(true);
+                    }).catch(() => {
+                        playTrack(activeItem);
+                    });
+                } else {
+                    playTrack(activeItem);
+                }
+            }
+        }
+    });
+
+    volumeSlider.addEventListener('input', (e) => {
+        mainAudioPlayer.volume = e.target.value;
+    });
+
+    playlistItems.forEach(item => {
+        item.addEventListener('click', () => {
+            playTrack(item);
+        });
+    });
+
+    // Auto-select first track UI without playing
+    if (playlistItems.length > 0) {
+        const firstItem = playlistItems[0];
+        playerTitle.innerText = firstItem.dataset.title;
+        playerSubtitle.innerText = firstItem.dataset.subtitle;
+        playerIcon.innerHTML = `<i class="fa-solid ${firstItem.dataset.icon}"></i>`;
+        mainAudioSource.src = firstItem.dataset.src;
+        mainAudioPlayer.load();
+        firstItem.classList.add('active-track');
+    }
+});
+
+// --- MOOD RECOMMENDATION ASSISTANT ---
+function recommendForMood(mood, evt) {
+    const techSelect = document.getElementById('techniqueSelect');
+    const playlistItems = document.querySelectorAll('.playlist-item');
+
+    document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('active'));
+    if (evt && evt.currentTarget) {
+        evt.currentTarget.classList.add('active');
+    }
+
+    if (mood === 'cemas') {
+        techSelect.value = 'sigh';
+        if (playlistItems[0]) playlistItems[0].click();
+    } else if (mood === 'stres') {
+        techSelect.value = '478';
+        if (playlistItems[2]) playlistItems[2].click();
+    } else if (mood === 'tidur') {
+        techSelect.value = '478';
+        if (playlistItems[3]) playlistItems[3].click();
+    } else if (mood === 'lelah') {
+        techSelect.value = '55';
+        if (playlistItems[1]) playlistItems[1].click();
+    }
+}
+
+
+
+// --- AFFIRMATION GENERATOR ---
+const affirmationsList = [
+    "Anda tidak harus menyelesaikan segalanya hari ini. Cukup bernapas dan melangkah satu demi satu.",
+    "Perasaan Anda valid, dan Anda berhak mendapatkan ruang untuk beristirahat.",
+    "Semua ketegangan ini akan berlalu, Anda jauh lebih kuat dari apa yang sedang Anda pikirkan.",
+    "Tubuh dan pikiran Anda layak mendapatkan ketenangan dan kasih sayang.",
+    "Satu napas dalam membawa keheningan dan kejernihan baru bagi jiwa Anda.",
+    "Tidak apa-apa untuk beristirahat. Berhenti sejenak adalah bagian dari pemulihan."
+];
+
+function shuffleAffirmation() {
+    const textEl = document.getElementById('affirmationTextQuote');
+    const rand = Math.floor(Math.random() * affirmationsList.length);
+    textEl.style.opacity = 0;
+    setTimeout(() => {
+        textEl.innerText = `"${affirmationsList[rand]}"`;
+        textEl.style.opacity = 1;
+    }, 250);
+}
+
+function copyAffirmation() {
+    const textEl = document.getElementById('affirmationTextQuote').innerText;
+    navigator.clipboard.writeText(textEl).then(() => {
+        alert("Teks afirmasi berhasil disalin!");
+    });
+}
+</script>
+{% endblock %}

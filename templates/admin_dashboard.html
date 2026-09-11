@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Administrasi - MindHaven Command Center{% endblock %}
+
+{% block content %}
+<style>
+  .admin-hero-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0369a1 100%);
+    border-radius: 28px;
+    box-shadow: 0 20px 50px rgba(3, 105, 161, 0.25);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin-glow-1 {
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 320px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.35) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .admin-kpi-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    padding: 1.5rem;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .admin-kpi-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-color: rgba(14, 165, 233, 0.3);
+  }
+
+  .admin-kpi-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: white;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+  }
+
+  .admin-chart-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  }
+
+  .admin-table-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+
+  .avatar-user-init {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+  }
+</style>
+
+
+<!-- Executive Admin Hero Banner -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card admin-hero-card p-4 p-md-5 text-white">
+      <div class="admin-glow-1"></div>
+      
+      <div class="row align-items-center position-relative" style="z-index: 2;">
+        <div class="col-lg-8">
+          <div class="d-inline-flex align-items-center gap-2 px-3.5 py-1.5 rounded-pill bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 mb-3 shadow-xs">
+            <span class="small font-weight-bold text-white"><i class="fa-solid fa-user-shield text-warning me-1"></i> Executive Admin Control Panel</span>
+          </div>
+          <h1 class="text-white font-weight-bold display-6 mb-2">
+            Pusat Kendali &amp; Pemantauan Sistem
+          </h1>
+          <p class="text-white-50 lead fs-6 mb-4" style="max-width: 660px;">
+            Pantau statistik emosi pengguna, riwayat skrining kesehatan mental, kelola direktori praktisi, tanggapi pesan masuk, serta kelola informasi kontak &amp; lokasi kantor.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2 gap-md-3">
+            <a href="{{ url_for('admin_contact') }}" class="btn btn-light btn-sm px-3.5 py-2 rounded-3 font-weight-bold d-inline-flex align-items-center gap-2 shadow-sm">
+              <i class="fa-solid fa-headset text-primary"></i> Kelola Hubungi Kami &amp; Peta ({{ unread_messages_count }} Baru)
+            </a>
+            <a href="{{ url_for('admin_articles_add') }}" class="btn btn-outline-light btn-sm px-3.5 py-2 rounded-3 font-weight-bold d-inline-flex align-items-center gap-2">
+              <i class="fa-solid fa-plus"></i> Buat Artikel Baru
+            </a>
+            <a href="{{ url_for('admin_services_add') }}" class="btn btn-outline-light btn-sm px-3.5 py-2 rounded-3 font-weight-bold d-inline-flex align-items-center gap-2">
+              <i class="fa-solid fa-user-plus"></i> Tambah Praktisi
+            </a>
+            <a href="{{ url_for('admin_bookings') }}" class="btn btn-warning btn-sm px-3.5 py-2 rounded-3 font-weight-bold d-inline-flex align-items-center gap-2 text-dark">
+              <i class="fa-solid fa-calendar-check"></i> Kelola Booking ({{ pending_bookings_count }} Pending)
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-4 d-none d-lg-flex justify-content-end">
+          <div class="p-4 rounded-circle bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-10 shadow-lg text-center" style="width:170px; height:170px; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-chart-line text-info" style="font-size: 4.8rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Key Performance Indicators (5 Cards) -->
+<div class="row g-4 mb-4">
+  <!-- Card 1: Total Users -->
+  <div class="col-md-6 col-lg-3">
+    <div class="admin-kpi-card">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="small font-weight-bold text-muted text-uppercase tracking-wider">Total Pengguna</span>
+          <h2 class="font-weight-bold text-dark mb-0 mt-1">{{ total_users }}</h2>
+        </div>
+        <div class="admin-kpi-icon" style="background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);">
+          <i class="fa-solid fa-users"></i>
+        </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-between text-muted small pt-2 border-top">
+        <span class="text-success font-weight-bold"><i class="fa-solid fa-arrow-trend-up me-1"></i>+12% Bulan Ini</span>
+        <a href="{{ url_for('admin_users') }}" class="text-primary text-decoration-none font-weight-bold">Kelola <i class="fa-solid fa-chevron-right ms-1"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Total Tests -->
+  <div class="col-md-6 col-lg-3">
+    <div class="admin-kpi-card">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="small font-weight-bold text-muted text-uppercase tracking-wider">Hasil Skrining</span>
+          <h2 class="font-weight-bold text-dark mb-0 mt-1">{{ total_tests }}</h2>
+        </div>
+        <div class="admin-kpi-icon" style="background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);">
+          <i class="fa-solid fa-clipboard-list"></i>
+        </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-between text-muted small pt-2 border-top">
+        <span class="text-success font-weight-bold"><i class="fa-solid fa-check-circle me-1"></i>Aktif Terintegrasi</span>
+        <span class="text-muted">DASS-21</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Total Bookings -->
+  <div class="col-md-6 col-lg-3">
+    <div class="admin-kpi-card">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="small font-weight-bold text-muted text-uppercase tracking-wider">Booking Konsultasi</span>
+          <h2 class="font-weight-bold text-dark mb-0 mt-1">{{ total_bookings }}</h2>
+        </div>
+        <div class="admin-kpi-icon" style="background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-between text-muted small pt-2 border-top">
+        {% if pending_bookings_count > 0 %}
+          <span class="text-warning font-weight-bold"><i class="fa-solid fa-bell me-1"></i>{{ pending_bookings_count }} Menunggu Konfirmasi</span>
+        {% else %}
+          <span class="text-success font-weight-bold"><i class="fa-solid fa-check-double me-1"></i>Semua Terkonfirmasi</span>
+        {% endif %}
+        <a href="{{ url_for('admin_bookings') }}" class="text-warning text-decoration-none font-weight-bold">Tinjau <i class="fa-solid fa-chevron-right ms-1"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: Support Messages -->
+  <div class="col-md-6 col-lg-3">
+    <div class="admin-kpi-card">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="small font-weight-bold text-muted text-uppercase tracking-wider">Pesan Hubungi Kami</span>
+          <h2 class="font-weight-bold text-dark mb-0 mt-1">{{ total_messages }}</h2>
+        </div>
+        <div class="admin-kpi-icon" style="background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-between text-muted small pt-2 border-top">
+        {% if unread_messages_count > 0 %}
+          <span class="text-danger font-weight-bold"><i class="fa-solid fa-envelope me-1"></i>{{ unread_messages_count }} Belum Dibaca</span>
+        {% else %}
+          <span class="text-success font-weight-bold"><i class="fa-solid fa-check-double me-1"></i>Pesan Terbaca</span>
+        {% endif %}
+        <a href="{{ url_for('admin_contact') }}" class="text-teal text-decoration-none font-weight-bold">Kelola <i class="fa-solid fa-chevron-right ms-1"></i></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Interactive Analytics Charts (Emotions & Tests) -->
+<div class="row g-4 mb-4">
+  <!-- Chart 1: Emotion Distribution -->
+  <div class="col-lg-6">
+    <div class="admin-chart-card p-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="font-weight-bold text-dark mb-0">
+            <i class="fa-solid fa-chart-pie text-primary me-2"></i>Statistik Emosi Pengguna (NLP)
+          </h5>
+          <p class="small text-muted mb-0">Aggregasi deteksi emosi dari pesan chatbot.</p>
+        </div>
+        <span class="badge bg-primary-subtle text-primary font-weight-bold px-3 py-1.5 rounded-pill small">19 Indikator</span>
+      </div>
+      <div style="position: relative; height: 310px;">
+        <canvas id="adminEmotionChart"></canvas>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Chart 2: Test Result Breakdown -->
+  <div class="col-lg-6">
+    <div class="admin-chart-card p-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h5 class="font-weight-bold text-dark mb-0">
+            <i class="fa-solid fa-chart-column text-info me-2"></i>Kategori Hasil Skrining Tes
+          </h5>
+          <p class="small text-muted mb-0">Sebaran tingkat stres, kecemasan, dan depresi.</p>
+        </div>
+        <span class="badge bg-info-subtle text-info font-weight-bold px-3 py-1.5 rounded-pill small">Rekapitulasi</span>
+      </div>
+      <div style="position: relative; height: 310px;">
+        <canvas id="adminTestChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Support Messages Inbox & Crisis Chat Signals Section -->
+<div class="row g-4 mb-4">
+  <!-- Table: Recent Support Messages -->
+  <div class="col-lg-6">
+    <div class="admin-table-card h-100 d-flex flex-column">
+      <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="font-weight-bold text-dark mb-0">
+            <i class="fa-solid fa-inbox text-teal me-2" style="color:#0d9488;"></i>Pesan Hubungi Kami Terbaru
+          </h5>
+          <p class="small text-muted mb-0">Pertanyaan dan saran dari pengguna.</p>
+        </div>
+        <a href="{{ url_for('admin_contact') }}" class="btn btn-sm btn-outline-success px-3 py-1.5 rounded-3 font-weight-bold">Buka Inbox Kontak</a>
+      </div>
+
+      <div class="table-responsive p-3 flex-grow-1">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="py-2.5 px-3">Pengirim</th>
+              <th class="py-2.5">Subjek</th>
+              <th class="py-2.5">Status</th>
+              <th class="py-2.5 text-end">Waktu</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in recent_messages %}
+              <tr>
+                <td class="px-3 py-2.5">
+                  <div class="font-weight-bold text-dark small">{{ m.name }}</div>
+                  <small class="text-muted">{{ m.email }}</small>
+                </td>
+                <td class="py-2.5">
+                  <span class="badge bg-primary-subtle text-primary font-weight-bold px-2 py-0.5 rounded-pill small" style="font-size:0.75rem;">{{ m.subject }}</span>
+                </td>
+                <td class="py-2.5">
+                  {% if m.status == 'Unread' %}
+                    <span class="badge bg-danger text-white rounded-pill px-2 py-0.5 small">Belum Dibaca</span>
+                  {% elif m.status == 'Read' %}
+                    <span class="badge bg-info text-white rounded-pill px-2 py-0.5 small">Sudah Dibaca</span>
+                  {% else %}
+                    <span class="badge bg-success text-white rounded-pill px-2 py-0.5 small">Dibalas</span>
+                  {% endif %}
+                </td>
+                <td class="small text-muted py-2.5 text-end">{{ m.created_at.strftime('%d %b %H:%M') }}</td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-4">Belum ada pesan masuk.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table: Recent Crisis Signals from Chatbot -->
+  <div class="col-lg-6">
+    <div class="admin-table-card h-100 d-flex flex-column">
+      <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="font-weight-bold text-dark mb-0">
+            <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Peringatan Risiko Tinggi Chatbot
+          </h5>
+          <p class="small text-muted mb-0">Deteksi sinyal krisis / emosi berat saat curhat.</p>
+        </div>
+        <span class="badge bg-danger-subtle text-danger font-weight-bold px-2.5 py-1 rounded-pill small">MONITORING SIAGA</span>
+      </div>
+
+      <div class="table-responsive p-3 flex-grow-1">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="py-2.5 px-3">Pengguna</th>
+              <th class="py-2.5">Pesan Curhat</th>
+              <th class="py-2.5 text-end">Waktu Sinyal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in recent_crisis_chats %}
+              <tr>
+                <td class="px-3 py-2.5">
+                  <div class="font-weight-bold text-dark small">{{ c.user.name }}</div>
+                  <small class="text-muted">{{ c.user.email }}</small>
+                </td>
+                <td class="py-2.5">
+                  <div class="text-truncate text-danger small font-weight-bold" style="max-width: 220px;" title="{{ c.message }}">
+                    "{{ c.message }}"
+                  </div>
+                </td>
+                <td class="small text-muted py-2.5 text-end">{{ c.created_at.strftime('%d %b %H:%M') }}</td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="3" class="text-center text-muted py-4">Tidak ada sinyal krisis terdeteksi saat ini. Sistem kondusif.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Activity Tables (Recent Users & Recent Bookings) -->
+<div class="row g-4 mb-4">
+  <!-- Table 1: Recent Users -->
+  <div class="col-lg-6">
+    <div class="admin-table-card h-100 d-flex flex-column">
+      <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="font-weight-bold text-dark mb-0">
+            <i class="fa-solid fa-users-gear text-primary me-2"></i>Pengguna Terbaru
+          </h5>
+          <p class="small text-muted mb-0">Akun terdaftar dalam sistem.</p>
+        </div>
+        <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-outline-primary px-3 py-1.5 rounded-3 font-weight-bold">Lihat Semua</a>
+      </div>
+
+      <div class="table-responsive p-3 flex-grow-1">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="py-2.5 px-3">Nama</th>
+              <th class="py-2.5">Email</th>
+              <th class="py-2.5">Role</th>
+              <th class="py-2.5 text-end">Terdaftar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in recent_users %}
+              {% set initials = u.name[:2].upper() %}
+              <tr>
+                <td class="px-3 py-2.5">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-user-init bg-primary">
+                      {{ initials }}
+                    </div>
+                    <div>
+                      <h6 class="font-weight-bold text-dark mb-0 small">{{ u.name }}</h6>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-2.5 text-muted small">{{ u.email }}</td>
+                <td class="py-2.5">
+                  <span class="badge {% if u.role == 'admin' %}bg-primary-subtle text-primary{% else %}bg-secondary-subtle text-secondary{% endif %} font-weight-bold px-2.5 py-1 rounded-pill small">
+                    {{ u.role|upper }}
+                  </span>
+                </td>
+                <td class="small text-muted py-2.5 text-end">{{ u.created_at.strftime('%d %b %Y') }}</td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-4">Belum ada pengguna terdaftar.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table 2: Recent Bookings with Direct Action Buttons -->
+  <div class="col-lg-6">
+    <div class="admin-table-card h-100 d-flex flex-column">
+      <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div>
+          <h5 class="font-weight-bold text-dark mb-0">
+            <i class="fa-solid fa-calendar-check text-warning me-2"></i>Booking Konsultasi Terbaru
+          </h5>
+          <p class="small text-muted mb-0">Permintaan jadwal dari klien.</p>
+        </div>
+        <a href="{{ url_for('admin_bookings') }}" class="btn btn-sm btn-outline-warning text-dark px-3 py-1.5 rounded-3 font-weight-bold">Kelola Semua Booking</a>
+      </div>
+
+      <div class="table-responsive p-3 flex-grow-1">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="py-2.5 px-3">Klien</th>
+              <th class="py-2.5">Praktisi / Layanan</th>
+              <th class="py-2.5">Jadwal Sesi</th>
+              <th class="py-2.5 text-end">Aksi Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in recent_bookings %}
+              <tr>
+                <td class="px-3 py-2.5">
+                  <div class="font-weight-bold text-dark small">{{ b.name }}</div>
+                  <small class="text-muted">{{ b.email }}</small>
+                </td>
+                <td class="py-2.5">
+                  <div class="text-dark small font-weight-bold">{{ b.service.name }}</div>
+                  <small class="text-muted">{{ b.service.category }}</small>
+                </td>
+                <td class="py-2.5 small">
+                  <div class="font-weight-bold text-dark"><i class="fa-solid fa-calendar-day text-primary me-1"></i> {{ b.booking_date.strftime('%d %b %Y') }}</div>
+                  <div class="text-muted small"><i class="fa-solid fa-clock text-warning me-1"></i> {{ b.booking_time or '09:00 WIB' }}</div>
+                </td>
+                <td class="py-2.5 text-end">
+                  {% if b.status == 'Pending' %}
+                    <div class="d-inline-flex gap-1">
+                      <form action="{{ url_for('admin_booking_status', booking_id=b.id, status='Approved') }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-success rounded-pill px-2 py-0.5 font-weight-bold" style="font-size:0.75rem;" title="Setujui Booking">
+                          <i class="fa-solid fa-check"></i>
+                        </button>
+                      </form>
+                      <form action="{{ url_for('admin_booking_status', booking_id=b.id, status='Cancelled') }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-0.5 font-weight-bold" style="font-size:0.75rem;" title="Batalkan Booking">
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </form>
+                    </div>
+                  {% else %}
+                    <span class="badge {% if b.status == 'Approved' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} font-weight-bold px-2.5 py-1 rounded-pill small">
+                      {{ b.status }}
+                    </span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-4">Belum ada booking konsultasi.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden script data container for Chart.js -->
+<div id="admin-chart-data" 
+     data-emotions='{{ emotion_stats|tojson }}' 
+     data-tests='{{ test_stats|tojson }}'>
+</div>
+
+{% endblock %}

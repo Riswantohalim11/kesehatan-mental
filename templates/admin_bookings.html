@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Kelola Booking Konsultasi - MindHaven Admin{% endblock %}
+
+{% block content %}
+<style>
+  .admin-panel-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  }
+</style>
+
+<!-- Header & Title -->
+<div class="row mb-4">
+  <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h2 class="font-weight-bold text-dark mb-1 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-calendar-check text-warning"></i> Manajemen Booking Konsultasi
+      </h2>
+      <p class="text-muted small mb-0">Tinjau, setujui (Approve), atau batalkan (Cancel) pengajuan jadwal konsultasi dari klien.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-outline-secondary btn-sm rounded-3 font-weight-bold" onclick="window.print()">
+        <i class="fa-solid fa-print me-1"></i> Cetak Laporan
+      </button>
+      <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1.5 rounded-pill font-weight-bold">
+        Total {{ bookings|length }} Pengajuan
+      </span>
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-3 font-weight-bold">
+        <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Main Table Card -->
+<div class="row">
+  <div class="col-12">
+    <div class="admin-panel-card p-4">
+      
+      <!-- Filter Tabs & Search Bar -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+        <div class="d-flex align-items-center gap-1.5 flex-wrap" id="statusFilterGroup">
+          <button class="btn btn-sm btn-primary rounded-pill px-3 font-weight-bold status-tab-btn active" onclick="filterByStatus('all', this)">Semua</button>
+          <button class="btn btn-sm btn-outline-warning text-dark rounded-pill px-3 font-weight-bold status-tab-btn" onclick="filterByStatus('Pending', this)">Pending</button>
+          <button class="btn btn-sm btn-outline-success rounded-pill px-3 font-weight-bold status-tab-btn" onclick="filterByStatus('Approved', this)">Disetujui</button>
+          <button class="btn btn-sm btn-outline-danger rounded-pill px-3 font-weight-bold status-tab-btn" onclick="filterByStatus('Cancelled', this)">Dibatalkan</button>
+        </div>
+
+        <div class="form-icon-input" style="max-width: 320px;">
+          <input type="text" id="searchBooking" class="form-control py-2" placeholder="Cari klien, email, praktisi..." onkeyup="filterBookingsTable()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="bookingsTable">
+          <thead class="table-light">
+            <tr>
+              <th class="py-3 px-3">No</th>
+              <th class="py-3">Nama Klien</th>
+              <th class="py-3">Email Klien</th>
+              <th class="py-3">Praktisi &amp; Layanan</th>
+              <th class="py-3">Jadwal Sesi Pertemuan</th>
+              <th class="py-3">Keluhan / Catatan</th>
+              <th class="py-3">Status</th>
+              <th class="py-3 text-end">Aksi Tindakan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in bookings %}
+              <tr class="booking-row-item" data-search="{{ b.name|lower }} {{ b.email|lower }} {{ b.service.name|lower }}" data-status="{{ b.status }}">
+                <td class="px-3 font-weight-bold text-muted">{{ loop.index }}</td>
+                <td class="font-weight-bold text-dark small">{{ b.name }}</td>
+                <td class="small"><a href="mailto:{{ b.email }}" class="text-primary text-decoration-none">{{ b.email }}</a></td>
+                <td>
+                  <div class="font-weight-bold text-dark small">{{ b.service.name }}</div>
+                  <small class="text-muted">({{ b.service.category }} - {{ b.service.specialty }})</small>
+                </td>
+                <td class="small font-weight-bold text-dark">
+                  <div><i class="fa-solid fa-calendar-day text-primary me-1"></i> {{ b.booking_date.strftime('%d %b %Y') }}</div>
+                  <div class="text-muted small mt-0.5"><i class="fa-solid fa-clock text-warning me-1"></i> {{ b.booking_time or '09:00 WIB' }}</div>
+                </td>
+                <td style="max-width: 240px;">
+                  <p class="small text-muted mb-0" style="white-space: pre-wrap; font-size: 0.825rem;" title="{{ b.complaint }}">
+                    {{ b.complaint[:90] }}{% if b.complaint|length > 90 %}...{% endif %}
+                  </p>
+                </td>
+                <td>
+                  <span class="badge {% if b.status == 'Approved' %}bg-success-subtle text-success{% elif b.status == 'Cancelled' %}bg-danger-subtle text-danger{% else %}bg-warning-subtle text-warning{% endif %} font-weight-bold px-2.5 py-1.5 rounded-pill small">
+                    <i class="fa-solid {% if b.status == 'Approved' %}fa-circle-check{% elif b.status == 'Cancelled' %}fa-circle-xmark{% else %}fa-clock{% endif %} me-1"></i>
+                    {{ b.status }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  {% if b.status == 'Pending' %}
+                    <div class="d-inline-flex gap-1.5">
+                      <form action="{{ url_for('admin_booking_status', booking_id=b.id, status='Approved') }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-success rounded-3 px-2.5 py-1 font-weight-bold">
+                          <i class="fa-solid fa-check me-1"></i> Setujui
+                        </button>
+                      </form>
+                      <form action="{{ url_for('admin_booking_status', booking_id=b.id, status='Cancelled') }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-3 px-2.5 py-1 font-weight-bold">
+                          <i class="fa-solid fa-xmark me-1"></i> Batalkan
+                        </button>
+                      </form>
+                    </div>
+                  {% else %}
+                    <span class="badge bg-light text-muted border px-2.5 py-1 rounded-pill small">Selesai Ditinjau</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="8" class="text-center py-5 text-muted">Belum ada pengajuan booking konsultasi.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentStatusFilter = 'all';
+
+  function filterByStatus(status, btn) {
+    currentStatusFilter = status;
+    document.querySelectorAll('.status-tab-btn').forEach(b => {
+      b.classList.remove('btn-primary');
+      b.classList.add('btn-outline-secondary');
+    });
+    btn.classList.remove('btn-outline-secondary', 'btn-outline-warning', 'btn-outline-success', 'btn-outline-danger');
+    btn.classList.add('btn-primary');
+
+    applyFilters();
+  }
+
+  function filterBookingsTable() {
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const input = document.getElementById('searchBooking').value.toLowerCase();
+    const rows = document.querySelectorAll('.booking-row-item');
+    
+    rows.forEach(row => {
+      const searchData = row.getAttribute('data-search') || '';
+      const statusData = row.getAttribute('data-status') || '';
+      
+      const matchesSearch = searchData.includes(input);
+      const matchesStatus = (currentStatusFilter === 'all') || (statusData === currentStatusFilter);
+      
+      if (matchesSearch && matchesStatus) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}
+

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Edukasi Kesehatan Mental - MindHaven{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-edukasi" style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--r-xl);padding:3rem 2rem;margin-bottom:2rem;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);">
+    <div class="hero-edukasi-text" style="position:relative;z-index:2;">
+        <h1 class="font-weight-bold mb-3" style="font-size: 2.5rem; color:var(--gray-900);">Artikel Edukasi Kesehatan Mental</h1>
+        <p class="mb-0" style="font-size: 1.1rem; color:var(--gray-600);">Perluas pengetahuan Anda mengenai kesehatan mental dengan membaca artikel pilihan dari para ahli. Temukan wawasan baru untuk kehidupan yang lebih baik.</p>
+    </div>
+    <div class="hero-edukasi-icon d-none d-md-block" style="position:absolute;right:10%;top:50%;transform:translateY(-50%);font-size:8rem;color:var(--primary-100);z-index:1;">
+        <i class="fa-solid fa-book-open-reader"></i>
+    </div>
+</div>
+
+<!-- Search and Category Navigation -->
+<div class="row mb-4 align-items-center">
+    <div class="col-md-7 mb-3 mb-md-0">
+        <!-- Category Filters -->
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('edukasi') }}" class="btn btn-sm {% if not selected_category_id %}btn-primary-custom{% else %}btn-secondary-custom{% endif %} px-3">
+                Semua
+            </a>
+            {% for cat in categories %}
+                <a href="{{ url_for('edukasi', category_id=cat.id) }}" class="btn btn-sm {% if selected_category_id == cat.id %}btn-primary-custom{% else %}btn-secondary-custom{% endif %} px-3">
+                    {{ cat.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-5">
+        <!-- Premium Search Bar -->
+        <form action="{{ url_for('edukasi') }}" method="GET">
+            <div class="search-premium" style="background:white;border:1px solid var(--gray-200);border-radius:999px;padding:0.4rem;display:flex;align-items:center;box-shadow:var(--shadow-sm);">
+                <i class="fa-solid fa-magnifying-glass ms-3" style="color:var(--gray-400);"></i>
+                <input type="text" name="search" placeholder="Cari judul artikel edukasi..." value="{{ search_query }}" style="background:transparent;border:none;color:var(--gray-800);width:100%;padding:0.5rem 1rem;outline:none;">
+                <button type="submit" class="btn btn-primary-custom btn-sm rounded-circle p-0" style="width: 36px; height: 36px;flex-shrink:0;">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- Articles Grid -->
+<div class="row g-4 mb-5">
+    {% for art in articles %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card glass-card shadow-sm h-100 position-relative" style="padding:0;overflow:hidden;">
+                <!-- Category Tag Badge -->
+                <span class="article-category" style="position:absolute;top:1rem;left:1rem;background:var(--primary-100);border:1px solid var(--primary-200);color:var(--primary-700);padding:0.4rem 1rem;border-radius:999px;font-size:0.75rem;font-weight:600;z-index:2;box-shadow:var(--shadow-sm);">{{ art.category.name }}</span>
+                
+                <!-- Article Image -->
+                <div class="img-wrapper" style="height:200px;overflow:hidden;position:relative;">
+                    <img src="{{ art.image_url | image_src }}" alt="{{ art.title }}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&q=80&w=800';">
+                </div>
+                
+                <div class="card-body d-flex flex-column justify-content-between p-4">
+                    <div>
+                        <!-- Title -->
+                        <h5 class="card-title font-weight-bold mb-2">
+                            <a href="{{ url_for('article_detail', article_id=art.id) }}" class="text-decoration-none text-dark hover-primary">{{ art.title }}</a>
+                        </h5>
+                        <!-- Content Preview -->
+                        <p class="card-text small mb-3" style="color:var(--gray-600);">
+                            {{ art.content[:100] }}...
+                        </p>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small" style="color:var(--gray-500);"><i class="fa-solid fa-calendar me-1"></i> {{ art.created_at.strftime('%d %b %Y') }}</span>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                <!-- Bookmark Button -->
+                                {% if current_user.is_authenticated and current_user.role != 'admin' %}
+                                    <button class="btn btn-sm rounded-circle bookmark-toggle {% if art.id in bookmarked_ids %}active text-warning{% endif %}" 
+                                            data-article-id="{{ art.id }}" 
+                                            style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--gray-200); background:var(--gray-50); color:var(--gray-600);">
+                                        <i class="{% if art.id in bookmarked_ids %}fa-solid fa-bookmark{% else %}fa-regular fa-bookmark{% endif %}"></i>
+                                    </button>
+                                {% endif %}
+                                
+                                <a href="{{ url_for('article_detail', article_id=art.id) }}" class="btn-primary-custom" style="padding:0.4rem 1rem;font-size:0.8rem;">
+                                    Baca
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Admin Controls -->
+                        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                            <div class="border-top pt-2 mt-3 d-flex justify-content-end gap-2">
+                                <a href="{{ url_for('admin_articles_edit', article_id=art.id) }}" class="btn btn-xs btn-outline-warning py-1 px-2 small">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                </a>
+                                <form action="{{ url_for('admin_articles_delete', article_id=art.id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus artikel ini?');" class="d-inline">
+                                    <button type="submit" class="btn btn-xs btn-outline-danger py-1 px-2 small">
+                                        <i class="fa-solid fa-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12 text-center py-5 glass-card">
+            <i class="fa-solid fa-newspaper fa-4x mb-3 d-block" style="color:var(--gray-300);"></i>
+            <p style="color:var(--gray-500);">Tidak ditemukan artikel kesehatan mental.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,859 @@
+{% extends "base.html" %}
+
+{% block title %}Skrining Awal Kesehatan Mental - MindHaven{% endblock %}
+
+{% block content %}
+<style>
+  .screening-wrapper {
+    max-width: 760px;
+    margin: 1.5rem auto 3rem;
+  }
+
+  .sk-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+    padding: 2.25rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (max-width: 640px) {
+    .sk-card {
+      padding: 1.5rem 1.25rem;
+      border-radius: 16px;
+    }
+  }
+
+  .sk-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+    border: 1px solid #d1fae5;
+  }
+
+  .sk-badge-risk {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fee2e2;
+  }
+
+  .sk-progress-track {
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 1rem 0 1.5rem;
+  }
+
+  .sk-progress-bar {
+    height: 100%;
+    width: 5%;
+    background: linear-gradient(90deg, #10b981 0%, #0d9488 50%, #0284c7 100%);
+    border-radius: 999px;
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .sk-question-num {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .sk-question-text {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.45;
+    margin: 0.6rem 0 0.5rem;
+    min-height: 3.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .sk-question-text {
+      font-size: 1.15rem;
+      min-height: auto;
+    }
+  }
+
+  .sk-timeframe-tag {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-bottom: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .sk-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .sk-opt-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+
+  .sk-opt-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .sk-opt-item.selected {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+
+  .sk-opt-item.selected-risk-high {
+    background: #fff1f2;
+    border-color: #f43f5e;
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15);
+  }
+
+  .sk-opt-left {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .sk-opt-emoji {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .sk-opt-label {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .sk-opt-score-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    background: #e2e8f0;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    transition: all 0.2s;
+  }
+
+  .sk-opt-item.selected .sk-opt-score-badge {
+    background: #3b82f6;
+    color: #ffffff;
+  }
+
+  .sk-nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .btn-sk-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-sk-back:hover:not(:disabled) {
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+
+  .btn-sk-back:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-sk-next {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+    border: none;
+    color: #ffffff;
+    padding: 0.7rem 1.6rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+  }
+
+  .btn-sk-next:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(13, 148, 136, 0.35);
+  }
+
+  .sk-validation-alert {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+    animation: fadeIn 0.2s ease;
+  }
+
+  /* Result Container Styling */
+  .result-hero {
+    text-align: center;
+    padding: 1.5rem 0 1rem;
+  }
+
+  .score-dial {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    margin: 0 auto 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+    border: 4px solid #0d9488;
+    box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15);
+  }
+
+  .score-dial-val {
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: #0f172a;
+  }
+
+  .score-dial-max {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-top: 0.2rem;
+  }
+
+  .result-indication-badge {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .badge-low { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+  .badge-mid { background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+  .badge-high { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+
+  .disclaimer-box {
+    background: #f8fafc;
+    border-left: 4px solid #3b82f6;
+    padding: 0.9rem 1.2rem;
+    border-radius: 0 12px 12px 0;
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.5;
+    margin: 1.5rem 0;
+    text-align: left;
+  }
+
+  .crisis-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1.25rem;
+  }
+
+  .crisis-modal-content {
+    background: #ffffff;
+    border-radius: 20px;
+    max-width: 540px;
+    width: 100%;
+    padding: 2rem;
+    border: 2px solid #fecaca;
+    box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.25);
+    animation: zoomIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>
+
+<div class="container py-4">
+  <div class="screening-wrapper">
+
+    <!-- Top Utility Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="sk-badge-pill" id="skCategoryPill">
+          <i class="fa-solid fa-heart-pulse"></i> Check-in Emosional
+        </span>
+        <span class="badge bg-light text-secondary border d-none d-sm-inline-block" style="font-size: 0.78rem;">
+          Bukan Diagnosis Medis
+        </span>
+      </div>
+      <a href="{{ url_for('dashboard') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center gap-1" title="Buka Dashboard">
+        <span>Lewati ke Dashboard</span> <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </a>
+    </div>
+
+    <!-- MAIN SCREENING CARD -->
+    <div class="sk-card" id="screeningCard">
+
+      <!-- =========================================================
+           VIEW 1: 20 PERTANYAAN EMOSIONAL (STEP 1 - 20)
+           ========================================================= -->
+      <div id="questionsContainer">
+        <!-- Progress Bar & Counter -->
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="sk-question-num" id="qNumText">Pertanyaan 1 dari 20</div>
+          <div class="small text-muted fw-bold" id="qPctText">5%</div>
+        </div>
+
+        <div class="sk-progress-track">
+          <div class="sk-progress-bar" id="skProgressBar" style="width: 5%;"></div>
+        </div>
+
+        <!-- Timeframe Anchor -->
+        <div class="sk-timeframe-tag">
+          <i class="fa-regular fa-calendar-check text-primary"></i>
+          <span>Periode evaluasi: <strong>Dalam 2 minggu terakhir</strong></span>
+        </div>
+
+        <!-- Active Question Text -->
+        <h3 class="sk-question-text" id="qTitle">
+          1. Saya merasa sedih atau murung tanpa alasan yang jelas.
+        </h3>
+
+        <!-- Options Scale 0 - 4 -->
+        <div class="sk-options-list" id="optionsGroup">
+          <div class="sk-opt-item" data-val="0" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">🙂</span>
+              <span class="sk-opt-label">Tidak Pernah</span>
+            </div>
+            <span class="sk-opt-score-badge">0 poin</span>
+          </div>
+
+          <div class="sk-opt-item" data-val="1" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">😐</span>
+              <span class="sk-opt-label">Jarang</span>
+            </div>
+            <span class="sk-opt-score-badge">1 poin</span>
+          </div>
+
+          <div class="sk-opt-item" data-val="2" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">😕</span>
+              <span class="sk-opt-label">Kadang-kadang</span>
+            </div>
+            <span class="sk-opt-score-badge">2 poin</span>
+          </div>
+
+          <div class="sk-opt-item" data-val="3" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">😟</span>
+              <span class="sk-opt-label">Sering</span>
+            </div>
+            <span class="sk-opt-score-badge">3 poin</span>
+          </div>
+
+          <div class="sk-opt-item" data-val="4" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">😫</span>
+              <span class="sk-opt-label">Sangat Sering</span>
+            </div>
+            <span class="sk-opt-score-badge">4 poin</span>
+          </div>
+        </div>
+
+        <!-- Validation Message -->
+        <div class="sk-validation-alert" id="valAlert">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>Silakan pilih salah satu jawaban di atas untuk melanjutkan.</span>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="sk-nav-bar">
+          <button type="button" class="btn-sk-back" id="btnPrev" disabled>
+            <i class="fa-solid fa-arrow-left"></i> Sebelumnya
+          </button>
+          <button type="button" class="btn-sk-next" id="btnNext">
+            Berikutnya <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div><!-- /questionsContainer -->
+
+
+      <!-- =========================================================
+           VIEW 2: RISK CHECK / SAFETY QUESTION (STEP 21)
+           ========================================================= -->
+      <div id="riskContainer" style="display: none;">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="sk-badge-pill sk-badge-risk">
+            <i class="fa-solid fa-shield-heart"></i> Pemeriksaan Keselamatan
+          </span>
+          <span class="small text-muted fw-bold">Pertanyaan Tambahan</span>
+        </div>
+
+        <h3 class="sk-question-text text-danger mt-3" style="font-size: 1.25rem;">
+          Dalam 2 minggu terakhir, apakah Anda pernah memiliki pikiran untuk menyakiti diri sendiri atau merasa bahwa Anda tidak ingin hidup?
+        </h3>
+
+        <p class="text-muted small mb-4">
+          <i class="fa-solid fa-circle-info"></i> Pertanyaan ini diajukan untuk memastikan keselamatan dan kenyamanan Anda, serta <strong>tidak dimasukkan ke dalam total skor 20 pertanyaan</strong>.
+        </p>
+
+        <div class="sk-options-list" id="riskOptionsGroup">
+          <div class="sk-opt-item" data-risk="Tidak pernah" data-is-high="false" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">🌱</span>
+              <span class="sk-opt-label">Tidak pernah</span>
+            </div>
+            <i class="fa-regular fa-circle-check text-muted"></i>
+          </div>
+
+          <div class="sk-opt-item" data-risk="Pernah terpikir, tetapi tidak serius" data-is-high="false" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">⛅</span>
+              <span class="sk-opt-label">Pernah terpikir, tetapi tidak serius</span>
+            </div>
+            <i class="fa-regular fa-circle text-muted"></i>
+          </div>
+
+          <div class="sk-opt-item" data-risk="Sering terpikir" data-is-high="true" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">🌧️</span>
+              <span class="sk-opt-label text-danger">Sering terpikir</span>
+            </div>
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle small">Perlu Dukungan Segera</span>
+          </div>
+
+          <div class="sk-opt-item" data-risk="Sangat sering / saat ini saya merasa berisiko" data-is-high="true" tabindex="0" role="button">
+            <div class="sk-opt-left">
+              <span class="sk-opt-emoji">⚠️</span>
+              <span class="sk-opt-label text-danger">Sangat sering / saat ini saya merasa berisiko</span>
+            </div>
+            <span class="badge bg-danger text-white small">Risiko Tinggi</span>
+          </div>
+        </div>
+
+        <div class="sk-validation-alert" id="riskValAlert">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>Silakan pilih salah satu opsi keselamatan untuk melihat hasil ringkasan.</span>
+        </div>
+
+        <div class="sk-nav-bar">
+          <button type="button" class="btn-sk-back" id="btnRiskBack">
+            <i class="fa-solid fa-arrow-left"></i> Pertanyaan Sebelumnya
+          </button>
+          <button type="button" class="btn-sk-next" id="btnRiskSubmit">
+            Lihat Hasil Skrining <i class="fa-solid fa-square-poll-vertical"></i>
+          </button>
+        </div>
+      </div><!-- /riskContainer -->
+
+
+      <!-- =========================================================
+           VIEW 3: HASIL SKRINING RINGKAS (STEP 22)
+           ========================================================= -->
+      <div id="resultContainer" style="display: none;">
+        <div class="result-hero">
+          <span class="sk-badge-pill mb-2">
+            <i class="fa-solid fa-clipboard-check"></i> Hasil Skrining Awal Selesai
+          </span>
+
+          <h2 class="fw-bold text-dark mb-1 mt-2">Ringkasan Kondisi Emosional</h2>
+          <p class="text-muted small">Berdasarkan check-in perasaan Anda dalam 2 minggu terakhir.</p>
+
+          <div class="score-dial">
+            <span class="score-dial-val" id="resScoreVal">0</span>
+            <span class="score-dial-max">DARI 80 POIN</span>
+          </div>
+
+          <div id="resBadgeWrapper">
+            <span class="result-indication-badge badge-low" id="resIndicationBadge">Indikasi Beban Rendah / Stabil</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-light rounded-3 mb-3 border">
+          <h6 class="fw-bold text-dark mb-2 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-circle-info text-primary"></i> Ringkasan Indikasi
+          </h6>
+          <p class="small text-secondary mb-0" id="resDescriptionText" style="line-height: 1.6;">
+            Kondisi emosional Anda saat ini cenderung stabil.
+          </p>
+        </div>
+
+        <div class="p-3 rounded-3 mb-3 border" style="background:#f0fdf4; border-color:#bbf7d0 !important;">
+          <h6 class="fw-bold text-success mb-2 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-seedling"></i> Rekomendasi Awal
+          </h6>
+          <p class="small text-secondary mb-0" id="resRecommendationText" style="line-height: 1.6;">
+            Pertahankan rutinitas istirahat dan luangkan waktu untuk relaksasi.
+          </p>
+        </div>
+
+        <div class="disclaimer-box">
+          <div class="fw-bold mb-1 text-dark d-flex align-items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation text-primary"></i> Penafian Penting
+          </div>
+          Hasil skrining ini merupakan gambaran awal kondisi emosional Anda saat ini dan <strong>BUKAN merupakan diagnosis medis atau psikologis klinis</strong>. Gunakan hasil ini sebagai referensi sebelum Anda memulai percakapan dengan AI Chatbot kami.
+        </div>
+
+        <!-- Primary CTA: Lanjutkan ke Chatbot -->
+        <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-3 mt-4 pt-2">
+          <a href="{{ url_for('chatbot', from_screening=1) }}" class="btn-sk-next text-decoration-none px-4 py-2.5 text-center w-100 w-sm-auto justify-content-center" id="btnContinueToChatbot">
+            <i class="fa-solid fa-comments"></i> Lanjutkan ke Chatbot
+          </a>
+          <a href="{{ url_for('dashboard') }}" class="btn-sk-back text-decoration-none px-4 py-2 text-center w-100 w-sm-auto justify-content-center">
+            Kembali ke Dashboard
+          </a>
+        </div>
+      </div><!-- /resultContainer -->
+
+    </div><!-- /sk-card -->
+
+  </div>
+</div>
+
+<!-- =========================================================
+     CRISIS ALERT MODAL (HIGH RISK)
+     ========================================================= -->
+<div class="crisis-modal-overlay" id="crisisOverlay">
+  <div class="crisis-modal-content">
+    <div class="text-center mb-3">
+      <div class="d-inline-flex p-3 rounded-circle bg-danger-subtle text-danger mb-2">
+        <i class="fa-solid fa-triangle-exclamation fa-2x"></i>
+      </div>
+      <h4 class="fw-bold text-danger mb-1">Crisis Alert &amp; Pendampingan</h4>
+      <p class="text-muted small">Kami sangat peduli pada keselamatan dan kesejahteraan Anda.</p>
+    </div>
+
+    <div class="alert alert-danger py-2.5 px-3 small border-0 mb-3" style="background:#fef2f2; color:#991b1b; line-height: 1.5;">
+      Anda mengindikasikan adanya pikiran atau perasaan yang berisiko terhadap keselamatan diri. Perlu diingat bahwa Anda <strong>tidak sendirian</strong> dan ada pertolongan yang selalu siap sedia mendengarkan Anda tanpa menghakimi.
+    </div>
+
+    <div class="card bg-light border-0 p-3 mb-3">
+      <h6 class="fw-bold text-dark small mb-2"><i class="fa-solid fa-phone-volume text-danger me-1"></i> Kontak Bantuan Darurat 24/7:</h6>
+      <ul class="list-unstyled small text-secondary mb-0" style="line-height: 1.7;">
+        <li>📞 <strong>Hotline Kemenkes RI:</strong> 119 (ext. 8) / Bebas Pulsa</li>
+        <li>📞 <strong>Layanan SEJIWA:</strong> 119 ext. 8</li>
+        <li>✉️ <strong>Into The Light:</strong> pendampingan &amp; edukasi pencegahan bunuh diri</li>
+      </ul>
+    </div>
+
+    <div class="d-grid gap-2">
+      <a href="{{ url_for('bantuan_krisis') }}" class="btn btn-danger font-weight-bold py-2.5 rounded-3">
+        <i class="fa-solid fa-hand-holding-heart me-1"></i> Buka Halaman Bantuan Krisis Sekarang
+      </a>
+      <button type="button" class="btn btn-outline-secondary btn-sm py-2 rounded-3" id="btnCloseCrisis">
+        Tetap Lanjutkan ke Hasil Skrining
+      </button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  // 20 PERTANYAAN RESMI DARI USER
+  const questions = [
+    "Saya merasa sedih atau murung tanpa alasan yang jelas.",
+    "Saya merasa cemas atau khawatir terhadap sesuatu secara berlebihan.",
+    "Saya merasa sulit menenangkan pikiran ketika sedang menghadapi masalah.",
+    "Saya merasa tertekan oleh berbagai masalah atau tuntutan yang sedang dihadapi.",
+    "Saya kehilangan minat atau kesenangan terhadap aktivitas yang biasanya saya sukai.",
+    "Saya merasa mudah lelah meskipun tidak melakukan aktivitas yang berat.",
+    "Saya mengalami kesulitan untuk tidur atau mendapatkan tidur yang cukup.",
+    "Saya merasa sulit berkonsentrasi ketika belajar, bekerja, atau melakukan aktivitas sehari-hari.",
+    "Saya merasa mudah tersinggung atau emosional.",
+    "Saya merasa kewalahan ketika menghadapi masalah sehari-hari.",
+    "Saya merasa kurang percaya diri dalam menghadapi situasi yang sedang saya alami.",
+    "Saya cenderung menghindari aktivitas atau situasi karena merasa tidak nyaman atau khawatir.",
+    "Saya merasa sulit menikmati waktu bersama orang lain.",
+    "Saya merasa sendirian meskipun berada di sekitar orang lain.",
+    "Saya mengalami perubahan nafsu makan yang cukup terasa.",
+    "Saya merasa sulit mengendalikan pikiran negatif yang muncul.",
+    "Saya merasa tidak memiliki energi atau motivasi untuk melakukan aktivitas sehari-hari.",
+    "Saya merasa masalah yang saya hadapi sulit untuk diselesaikan.",
+    "Saya merasa membutuhkan seseorang untuk mendengarkan atau memahami apa yang sedang saya alami.",
+    "Saya merasa kondisi emosional saya mengganggu aktivitas sehari-hari."
+  ];
+
+  // State
+  let currentIndex = 0; // 0 to 19 (Pertanyaan 1 to 20)
+  const answers = new Array(20).fill(null);
+  let selectedRisk = null;
+  let isRiskHigh = false;
+
+  // DOM Elements
+  const questionsContainer = document.getElementById('questionsContainer');
+  const riskContainer = document.getElementById('riskContainer');
+  const resultContainer = document.getElementById('resultContainer');
+  const qNumText = document.getElementById('qNumText');
+  const qPctText = document.getElementById('qPctText');
+  const skProgressBar = document.getElementById('skProgressBar');
+  const qTitle = document.getElementById('qTitle');
+  const optItems = document.querySelectorAll('#optionsGroup .sk-opt-item');
+  const valAlert = document.getElementById('valAlert');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+
+  // Risk elements
+  const riskOptItems = document.querySelectorAll('#riskOptionsGroup .sk-opt-item');
+  const riskValAlert = document.getElementById('riskValAlert');
+  const btnRiskBack = document.getElementById('btnRiskBack');
+  const btnRiskSubmit = document.getElementById('btnRiskSubmit');
+  const crisisOverlay = document.getElementById('crisisOverlay');
+  const btnCloseCrisis = document.getElementById('btnCloseCrisis');
+
+  // Result elements
+  const resScoreVal = document.getElementById('resScoreVal');
+  const resIndicationBadge = document.getElementById('resIndicationBadge');
+  const resDescriptionText = document.getElementById('resDescriptionText');
+  const resRecommendationText = document.getElementById('resRecommendationText');
+
+  // Render question by index
+  function renderQuestion(idx) {
+    valAlert.style.display = 'none';
+    const qNumber = idx + 1;
+    qNumText.textContent = `Pertanyaan ${qNumber} dari 20`;
+    const pct = Math.round((qNumber / 20) * 100);
+    qPctText.textContent = `${pct}%`;
+    skProgressBar.style.width = `${pct}%`;
+
+    qTitle.textContent = `${qNumber}. ${questions[idx]}`;
+
+    // Update selected state on options
+    const currentVal = answers[idx];
+    optItems.forEach(item => {
+      const val = parseInt(item.dataset.val);
+      if (currentVal !== null && val === currentVal) {
+        item.classList.add('selected');
+      } else {
+        item.classList.remove('selected');
+      }
+    });
+
+    btnPrev.disabled = (idx === 0);
+    if (idx === 19) {
+      btnNext.innerHTML = 'Pemeriksaan Keselamatan <i class="fa-solid fa-arrow-right"></i>';
+    } else {
+      btnNext.innerHTML = 'Berikutnya <i class="fa-solid fa-arrow-right"></i>';
+    }
+  }
+
+  // Option Click Handler
+  optItems.forEach(item => {
+    item.addEventListener('click', function() {
+      optItems.forEach(i => i.classList.remove('selected'));
+      this.classList.add('selected');
+      const val = parseInt(this.dataset.val);
+      answers[currentIndex] = val;
+      valAlert.style.display = 'none';
+    });
+  });
+
+  // Next Button Handler
+  btnNext.addEventListener('click', function() {
+    if (answers[currentIndex] === null) {
+      valAlert.style.display = 'flex';
+      return;
+    }
+
+    if (currentIndex < 19) {
+      currentIndex++;
+      renderQuestion(currentIndex);
+    } else {
+      // Step 20 finished -> Proceed to Risk Check (Step 21)
+      showRiskCheck();
+    }
+  });
+
+  // Prev Button Handler
+  btnPrev.addEventListener('click', function() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderQuestion(currentIndex);
+    }
+  });
+
+  // Risk check display
+  function showRiskCheck() {
+    questionsContainer.style.display = 'none';
+    riskContainer.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  btnRiskBack.addEventListener('click', function() {
+    riskContainer.style.display = 'none';
+    questionsContainer.style.display = 'block';
+    renderQuestion(19);
+  });
+
+  // Risk Option Selection
+  riskOptItems.forEach(item => {
+    item.addEventListener('click', function() {
+      riskOptItems.forEach(i => i.classList.remove('selected', 'selected-risk-high'));
+      const isHigh = this.dataset.isHigh === 'true';
+      if (isHigh) {
+        this.classList.add('selected-risk-high');
+      } else {
+        this.classList.add('selected');
+      }
+      selectedRisk = this.dataset.risk;
+      isRiskHigh = isHigh;
+      riskValAlert.style.display = 'none';
+    });
+  });
+
+  // Submit Risk and Calculate
+  btnRiskSubmit.addEventListener('click', function() {
+    if (!selectedRisk) {
+      riskValAlert.style.display = 'flex';
+      return;
+    }
+
+    if (isRiskHigh) {
+      crisisOverlay.style.display = 'flex';
+    } else {
+      finalizeAndShowResult();
+    }
+  });
+
+  if (btnCloseCrisis) {
+    btnCloseCrisis.addEventListener('click', function() {
+      crisisOverlay.style.display = 'none';
+      finalizeAndShowResult();
+    });
+  }
+
+  // Calculate Total Score & Indication
+  function finalizeAndShowResult() {
+    // Total score is SUM of questions 1 - 20 (0 to 80)
+    const totalScore = answers.reduce((acc, curr) => acc + (curr || 0), 0);
+
+    let categoryResult = "";
+    let badgeClass = "badge-low";
+    let desc = "";
+    let rec = "";
+
+    if (totalScore <= 20) {
+      categoryResult = "Indikasi Beban Rendah / Stabil";
+      badgeClass = "badge-low";
+      desc = "Kondisi emosional Anda dalam 2 minggu terakhir cenderung stabil dan minim tekanan. Anda mampu mengelola aktivitas dan pikiran harian dengan baik.";
+      rec = "Pertahankan pola hidup seimbang, istirahat cukup, dan luangkan waktu untuk aktivitas yang Anda senangi.";
+    } else if (totalScore <= 40) {
+      categoryResult = "Indikasi Beban Emosional Ringan - Sedang";
+      badgeClass = "badge-mid";
+      desc = "Ada beberapa gejala stres, kecemasan, atau kelelahan emosional yang mulai Anda rasakan dalam 2 minggu terakhir. Hal ini lumrah terjadi saat menghadapi rutinitas atau tekanan tertentu.";
+      rec = "Ambil jeda istirahat berkala, lakukan teknik relaksasi pernapasan, dan ceritakan hal-hal yang membebani pikiran Anda di ruang curhat MindHaven.";
+    } else if (totalScore <= 60) {
+      categoryResult = "Indikasi Beban Emosional Cukup Tinggi";
+      badgeClass = "badge-mid";
+      desc = "Anda merasakan beban emosional atau tekanan pikiran yang cukup intens dan mulai mengganggu kenyamanan beraktivitas. Energi Anda mungkin terasa mudah terkuras.";
+      rec = "Kurangi beban pekerjaan jika memungkinkan, terapkan *grounding*, dan pertimbangkan untuk bercerita serta berkonsultasi lebih lanjut dengan konselor/psikolog.";
+    } else {
+      categoryResult = "Indikasi Beban Emosional Sangat Tinggi";
+      badgeClass = "badge-high";
+      desc = "Kondisi emosional Anda dalam 2 minggu terakhir tampak sangat membebani aktivitas harian. Anda mungkin mengalami kelelahan batin yang mendalam dan membutuhkan ruang dukungan yang aman.";
+      rec = "Prioritaskan kesehatan dan pemulihan diri. Jangan ragu mencari dukungan dari orang terdekat atau berkonsultasi langsung dengan profesional kesehatan mental.";
+    }
+
+    // Save to server via AJAX endpoint
+    fetch('/api/skrining/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        score: totalScore,
+        category_result: categoryResult,
+        description: desc,
+        recommendation: rec,
+        risk_response: selectedRisk,
+        is_risk_high: isRiskHigh,
+        answers: answers
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      console.log('Screening successfully saved:', data);
+    })
+    .catch(err => {
+      console.warn('Screening saved locally in session:', err);
+    });
+
+    // Populate UI
+    resScoreVal.textContent = totalScore;
+    resIndicationBadge.className = `result-indication-badge ${badgeClass}`;
+    resIndicationBadge.textContent = categoryResult;
+    resDescriptionText.textContent = desc;
+    resRecommendationText.textContent = rec;
+
+    // Show result view
+    riskContainer.style.display = 'none';
+    resultContainer.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Initial call
+  renderQuestion(0);
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Tes Screening - MindHaven{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card glass-card p-4 mb-4 text-center" style="background:white; border:1px solid var(--gray-200);">
+            <div class="mb-3">
+                <i class="fa-solid fa-square-poll-vertical" style="font-size: 4rem; color:var(--primary-500);"></i>
+            </div>
+            <h2 class="font-weight-bold text-dark mb-1">Hasil Screening Mandiri</h2>
+            <p style="color:var(--gray-600);">Hasil evaluasi tes kesehatan mental kategori: <strong>{{ result.test_category }}</strong></p>
+            <p class="small mb-0" style="color:var(--gray-500);">Diselesaikan pada: {{ result.created_at.strftime('%d %B %Y - %H:%M') }}</p>
+        </div>
+
+        <div class="card glass-card p-4 mb-4" style="background:white; border:1px solid var(--gray-200);">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-4 text-center">
+                    <div class="d-inline-block p-4 rounded-circle bg-opacity-10 text-white mb-2 {% if result.category_result == 'Berat' %}bg-danger{% elif result.category_result == 'Sedang' %}bg-warning text-dark{% else %}bg-success{% endif %}" style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; background-color: {% if result.category_result == 'Berat' %}var(--danger){% elif result.category_result == 'Sedang' %}var(--warning){% else %}var(--success){% endif %};">
+                        <div>
+                            <span class="fs-1 font-weight-bold d-block">{{ result.score }}</span>
+                            <span class="small d-block text-uppercase" style="font-size: 0.7rem; font-weight: 700;">Skor</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge fs-6 px-3 py-2 rounded-pill {% if result.category_result == 'Berat' %}bg-danger{% elif result.category_result == 'Sedang' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                            {{ result.category_result }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="col-md-8">
+                    <h5 class="font-weight-bold text-dark"><i class="fa-solid fa-circle-info me-2" style="color:var(--primary-400);"></i> Penjelasan Kondisi</h5>
+                    <p style="color:var(--gray-600); line-height: 1.6;">{{ result.description }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations panel -->
+        <div class="card glass-card p-4 mb-4" style="background:white; border:1px solid var(--gray-200); border-left: 5px solid var(--primary-400);">
+            <h5 class="font-weight-bold text-dark mb-3"><i class="fa-solid fa-seedling me-2" style="color:var(--primary-500);"></i> Rekomendasi Self-Help</h5>
+            <div style="color:var(--gray-600); line-height: 1.7;">
+                {{ result.recommendation.replace('\n', '<br>')|safe }}
+            </div>
+        </div>
+
+        <!-- Call to action -->
+        <div class="card glass-card p-4 text-center mb-5" style="background:white; border:1px solid var(--gray-200);">
+            {% if result.category_result == 'Sedang' or result.category_result == 'Berat' %}
+                <div class="alert py-3 mb-3 text-start" style="background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); color:#b45309;">
+                    <h6 class="font-weight-bold mb-1 text-dark"><i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24;"></i> Harap Diperhatikan</h6>
+                    Skor Anda tergolong {{ result.category_result }}. Kami sangat menyarankan Anda untuk berkonsultasi dengan profesional medis (Psikolog/Konselor) untuk penanganan lebih tepat.
+                </div>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('layanan') }}" class="btn-secondary-custom d-inline-flex align-items-center px-4" style="border:none;">
+                        <i class="fa-solid fa-calendar-check me-2"></i> Booking Jadwal Konsultasi
+                    </a>
+                    <a href="{{ url_for('chatbot') }}" class="btn-primary-custom d-inline-flex align-items-center px-4" style="border:none;">
+                        <i class="fa-solid fa-comments me-2"></i> Curhat dengan AI Chatbot
+                    </a>
+                </div>
+            {% else %}
+                <p style="color:var(--gray-600);">Pertahankan pola hidup sehat dan manajemen stres yang baik untuk menjaga kesehatan emosional Anda.</p>
+                <div class="d-flex justify-content-center gap-3 mt-3">
+                    <a href="{{ url_for('test') }}" class="btn-secondary-custom d-inline-flex align-items-center px-4" style="border:none;">
+                        <i class="fa-solid fa-arrow-rotate-left me-2"></i> Ambil Tes Kategori Lain
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn-primary-custom d-inline-flex align-items-center px-4" style="border:none;">
+                        <i class="fa-solid fa-house me-2"></i> Kembali ke Dashboard
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

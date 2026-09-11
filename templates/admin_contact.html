@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Kelola Kontak & Pesan Masuk Admin — MindHaven{% endblock %}
+
+{% block content %}
+<!-- Header Page -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div>
+        <h2 class="font-weight-bold text-dark mb-1 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-headset text-primary"></i> Kelola Hubungi Kami &amp; Pesan Masuk
+        </h2>
+        <p class="small text-muted mb-0">Ubah informasi kontak kantor &amp; tanggapi pesan yang dikirimkan oleh pengguna/pengunjung.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill font-weight-bold px-3">
+            <i class="fa-solid fa-arrow-left me-1"></i> Dashboard Admin
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Left Column: Form Edit Informasi Kontak & Lokasi -->
+    <div class="col-lg-5">
+        <div class="glass-card p-4 border-0 shadow-sm h-100" style="border-radius:24px; background:white;">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <h5 class="font-weight-bold text-dark mb-0 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-warning"></i> Edit Informasi Kontak &amp; Peta
+                </h5>
+                <span class="badge bg-warning-subtle text-warning font-weight-bold px-2.5 py-1 rounded-pill small">LIVE UPDATE</span>
+            </div>
+
+            <form action="{{ url_for('admin_contact') }}" method="POST">
+                <!-- Email Support -->
+                <div class="mb-3">
+                    <label for="email_support" class="form-label font-weight-bold text-dark small mb-1">Email Dukungan Layanan</label>
+                    <div class="form-icon-input">
+                        <input type="email" class="form-control" id="email_support" name="email_support" value="{{ contact_setting.email_support }}" required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                </div>
+
+                <!-- WhatsApp Center -->
+                <div class="mb-3">
+                    <label for="whatsapp_number" class="form-label font-weight-bold text-dark small mb-1">Nomor WhatsApp Center</label>
+                    <div class="form-icon-input">
+                        <input type="text" class="form-control" id="whatsapp_number" name="whatsapp_number" value="{{ contact_setting.whatsapp_number }}" required>
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                </div>
+
+                <!-- Operating Hours -->
+                <div class="mb-3">
+                    <label for="operating_hours" class="form-label font-weight-bold text-dark small mb-1">Jam Operasional Kantor</label>
+                    <div class="form-icon-input">
+                        <input type="text" class="form-control" id="operating_hours" name="operating_hours" value="{{ contact_setting.operating_hours }}" required>
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+
+                <!-- Office Address -->
+                <div class="mb-3">
+                    <label for="office_address" class="form-label font-weight-bold text-dark small mb-1">Alamat Lengkap Kantor / Center</label>
+                    <textarea class="form-control p-3" id="office_address" name="office_address" rows="3" required style="border-radius:12px; font-size:0.9rem;">{{ contact_setting.office_address }}</textarea>
+                </div>
+
+                <!-- Google Maps Embed URL or iframe code -->
+                <div class="mb-4">
+                    <label for="google_maps_url" class="form-label font-weight-bold text-dark small mb-1">Link Peta / Kode Embed Google Maps</label>
+                    <textarea class="form-control p-3 mb-2" id="google_maps_url" name="google_maps_url" rows="3.5" placeholder="Bisa berupa link URL 'https://www.google.com/maps/embed...' ATAU langsung tempelkan seluruh kode HTML <iframe src='...'></iframe>" required style="border-radius:12px; font-size:0.82rem; font-family:monospace;" oninput="updateMapPreview(this.value)">{{ contact_setting.google_maps_url }}</textarea>
+                    
+
+
+                    <!-- Live Map Preview Box -->
+                    <label class="form-label font-weight-bold text-dark small mb-1">Pratinjau Peta Tampilan Pengguna:</label>
+                    <div class="border rounded-3 overflow-hidden bg-light p-1 shadow-xs">
+                        <iframe id="liveMapPreview" src="{{ contact_setting.google_maps_url }}" width="100%" height="200" style="border:0; border-radius:8px;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 font-weight-bold py-2.5 rounded-3 shadow-xs">
+                    <i class="fa-solid fa-floppy-disk me-1.5"></i> Simpan Perubahan Kontak &amp; Peta
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Support Messages Inbox -->
+    <div class="col-lg-7">
+        <div class="glass-card p-4 border-0 shadow-sm h-100" style="border-radius:24px; background:white;">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 pb-2 border-bottom">
+                <div>
+                    <h5 class="font-weight-bold text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-inbox text-primary"></i> Pesan Masuk dari Pengguna
+                    </h5>
+                    <span class="small text-muted">Total: {{ messages|length }} Pesan ({{ unread_count }} Belum Dibaca)</span>
+                </div>
+            </div>
+
+            <!-- Messages Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="font-size:0.88rem;">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Pengirim</th>
+                            <th>Subjek / Pesan</th>
+                            <th>Status</th>
+                            <th>Waktu</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if messages %}
+                            {% for m in messages %}
+                            <tr class="{% if m.status == 'Unread' %}fw-bold table-warning bg-opacity-10{% endif %}">
+                                <td>
+                                    <div class="font-weight-bold text-dark mb-0">{{ m.name }}</div>
+                                    <span class="small text-muted d-block" style="font-size:0.78rem;">{{ m.email }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary mb-1">{{ m.subject }}</span>
+                                    <div class="text-truncate text-secondary" style="max-width: 220px;" title="{{ m.message }}">
+                                        {{ m.message }}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if m.status == 'Unread' %}
+                                        <span class="badge bg-danger text-white rounded-pill px-2.5 py-1">Belum Dibaca</span>
+                                    {% elif m.status == 'Read' %}
+                                        <span class="badge bg-info text-white rounded-pill px-2.5 py-1">Sudah Dibaca</span>
+                                    {% else %}
+                                        <span class="badge bg-success text-white rounded-pill px-2.5 py-1">Sudah Dibalas</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small text-muted" style="white-space:nowrap;">
+                                    {{ m.created_at.strftime('%d %b %Y, %H:%M') }}
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-primary me-1" title="Detail & Balas" data-bs-toggle="modal" data-bs-target="#msgModal{{ m.id }}">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <form action="{{ url_for('admin_contact_delete', msg_id=m.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesan ini?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                            <!-- Message Detail & Reply Modal -->
+                            <div class="modal fade" id="msgModal{{ m.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content border-0 shadow-lg" style="border-radius:20px;">
+                                        <div class="modal-header border-bottom">
+                                            <h5 class="modal-title font-weight-bold text-dark">
+                                                <i class="fa-solid fa-envelope-open text-primary me-2"></i> Detail Pesan Masuk
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="p-3 bg-light rounded-3 mb-3 border">
+                                                <div class="row g-2 small">
+                                                    <div class="col-sm-4 text-muted font-weight-bold">Pengirim:</div>
+                                                    <div class="col-sm-8 text-dark font-weight-bold">{{ m.name }}</div>
+                                                    <div class="col-sm-4 text-muted font-weight-bold">Email:</div>
+                                                    <div class="col-sm-8 text-primary">{{ m.email }}</div>
+                                                    <div class="col-sm-4 text-muted font-weight-bold">Subjek:</div>
+                                                    <div class="col-sm-8 text-dark font-weight-bold">{{ m.subject }}</div>
+                                                    <div class="col-sm-4 text-muted font-weight-bold">Waktu Masuk:</div>
+                                                    <div class="col-sm-8 text-muted">{{ m.created_at.strftime('%d %B %Y jam %H:%M WIB') }}</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label font-weight-bold text-dark small mb-1">Isi Pesan Pengguna:</label>
+                                                <div class="p-3 bg-white rounded-3 border text-dark small" style="white-space: pre-wrap; line-height: 1.6;">{{ m.message }}</div>
+                                            </div>
+
+                                            {% if m.admin_reply %}
+                                                <div class="mb-3">
+                                                    <label class="form-label font-weight-bold text-success small mb-1"><i class="fa-solid fa-reply me-1"></i> Catatan Balasan Admin Terakhir:</label>
+                                                    <div class="p-3 bg-success-subtle rounded-3 border border-success-subtle text-dark small">{{ m.admin_reply }}</div>
+                                                </div>
+                                            {% endif %}
+
+                                            <form action="{{ url_for('admin_contact_status', msg_id=m.id, status='Replied') }}" method="POST">
+                                                <div class="mb-3">
+                                                    <label for="admin_reply_{{ m.id }}" class="form-label font-weight-bold text-dark small mb-1">Tulis Catatan / Balasan Admin:</label>
+                                                    <textarea class="form-control p-2.5" id="admin_reply_{{ m.id }}" name="admin_reply" rows="3" placeholder="Tuliskan catatan tindak lanjut atau balasan untuk pengguna ini..." style="border-radius:10px; font-size:0.88rem;">{{ m.admin_reply or '' }}</textarea>
+                                                </div>
+
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" class="btn btn-success btn-sm font-weight-bold flex-grow-1 py-2">
+                                                        <i class="fa-solid fa-paper-plane me-1"></i> Simpan &amp; Tandai Dibalas
+                                                    </button>
+                                                    <a href="#" onclick="event.preventDefault(); document.getElementById('markReadForm{{ m.id }}').submit();" class="btn btn-outline-info btn-sm font-weight-bold py-2">
+                                                        Tandai Dibaca
+                                                    </a>
+                                                </div>
+                                            </form>
+
+                                            <form id="markReadForm{{ m.id }}" action="{{ url_for('admin_contact_status', msg_id=m.id, status='Read') }}" method="POST" class="d-none"></form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">Belum ada pesan masuk dari pengguna.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+</div>
+</div>
+
+{% block extra_js %}
+<script>
+function updateMapPreview(val) {
+    const preview = document.getElementById('liveMapPreview');
+    if (!val || !val.trim()) return;
+    
+    let cleanUrl = val.trim();
+    const srcMatch = cleanUrl.match(/src=["']([^"']+)["']/i);
+    if (srcMatch) {
+        cleanUrl = srcMatch[1];
+    }
+    
+    if (cleanUrl.includes('google.com/maps') && !cleanUrl.includes('/embed')) {
+        if (cleanUrl.includes('/place/')) {
+            const place = cleanUrl.split('/place/')[1].split('/')[0];
+            cleanUrl = 'https://maps.google.com/maps?q=' + place + '&output=embed';
+        } else {
+            cleanUrl = 'https://maps.google.com/maps?output=embed&q=' + cleanUrl;
+        }
+    }
+    
+    preview.src = cleanUrl;
+}
+
+
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Tentang Kami - MindHaven Mental Health Platform{% endblock %}
+
+{% block content %}
+<style>
+  .hero-about-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0d9488 100%);
+    border-radius: 28px;
+    box-shadow: 0 20px 50px rgba(13, 148, 136, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .stat-card-modern {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid var(--gray-200);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  }
+
+  .stat-card-modern:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 181, 181, 0.1);
+    border-color: var(--primary-400);
+  }
+
+  .value-card-modern {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  }
+
+  .value-card-modern:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-color: rgba(14, 165, 233, 0.3);
+  }
+</style>
+
+<!-- Hero Section Tentang Kami -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card hero-about-card p-4 p-md-5 text-white">
+      <div class="about-glow"></div>
+      
+      <div class="row align-items-center position-relative" style="z-index: 2;">
+        <div class="col-lg-8">
+          <div class="d-inline-flex align-items-center gap-2 px-3.5 py-1.5 rounded-pill bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 mb-3 shadow-xs">
+            <i class="fa-solid fa-heart-pulse text-warning"></i>
+            <span class="small font-weight-bold text-white">PROFIL &amp; VISI INKLUSIF MINDHAVEN</span>
+          </div>
+          <h1 class="text-white font-weight-bold display-6 mb-3">
+            Mendampingi Langkah Menuju <span class="text-gradient-hero">Kesejahteraan Mental</span>
+          </h1>
+          <p class="text-white-50 lead fs-6 mb-0" style="max-width: 700px;">
+            MindHaven adalah ekosistem kesehatan mental terpadu berbasis AI yang hadir untuk membantu Anda memahami emosi, mengelola stres, serta mengakses bantuan profesional secara aman, privat, dan bebas stigma.
+          </p>
+        </div>
+
+        <div class="col-lg-4 d-none d-lg-flex justify-content-end">
+          <div class="p-4 rounded-circle bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-10 shadow-lg text-center" style="width:170px; height:170px; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-hands-holding-child text-info" style="font-size: 4.8rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Counter Bar -->
+<div class="row g-3 mb-5">
+  <div class="col-md-3 col-6">
+    <div class="stat-card-modern p-3 text-center">
+      <h3 class="font-weight-bold text-primary mb-0">24/7</h3>
+      <small class="text-muted font-weight-bold">Akses Layanan AI &amp; Krisis</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card-modern p-3 text-center">
+      <h3 class="font-weight-bold text-success mb-0">100%</h3>
+      <small class="text-muted font-weight-bold">Privasi Data Terjamin</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card-modern p-3 text-center">
+      <h3 class="font-weight-bold text-info mb-0">19 Emosi</h3>
+      <small class="text-muted font-weight-bold">Klasifikasi Respon Empati</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card-modern p-3 text-center">
+      <h3 class="font-weight-bold text-warning mb-0">Terpadu</h3>
+      <small class="text-muted font-weight-bold">Bantuan Self-Help &amp; Konsul</small>
+    </div>
+  </div>
+</div>
+
+<!-- Vision Mission Values Grid -->
+<div class="row g-4 mb-5">
+  <div class="col-md-4">
+    <div class="value-card-modern h-100 p-4 text-center">
+      <div class="rounded-4 bg-primary-subtle text-primary mx-auto d-flex align-items-center justify-content-center mb-3 shadow-xs" style="width:60px;height:60px;font-size:1.5rem;">
+        <i class="fa-solid fa-eye"></i>
+      </div>
+      <h5 class="font-weight-bold text-dark mb-2">Visi Kami</h5>
+      <p class="small text-secondary mb-0">
+        Mewujudkan masyarakat Indonesia yang sadar akan pentingnya kesehatan mental, bebas dari stigma negatif, serta memiliki akses pertolongan pertama emosional yang inklusif dan responsif.
+      </p>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="value-card-modern h-100 p-4 text-center">
+      <div class="rounded-4 bg-success-subtle text-success mx-auto d-flex align-items-center justify-content-center mb-3 shadow-xs" style="width:60px;height:60px;font-size:1.5rem;">
+        <i class="fa-solid fa-bullseye"></i>
+      </div>
+      <h5 class="font-weight-bold text-dark mb-2">Misi Kami</h5>
+      <p class="small text-secondary mb-0">
+        Menyediakan teknologi AI ramah pengguna untuk deteksi emosi dini, ruang curhat aman 24/7, materi edukasi berbasis bukti ilmiah, serta jembatan penghubung ke psikolog &amp; konselor profesional.
+      </p>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="value-card-modern h-100 p-4 text-center">
+      <div class="rounded-4 bg-info-subtle text-info mx-auto d-flex align-items-center justify-content-center mb-3 shadow-xs" style="width:60px;height:60px;font-size:1.5rem;">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h5 class="font-weight-bold text-dark mb-2">Komitmen Privasi</h5>
+      <p class="small text-secondary mb-0">
+        Privasi dan kerahasiaan cerita Anda adalah prioritas tertinggi kami. Seluruh percakapan dan data hasil tes kesehatan mental dienkripsi dan tidak dibagikan kepada pihak manapun.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Features Showcase Grid -->
+<div class="row mb-5">
+  <div class="col-12 text-center mb-4">
+    <h4 class="font-weight-bold text-dark mb-1">Mengapa Memilih MindHaven?</h4>
+    <p class="text-muted small">Ekosistem lengkap yang dirancang khusus untuk kenyamanan pemulihan kesehatan mental Anda.</p>
+  </div>
+
+  <div class="col-md-6 col-lg-3 mb-4">
+    <div class="card glass-card p-4 h-100 border-0 shadow-xs" style="border-radius:20px;">
+      <i class="fa-solid fa-robot text-primary fs-2 mb-3"></i>
+      <h6 class="font-weight-bold text-dark mb-2">AI Emotion Detection</h6>
+      <p class="small text-secondary mb-0">Model NLP canggih yang mampu mengenali 19 indikator emosi utama dari cerita Anda secara presisi.</p>
+    </div>
+  </div>
+  
+  <div class="col-md-6 col-lg-3 mb-4">
+    <div class="card glass-card p-4 h-100 border-0 shadow-xs" style="border-radius:20px;">
+      <i class="fa-solid fa-spa text-success fs-2 mb-3"></i>
+      <h6 class="font-weight-bold text-dark mb-2">Relaksasi Interaktif</h6>
+      <p class="small text-secondary mb-0">Fitur olah napas 4-7-8, pemutar musik relaksasi alam, dan panduan grounding emosi.</p>
+    </div>
+  </div>
+  
+  <div class="col-md-6 col-lg-3 mb-4">
+    <div class="card glass-card p-4 h-100 border-0 shadow-xs" style="border-radius:20px;">
+      <i class="fa-solid fa-clipboard-check text-info fs-2 mb-3"></i>
+      <h6 class="font-weight-bold text-dark mb-2">Skrining Mandiri</h6>
+      <p class="small text-secondary mb-0">Tes mandiri tingkat stres, kecemasan, dan depresi berbasis kuesioner ilmiah terstandar.</p>
+    </div>
+  </div>
+  
+  <div class="col-md-6 col-lg-3 mb-4">
+    <div class="card glass-card p-4 h-100 border-0 shadow-xs" style="border-radius:20px;">
+      <i class="fa-solid fa-user-doctor text-warning fs-2 mb-3"></i>
+      <h6 class="font-weight-bold text-dark mb-2">Booking Konsultasi</h6>
+      <p class="small text-secondary mb-0">Kemudahan menjadwalkan konsultasi dengan psikolog dan konselor berlisensi.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Disclaimer Banner -->
+<div class="row">
+  <div class="col-12">
+    <div class="card glass-card p-4 border-0 bg-warning-subtle" style="border-radius:20px; border-left: 5px solid var(--warning) !important;">
+      <div class="d-flex align-items-start gap-3">
+        <i class="fa-solid fa-triangle-exclamation text-warning fs-3 flex-shrink-0 mt-1"></i>
+        <div>
+          <h6 class="font-weight-bold text-dark mb-1">Catatan Penting Disclaimer Medis</h6>
+          <p class="small text-secondary mb-0">
+            MindHaven dan fitur AI Chatbot di dalamnya dirancang sebagai alat bantu <em>self-help</em>, dukungan emosional awal, serta media edukasi. Fitur AI <strong>bukanlah pengganti diagnosis medis, psikiatri, atau terapi klinis profesional</strong>. Jika Anda mengalami gangguan emosi berat atau krisis kehidupan, kami sangat menyarankan untuk menghubungi psikolog berlisensi atau layanan darurat krisis di menu <a href="{{ url_for('bantuan_krisis') }}" class="font-weight-bold text-danger">Bantuan Krisis</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

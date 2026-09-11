@@ -1,0 +1,427 @@
+{% extends "base.html" %}
+
+{% block title %}Profil Saya - MindHaven{% endblock %}
+
+{% block content %}
+<style>
+  .profile-hero-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #0284c7 100%);
+    border-radius: 28px;
+    box-shadow: 0 20px 45px rgba(2, 132, 199, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .avatar-large-container {
+    width: 86px;
+    height: 86px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: white;
+    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.25);
+    flex-shrink: 0;
+  }
+
+  .profile-stat-box {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 18px;
+    padding: 1rem 1.25rem;
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  .profile-stat-box:hover {
+    background: rgba(255, 255, 255, 0.18);
+    transform: translateY(-3px);
+  }
+
+  .nav-pills-custom .nav-link {
+    border-radius: 999px;
+    padding: 0.6rem 1.4rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--gray-600);
+    transition: all 0.25s ease;
+  }
+
+  .nav-pills-custom .nav-link.active {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+    color: white;
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.3);
+  }
+</style>
+
+<!-- Executive User Profile Hero Banner -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card profile-hero-card p-4 p-md-5 text-white">
+      <div class="profile-glow"></div>
+
+      <div class="row align-items-center position-relative" style="z-index:2;">
+        <div class="col-lg-7 mb-4 mb-lg-0">
+          <div class="d-flex align-items-center gap-3.5 mb-3 flex-wrap">
+            <div class="avatar-large-container">
+              {{ current_user.name[0].upper() }}
+            </div>
+            <div>
+              <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white bg-opacity-15 backdrop-blur border border-white border-opacity-20 mb-1 shadow-xs">
+                <span class="pulse-dot bg-success"></span>
+                <span class="small font-weight-bold text-white"><i class="fa-solid fa-shield-halved text-warning me-1"></i> Profil Anggota Terdaftar</span>
+              </div>
+              <h2 class="font-weight-bold text-white mb-0 display-6 fs-3">
+                {{ current_user.name }}
+              </h2>
+              <p class="text-white-50 mb-0 small mt-1">
+                <i class="fa-solid fa-envelope me-1.5 opacity-75"></i> {{ current_user.email }}
+                <span class="mx-2">&bull;</span>
+                <i class="fa-solid fa-venus-mars me-1.5 opacity-75"></i> {{ current_user.gender or 'Belum diisi' }} ({{ current_user.age or '-' }} Tahun)
+              </p>
+            </div>
+          </div>
+
+          <!-- Direct Link to Dedicated Booking Page -->
+          <div class="mt-3">
+            <a href="{{ url_for('booking_saya') }}" class="btn btn-warning btn-sm font-weight-bold px-3.5 py-2 rounded-3 text-dark shadow-sm d-inline-flex align-items-center gap-2">
+              <i class="fa-solid fa-calendar-check text-dark"></i> Buka Halaman Status Booking Saya (Terpisah)
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-5">
+          <div class="row g-2">
+            <div class="col-4">
+              <div class="profile-stat-box text-center">
+                <div class="fs-4 font-weight-bold mb-0 text-info">{{ test_results|length }}</div>
+                <div class="small text-white-50 font-weight-bold" style="font-size:0.78rem;">Tes Skrining</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="profile-stat-box text-center">
+                <div class="fs-4 font-weight-bold mb-0 text-success">{{ emotion_results|length }}</div>
+                <div class="small text-white-50 font-weight-bold" style="font-size:0.78rem;">Sesi Curhat AI</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="profile-stat-box text-center">
+                <div class="fs-4 font-weight-bold mb-0 text-light">{{ bookmarked_articles|length }}</div>
+                <div class="small text-white-50 font-weight-bold" style="font-size:0.78rem;">Artikel Favorit</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left Side: User Profile & Password Settings -->
+  <div class="col-lg-4">
+    <!-- Panel 1: Edit Profile -->
+    <div class="card glass-card p-4 mb-4 border-0 shadow-sm" style="border-radius:24px; background:white;">
+      <h5 class="font-weight-bold text-dark mb-3 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-user-pen text-primary"></i> Edit Data Diri
+      </h5>
+      <form action="{{ url_for('profile_update') }}" method="POST">
+        <div class="mb-3">
+          <label for="name" class="form-label font-weight-bold text-dark small mb-1">Nama Lengkap</label>
+          <input type="text" class="form-control py-2.5" id="name" name="name" value="{{ current_user.name }}" required style="border-radius:12px;">
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label font-weight-bold text-dark small mb-1">Alamat Email</label>
+          <input type="email" class="form-control py-2.5 bg-light text-muted" id="email" name="email" value="{{ current_user.email }}" readonly style="border-radius:12px;">
+          <div class="form-text small text-muted">Email terdaftar tidak dapat diubah.</div>
+        </div>
+        <div class="row">
+          <div class="col-6 mb-3">
+            <label for="gender" class="form-label font-weight-bold text-dark small mb-1">Jenis Kelamin</label>
+            <select class="form-select py-2.5" id="gender" name="gender" required style="border-radius:12px;">
+              <option value="Laki-laki" {% if current_user.gender == 'Laki-laki' %}selected{% endif %}>Laki-laki</option>
+              <option value="Perempuan" {% if current_user.gender == 'Perempuan' %}selected{% endif %}>Perempuan</option>
+            </select>
+          </div>
+          <div class="col-6 mb-3">
+            <label for="age" class="form-label font-weight-bold text-dark small mb-1">Umur (Tahun)</label>
+            <input type="number" class="form-control py-2.5" id="age" name="age" value="{{ current_user.age }}" min="1" max="120" required style="border-radius:12px;">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 font-weight-bold py-2.5 rounded-3 shadow-xs">
+          <i class="fa-solid fa-floppy-disk me-1.5"></i> Simpan Perubahan Profil
+        </button>
+      </form>
+    </div>
+
+    <!-- Panel 2: Ubah Password -->
+    <div class="card glass-card p-4 mb-4 border-0 shadow-sm" style="border-radius:24px; background:white;">
+      <h5 class="font-weight-bold text-dark mb-3 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-key text-warning"></i> Keamanan &amp; Password
+      </h5>
+      <form action="{{ url_for('password_update') }}" method="POST">
+        <div class="mb-3">
+          <label for="old_password" class="form-label font-weight-bold text-dark small mb-1">Password Lama</label>
+          <input type="password" class="form-control py-2.5" id="old_password" name="old_password" placeholder="Masukkan password lama" required style="border-radius:12px;">
+        </div>
+        <div class="mb-3">
+          <label for="new_password" class="form-label font-weight-bold text-dark small mb-1">Password Baru</label>
+          <input type="password" class="form-control py-2.5" id="new_password" name="new_password" placeholder="Min. 6 karakter" minlength="6" required style="border-radius:12px;">
+        </div>
+        <div class="mb-3">
+          <label for="confirm_password" class="form-label font-weight-bold text-dark small mb-1">Konfirmasi Password Baru</label>
+          <input type="password" class="form-control py-2.5" id="confirm_password" name="confirm_password" placeholder="Ulangi password baru" minlength="6" required style="border-radius:12px;">
+        </div>
+        <button type="submit" class="btn btn-outline-secondary w-100 font-weight-bold py-2.5 rounded-3">
+          <i class="fa-solid fa-lock me-1.5"></i> Perbarui Password
+        </button>
+      </form>
+
+      <!-- Danger Zone Card: Delete Account -->
+      <div class="p-3.5 mt-4 rounded-4" style="background:#fef2f2; border:1px solid #fecaca;">
+        <h6 class="font-weight-bold text-danger mb-1.5 d-flex align-items-center gap-2">
+          <i class="fa-solid fa-triangle-exclamation text-danger"></i> Zona Bahaya: Hapus Akun
+        </h6>
+        <p class="small text-secondary mb-3" style="line-height:1.5; font-size:0.82rem;">
+          Menghapus akun akan menghapus secara permanen seluruh data Anda (riwayat chat AI, hasil tes skrining, log emosi, booking konsultasi, dan artikel tersimpan). Tindakan ini <strong>tidak dapat dibatalkan</strong>.
+        </p>
+        <button class="btn btn-outline-danger btn-sm w-100 font-weight-bold py-2 rounded-3 shadow-xs" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+          <i class="fa-solid fa-user-xmark me-1.5"></i> Hapus Akun Permanen Saya
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Profile Activity Tabs (Screening Tests, AI Emotion Logs, Bookmarks) -->
+  <div class="col-lg-8">
+    <div class="card glass-card p-4 border-0 shadow-sm h-100" style="border-radius:28px; background:white;">
+      <!-- Tabs Navigation -->
+      <ul class="nav nav-pills nav-pills-custom gap-2 mb-4 pb-2 border-bottom" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tests-tab" data-bs-toggle="tab" data-bs-target="#tab-tests" type="button" role="tab">
+            <i class="fa-solid fa-file-medical me-1.5"></i> Riwayat Skrining
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="emotions-tab" data-bs-toggle="tab" data-bs-target="#tab-emotions" type="button" role="tab">
+            <i class="fa-solid fa-chart-pie me-1.5"></i> Log Emosi AI
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="bookmarks-tab" data-bs-toggle="tab" data-bs-target="#tab-bookmarks" type="button" role="tab">
+            <i class="fa-solid fa-bookmark me-1.5"></i> Artikel Tersimpan
+          </button>
+        </li>
+      </ul>
+
+      <!-- Tabs Content -->
+      <div class="tab-content" id="profileTabsContent">
+        
+        <!-- Tab 1: Riwayat Skrining Tes (Default Active) -->
+        <div class="tab-pane fade show active" id="tab-tests" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="font-weight-bold text-dark mb-0"><i class="fa-solid fa-clipboard-check text-info me-2"></i> Riwayat Tes Skrining Kesehatan Mental</h5>
+              <p class="small text-muted mb-0">Hasil evaluasi tes DASS-21 yang telah Anda selesaikan.</p>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="py-2.5">Kategori Tes</th>
+                  <th class="py-2.5">Tanggal</th>
+                  <th class="py-2.5">Skor Perolehan</th>
+                  <th class="py-2.5">Kategori Tingkat</th>
+                  <th class="py-2.5 text-end">Aksi Detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in test_results %}
+                  <tr>
+                    <td class="font-weight-bold text-dark">{{ r.test_category }}</td>
+                    <td class="small text-muted">{{ r.created_at.strftime('%d %B %Y') }}</td>
+                    <td>
+                      <span class="font-weight-bold text-dark fs-6">{{ r.score }}</span> <span class="small text-muted">/80</span>
+                    </td>
+                    <td>
+                      <span class="badge {% if r.category_result == 'Berat' %}bg-danger text-white{% elif r.category_result == 'Sedang' %}bg-warning text-dark{% else %}bg-success text-white{% endif %} rounded-pill px-2.5 py-1 small">
+                        {{ r.category_result }}
+                      </span>
+                    </td>
+                    <td class="text-end">
+                      <a href="{{ url_for('test_detail', result_id=r.id) }}" class="btn btn-sm btn-outline-info font-weight-bold rounded-pill px-3 py-1">
+                        Lihat Laporan
+                      </a>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">Belum ada riwayat tes skrining terdaftar.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Riwayat Emosi AI -->
+        <div class="tab-pane fade" id="tab-emotions" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="font-weight-bold text-dark mb-0"><i class="fa-solid fa-brain text-success me-2"></i> Log Emosi Hasil Deteksi Chatbot AI</h5>
+              <p class="small text-muted mb-0">Statistik emosi terdeteksi dari percakapan curhat Anda bersama MindHaven AI.</p>
+            </div>
+          </div>
+
+          <div class="table-responsive" style="max-height: 420px; overflow-y: auto;">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="py-2.5">Emosi Terdeteksi</th>
+                  <th class="py-2.5">Kutipan Pesan Curhat</th>
+                  <th class="py-2.5">Tingkat Keyakinan</th>
+                  <th class="py-2.5 text-end">Waktu Log</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for e in emotion_results %}
+                  <tr>
+                    <td>
+                      <span class="font-weight-bold text-dark">
+                        {% if e.emotion_label == 'Marah' %}😠
+                        {% elif e.emotion_label == 'Kecewa' %}😞
+                        {% elif e.emotion_label == 'Terluka' %}😢
+                        {% elif e.emotion_label == 'Dendam' %}😡
+                        {% elif e.emotion_label == 'Sakit hati' %}💔
+                        {% elif e.emotion_label == 'Tersinggung' %}😑
+                        {% elif e.emotion_label == 'Benci' %}🤬
+                        {% elif e.emotion_label == 'Menyesal' %}🥺
+                        {% elif e.emotion_label == 'Frustasi' %}😩
+                        {% elif e.emotion_label == 'Takut' %}😰
+                        {% elif e.emotion_label == 'Cemas' %}😰
+                        {% elif e.emotion_label == 'Malu' %}😳
+                        {% elif e.emotion_label == 'Kesepian' %}👤
+                        {% elif e.emotion_label == 'Sedih' %}😢
+                        {% elif e.emotion_label == 'Merasa tidak mampu' %}😔
+                        {% elif e.emotion_label == 'Merasa putus asa' %}😭
+                        {% elif e.emotion_label == 'Merasa tidak berharga' %}🥀
+                        {% elif e.emotion_label == 'Merasa kecil' %}🥺
+                        {% elif e.emotion_label == 'Merasa tidak di inginkan' %}🖤
+                        {% else %}😐{% endif %}
+                        {{ e.emotion_label }}
+                      </span>
+                    </td>
+                    <td class="text-truncate small text-secondary" style="max-width: 220px;" title="{{ e.chat.message if e.chat else '' }}">
+                      "{{ e.chat.message if e.chat else 'Pesan dianalisis' }}"
+                    </td>
+                    <td>
+                      <span class="badge bg-primary-subtle text-primary font-weight-bold px-2 py-0.5 rounded-pill small">{{ (e.confidence * 100)|round|int }}%</span>
+                    </td>
+                    <td class="small text-muted text-end">{{ e.created_at.strftime('%d %b %H:%M') }}</td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="4" class="text-center py-4 text-muted">Belum ada aktivitas chat yang dianalisis oleh AI.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: Artikel Tersimpan (Bookmarks) -->
+        <div class="tab-pane fade" id="tab-bookmarks" role="tabpanel">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="font-weight-bold text-dark mb-0"><i class="fa-solid fa-bookmark text-primary me-2"></i> Artikel Edukasi Favorit Anda</h5>
+              <p class="small text-muted mb-0">Daftar artikel yang telah Anda bookmark untuk dibaca kembali.</p>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            {% for b in bookmarked_articles %}
+              <div class="col-md-6">
+                <div class="p-3.5 rounded-4 h-100 d-flex flex-column justify-content-between bg-light border shadow-xs">
+                  <div>
+                    <span class="badge bg-primary-subtle text-primary mb-2 font-weight-bold">{{ b.article.category.name }}</span>
+                    <h6 class="font-weight-bold mb-1.5">
+                      <a href="{{ url_for('article_detail', article_id=b.article.id) }}" class="text-decoration-none text-dark hover-primary">{{ b.article.title }}</a>
+                    </h6>
+                    <p class="small text-muted mb-0" style="line-height:1.5;">{{ b.article.content[:85] }}...</p>
+                  </div>
+                  <div class="text-end mt-3">
+                    <a href="{{ url_for('article_detail', article_id=b.article.id) }}" class="btn btn-sm btn-outline-primary rounded-pill font-weight-bold px-3">
+                      Baca Selengkapnya
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="col-12 text-center py-4 text-muted">
+                Belum ada artikel edukasi yang Anda simpan.
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Hapus Akun (Placed at Root Level to Prevent Flickering) -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius:24px;">
+      <div class="modal-header border-bottom bg-danger text-white p-4" style="border-top-left-radius:24px; border-top-right-radius:24px;">
+        <h5 class="modal-title font-weight-bold text-white mb-0">
+          <i class="fa-solid fa-user-slash me-2"></i> Konfirmasi Hapus Akun Permanen
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{{ url_for('profile_delete_account') }}" method="POST">
+        <div class="modal-body p-4">
+          <div class="p-3 bg-danger-subtle rounded-3 text-danger small mb-3 border border-danger-subtle" style="line-height:1.5;">
+            <i class="fa-solid fa-circle-exclamation me-1 fs-6"></i>
+            <strong>Peringatan Penting:</strong> Setelah akun dihapus, seluruh riwayat percakapan AI, hasil tes skrining, dan pengajuan booking konsultasi Anda akan terhapus selamanya dari database MindHaven.
+          </div>
+
+          <div class="mb-3">
+            <label for="confirm_password_delete" class="form-label font-weight-bold text-dark small mb-1">
+              Masukkan Password Anda Untuk Konfirmasi:
+            </label>
+            <div class="form-icon-input">
+              <input type="password" class="form-control py-2.5" id="confirm_password_delete" name="password" placeholder="Masukkan password akun Anda saat ini" required>
+              <i class="fa-solid fa-lock text-danger"></i>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top bg-light p-3" style="border-bottom-left-radius:24px; border-bottom-right-radius:24px;">
+          <button type="button" class="btn btn-outline-secondary font-weight-bold rounded-3 px-3 py-2" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-danger font-weight-bold rounded-3 px-4 py-2 shadow-xs">
+            <i class="fa-solid fa-trash-can me-1.5"></i> Ya, Hapus Akun Permanen
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1143 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — MindHaven{% endblock %}
+
+{% block extra_css %}
+<style>
+/* =============================================
+   DASHBOARD PREMIUM REDESIGN
+   ============================================= */
+
+body {
+  background: var(--gray-50);
+  min-height: 100vh;
+}
+
+/* Animated orbs background */
+.dash-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.dash-bg::before {
+  content: '';
+  position: absolute;
+  top: -200px; right: -150px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, transparent 65%);
+  animation: orb-float 10s ease-in-out infinite;
+}
+.dash-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -200px; left: -100px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.05) 0%, transparent 65%);
+  animation: orb-float 13s ease-in-out infinite reverse;
+}
+@keyframes orb-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -40px) scale(1.05); }
+  66%       { transform: translate(-20px, 20px) scale(0.97); }
+}
+
+.dash-bg-orb3 {
+  position: absolute;
+  top: 40%; left: 50%;
+  width: 400px; height: 400px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.04) 0%, transparent 65%);
+  animation: orb-float 16s ease-in-out infinite 2s;
+}
+
+/* ---- Page wrapper override ---- */
+.page-wrapper {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 0 5rem;
+}
+
+/* =============================================
+   HERO SECTION
+   ============================================= */
+.dash-hero {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 28px;
+  padding: 2.75rem 3rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+}
+
+.dash-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, var(--primary-100) 0%, transparent 70%);
+  pointer-events: none;
+}
+.dash-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 15%;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.dash-hero-inner { position: relative; z-index: 1; }
+
+.dash-greeting-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  color: var(--primary-600);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.03em;
+  animation: badge-in 0.6s ease both;
+}
+
+@keyframes badge-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dash-hero h1 {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.5px;
+  animation: slide-in 0.7s ease 0.1s both;
+}
+
+.dash-hero h1 .name-highlight {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dash-hero p {
+  color: var(--gray-600);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  max-width: 540px;
+  animation: slide-in 0.7s ease 0.2s both;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.dash-hero-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  animation: slide-in 0.7s ease 0.3s both;
+}
+
+.btn-hero-primary {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+  color: white;
+  border: none;
+  padding: 0.7rem 1.75rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+}
+.btn-hero-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+  color: white;
+}
+
+.btn-hero-ghost {
+  background: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  padding: 0.7rem 1.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+.btn-hero-ghost:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-300);
+  color: var(--gray-900);
+  transform: translateY(-2px);
+}
+
+.dash-hero-illustration {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-icon-ring {
+  width: 160px; height: 160px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+
+.hero-icon-ring::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 1px dashed var(--primary-200);
+  animation: spin-slow 20s linear infinite;
+}
+
+.hero-icon-ring::after {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  border-radius: 50%;
+  border: 1px dashed rgba(14, 165, 233, 0.2);
+  animation: spin-slow 30s linear infinite reverse;
+}
+
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,181,181,0.15); }
+  50%       { box-shadow: 0 0 0 20px rgba(0,181,181,0); }
+}
+
+.hero-icon-ring i {
+  font-size: 4.5rem;
+  background: linear-gradient(135deg, #5eead4, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: pulse-ring 3s ease-in-out infinite;
+}
+
+/* =============================================
+   STAT CARDS — GLASS STYLE
+   ============================================= */
+.stat-glass {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 1.6rem 1.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+  cursor: default;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+}
+
+.stat-glass:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary-200);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+.stat-glass-teal   { --card-accent: #0ea5e9; --card-glow: rgba(14, 165, 233, 0.15); }
+.stat-glass-indigo { --card-accent: #6366f1; --card-glow: rgba(99,102,241,0.15); }
+.stat-glass-amber  { --card-accent: #f59e0b; --card-glow: rgba(245,158,11,0.15); }
+.stat-glass-green  { --card-accent: #10b981; --card-glow: rgba(16,185,129,0.15); }
+
+.stat-glass::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--card-accent), transparent);
+}
+
+.stat-glass::after {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, var(--card-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.sg-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 1.25rem;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  color: var(--card-accent);
+  position: relative;
+  z-index: 1;
+}
+
+.sg-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+}
+
+.sg-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+}
+
+.sg-badge.fire {
+  background: #fffbeb;
+  color: #d97706;
+  border-color: #fde68a;
+}
+
+.sg-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  line-height: 1;
+  margin-bottom: 0.35rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sg-value-md {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  line-height: 1.2;
+  margin-bottom: 0.35rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sg-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  position: relative;
+  z-index: 1;
+}
+
+/* =============================================
+   RECOMMENDATION ALERT
+   ============================================= */
+.dash-alert {
+  background: var(--primary-50);
+  border: 1px solid var(--primary-100);
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  animation: alert-slide 0.5s ease both;
+}
+
+@keyframes alert-slide {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dash-alert-icon {
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  background: white;
+  border: 1px solid var(--primary-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.dash-alert h6 {
+  color: var(--gray-900);
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.dash-alert p {
+  color: var(--gray-700);
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.btn-alert-action {
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(99,102,241,0.35);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.btn-alert-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99,102,241,0.5);
+  color: white;
+}
+
+/* =============================================
+   CHART PANELS
+   ============================================= */
+.dash-panel {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 1.75rem;
+  height: 100%;
+  transition: border-color 0.3s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.dash-panel:hover {
+  border-color: var(--gray-300);
+}
+
+.dash-panel-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dash-panel-title i {
+  font-size: 0.95rem;
+}
+
+/* =============================================
+   QUOTE CARD
+   ============================================= */
+.dash-quote {
+  background: linear-gradient(135deg, var(--primary-50) 0%, #eff6ff 100%);
+  border: 1px solid var(--primary-100);
+  border-radius: 20px;
+  padding: 2rem 2.25rem;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.dash-quote::before {
+  content: '"';
+  position: absolute;
+  top: -30px; left: 16px;
+  font-size: 12rem;
+  font-family: Georgia, serif;
+  color: rgba(14, 165, 233, 0.05);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.dash-quote-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--primary-600);
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.dash-quote-text {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--gray-800);
+  line-height: 1.75;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.dash-quote-author {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  position: relative;
+  z-index: 1;
+}
+
+.dash-tips {
+  background: white;
+  border: 1px solid var(--primary-100);
+  border-radius: 12px;
+  padding: 0.9rem 1.1rem;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.dash-tips p {
+  margin: 0;
+  font-size: 0.83rem;
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+
+/* =============================================
+   QUICK ACTIONS
+   ============================================= */
+.quick-action-link {
+  text-decoration: none;
+  display: block;
+}
+
+.quick-action-item {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer;
+}
+
+.quick-action-item:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-300);
+  transform: translateX(5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+}
+
+.qa-icon {
+  width: 44px; height: 44px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+
+.quick-action-item:hover .qa-icon { transform: scale(1.1); }
+
+.qa-icon.teal   { background: #f0fdfa; color: #0f766e; border: 1px solid #ccfbf1; }
+.qa-icon.indigo { background: #eef2ff; color: #4338ca; border: 1px solid #e0e7ff; }
+.qa-icon.amber  { background: #fffbeb; color: #b45309; border: 1px solid #fef3c7; }
+.qa-icon.green  { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
+
+.qa-title {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--gray-900);
+  margin-bottom: 0.1rem;
+}
+
+.qa-desc {
+  font-size: 0.76rem;
+  color: var(--gray-500);
+}
+
+.qa-arrow {
+  margin-left: auto;
+  color: var(--gray-400);
+  font-size: 0.8rem;
+  transition: transform 0.3s, color 0.3s;
+}
+.quick-action-item:hover .qa-arrow {
+  transform: translateX(3px);
+  color: var(--gray-600);
+}
+
+/* =============================================
+   ACTIVITY FEED
+   ============================================= */
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--gray-100);
+  transition: background 0.2s;
+}
+
+.activity-item:last-child { border-bottom: none; }
+
+.activity-emoji {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.activity-label {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 0.1rem;
+}
+
+.activity-date {
+  font-size: 0.73rem;
+  color: var(--gray-500);
+}
+
+/* =============================================
+   CHART OVERRIDES (dark theme)
+   ============================================= */
+#userTimelineChart, #userEmotionChart {
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05));
+}
+
+/* =============================================
+   EMPTY STATE
+   ============================================= */
+.dash-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--gray-400);
+  text-align: center;
+  padding: 2rem;
+}
+.dash-empty i { font-size: 2.5rem; margin-bottom: 0.75rem; color: var(--gray-300); }
+.dash-empty span { font-size: 0.85rem; }
+
+/* =============================================
+   ANIMATIONS ENTRY
+   ============================================= */
+.anim-fade-up {
+  animation: fade-up 0.6s ease both;
+}
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.2s; }
+.anim-delay-3 { animation-delay: 0.3s; }
+.anim-delay-4 { animation-delay: 0.4s; }
+.anim-delay-5 { animation-delay: 0.5s; }
+.anim-delay-6 { animation-delay: 0.6s; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dash-hero { padding: 2rem 1.5rem; }
+  .dash-alert { flex-wrap: wrap; }
+  .btn-alert-action { margin-left: 0; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Animated background orbs -->
+<div class="dash-bg"><div class="dash-bg-orb3"></div></div>
+
+<div class="pt-2 pb-2" style="position:relative;z-index:1;">
+
+    <!-- ====== HERO ====== -->
+    <div class="dash-hero mb-4 anim-fade-up">
+        <div class="row align-items-center">
+            <div class="col-lg-8 dash-hero-inner">
+                <div class="dash-greeting-badge">
+                    {% if now.hour < 6 %}🌙 Dini Hari
+                    {% elif now.hour < 12 %}🌤️ Selamat Pagi
+                    {% elif now.hour < 15 %}☀️ Selamat Siang
+                    {% elif now.hour < 18 %}🌅 Selamat Sore
+                    {% else %}🌙 Selamat Malam{% endif %}
+                </div>
+                <h1>Halo, <span class="name-highlight">{% if current_user.is_authenticated %}{{ current_user.name }}{% else %}Pengunjung{% endif %}</span>! 👋</h1>
+                <p>Selamat datang di MindHaven. Luangkan waktu untuk peduli dengan kesehatan mental Anda hari ini. Kami siap menemani perjalanan Anda.</p>
+                <div class="dash-hero-btns">
+                    <a href="{{ url_for('relaksasi') }}" class="btn-hero-primary">
+                        <i class="fa-solid fa-spa"></i> Mulai Relaksasi
+                    </a>
+                    <a href="{{ url_for('chatbot') }}" class="btn-hero-ghost">
+                        <i class="fa-solid fa-robot"></i> MindHaven AI
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-flex justify-content-center align-items-center mt-3 mt-lg-0">
+                <div class="dash-hero-illustration">
+                    <div class="hero-icon-ring">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== STAT CARDS ====== -->
+    <div class="row g-3 mb-4">
+
+        <!-- Profil Pengguna -->
+        <div class="col-sm-6 col-lg-3 anim-fade-up anim-delay-1">
+            <div class="stat-glass stat-glass-teal">
+                <div class="sg-header">
+                    <div class="sg-icon"><i class="fa-solid fa-user"></i></div>
+                    <span class="sg-badge fire">
+                        <i class="fa-solid fa-fire"></i> {{ streak_count }} Hari
+                    </span>
+                </div>
+                <div class="sg-value-md">{% if current_user.is_authenticated %}{{ current_user.name }}{% else %}Pengunjung{% endif %}</div>
+                <div class="sg-label">{% if current_user.is_authenticated %}{{ current_user.age or '—' }} Tahun &bull; {{ current_user.gender or '—' }}{% else %}Belum Login{% endif %}</div>
+            </div>
+        </div>
+
+        <!-- Total Interaksi AI -->
+        <div class="col-sm-6 col-lg-3 anim-fade-up anim-delay-2">
+            <div class="stat-glass stat-glass-indigo">
+                <div class="sg-header">
+                    <div class="sg-icon"><i class="fa-solid fa-message"></i></div>
+                </div>
+                <div class="sg-value">{{ total_interactions }}</div>
+                <div class="sg-label">Sesi Curhat AI Dilakukan</div>
+            </div>
+        </div>
+
+        <!-- Emosi Terakhir -->
+        <div class="col-sm-6 col-lg-3 anim-fade-up anim-delay-3">
+            <div class="stat-glass stat-glass-amber">
+                <div class="sg-header">
+                    <div class="sg-icon"><i class="fa-solid fa-brain"></i></div>
+                    <span class="sg-badge">NLP</span>
+                </div>
+                <div class="sg-value-md">
+                    {% if last_emotion %}{{ last_emotion.emoji }} {{ last_emotion.label }}{% else %}—{% endif %}
+                </div>
+                <div class="sg-label">
+                    {% if last_emotion %}Keyakinan: {{ (last_emotion.confidence * 100)|round|int }}%{% else %}Belum ada sesi chat{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Emosi Dominan -->
+        <div class="col-sm-6 col-lg-3 anim-fade-up anim-delay-4">
+            <div class="stat-glass stat-glass-green">
+                <div class="sg-header">
+                    <div class="sg-icon"><i class="fa-solid fa-face-smile-beam"></i></div>
+                </div>
+                <div class="sg-value-md">{{ dominant_emotion or '—' }}</div>
+                <div class="sg-label">Emosi Paling Sering Muncul</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== SMART RECOMMENDATION ====== -->
+    {% set negative_emotions = ['Sedih', 'Marah', 'Kecewa', 'Cemas', 'Takut', 'Frustasi', 'Merasa putus asa'] %}
+    {% if dominant_emotion in negative_emotions %}
+    <div class="dash-alert mb-4">
+        <div class="dash-alert-icon">
+            <i class="fa-solid fa-lightbulb" style="color:#818cf8;"></i>
+        </div>
+        <div>
+            <h6>Rekomendasi Pintar MindHaven</h6>
+            <p>Sistem kami mendeteksi emosi yang sering muncul akhir-akhir ini adalah <strong style="color:white;">{{ dominant_emotion }}</strong>. Ingin mengambil jeda sejenak? Cobalah latihan pernapasan untuk meredakan ketegangan.</p>
+        </div>
+        <a href="{{ url_for('relaksasi') }}" class="btn-alert-action">
+            <i class="fa-solid fa-spa"></i> Mulai Relaksasi
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- ====== LIVE BOOKING STATUS WIDGET ====== -->
+    {% if user_bookings %}
+    <div class="card p-4 border-0 mb-4 shadow-sm" style="border-radius: 24px; background: #ffffff; border: 1px solid rgba(226, 232, 240, 0.9) !important;">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <h6 class="font-weight-bold text-dark mb-1 d-flex align-items-center gap-2" style="font-size: 1.05rem;">
+                    <i class="fa-solid fa-calendar-check text-warning fs-5"></i> Status Booking Konsultasi Saya
+                </h6>
+                <p class="small text-muted mb-0">Pantau persetujuan jadwal pertemuan Anda secara real-time.</p>
+            </div>
+            <a href="{{ url_for('profil') }}#tab-bookings-user" class="btn btn-sm btn-outline-primary rounded-pill px-3 font-weight-bold">
+                Lihat Semua Riwayat <i class="fa-solid fa-chevron-right ms-1"></i>
+            </a>
+        </div>
+        <div class="row g-3">
+            {% for b in user_bookings[:2] %}
+            <div class="col-md-6">
+                <div class="p-3 rounded-4 bg-light border d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="small font-weight-bold text-muted text-uppercase" style="font-size:0.72rem; tracking-wide:0.04em;">Praktisi / Layanan</span>
+                        <h6 class="font-weight-bold text-dark mb-1 small">{{ b.service.name }}</h6>
+                        <div class="small text-muted" style="font-size: 0.8rem;">
+                            <i class="fa-solid fa-calendar-day text-primary me-1"></i>
+                            <strong>{{ b.booking_date.strftime('%d %b %Y') }}</strong>
+                            <span class="mx-1">&bull;</span>
+                            <i class="fa-solid fa-clock text-warning me-1"></i>
+                            <strong>{{ b.booking_time or '09:00 WIB' }}</strong>
+                        </div>
+                    </div>
+                    <div>
+                        {% if b.status == 'Approved' %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill font-weight-bold small">
+                                <i class="fa-solid fa-circle-check me-1"></i> Disetujui
+                            </span>
+                        {% elif b.status == 'Cancelled' %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1.5 rounded-pill font-weight-bold small">
+                                <i class="fa-solid fa-circle-xmark me-1"></i> Dibatalkan
+                            </span>
+                        {% else %}
+                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1.5 rounded-pill font-weight-bold small">
+                                <i class="fa-solid fa-clock me-1"></i> Menunggu Konfirmasi
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ====== CHARTS ROW ====== -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-8 anim-fade-up anim-delay-2">
+            <div class="dash-panel">
+                <div class="dash-panel-title">
+                    <i class="fa-solid fa-chart-line" style="color:#5eead4;"></i>
+                    Tren Aktivitas Emosi (7 Hari Terakhir)
+                </div>
+                <div style="position:relative;height:280px;">
+                    <canvas id="userTimelineChart"></canvas>
+                    {% if not timeline_stats %}
+                    <div class="dash-empty" style="position:absolute;inset:0;">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Belum ada aktivitas dalam 7 hari terakhir</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 anim-fade-up anim-delay-3">
+            <div class="dash-panel">
+                <div class="dash-panel-title">
+                    <i class="fa-solid fa-chart-pie" style="color:#818cf8;"></i>
+                    Riwayat Emosi
+                </div>
+                <div style="position:relative;height:250px;">
+                    <canvas id="userEmotionChart"></canvas>
+                    {% if not emotion_stats %}
+                    <div class="dash-empty" style="position:absolute;inset:0;">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Belum ada data</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== QUOTE + QUICK ACTIONS + ACTIVITY ====== -->
+    <div class="row g-3">
+
+        <!-- Quote Card -->
+        <div class="col-lg-5 anim-fade-up anim-delay-3">
+            <div class="dash-quote">
+                <div class="dash-quote-tag">
+                    <i class="fa-solid fa-seedling"></i> Inspirasi Harian
+                </div>
+                <p class="dash-quote-text">"{{ quote.quote }}"</p>
+                <p class="dash-quote-author">— {{ quote.author }}</p>
+                {% if quote.tips %}
+                <div class="dash-tips">
+                    <p><i class="fa-solid fa-lightbulb" style="color:#fbbf24;margin-right:0.4rem;"></i><strong style="color:rgba(255,255,255,0.8);">Tips Hari Ini:</strong> {{ quote.tips }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4 anim-fade-up anim-delay-4">
+            <div class="dash-panel" style="padding: 1.25rem;">
+                <div class="dash-panel-title">
+                    <i class="fa-solid fa-bolt" style="color:#fbbf24;"></i>
+                    Aksi Cepat
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    <a href="{{ url_for('relaksasi') }}" class="quick-action-link">
+                        <div class="quick-action-item">
+                            <div class="qa-icon teal"><i class="fa-solid fa-spa"></i></div>
+                            <div>
+                                <div class="qa-title">Ruang Relaksasi</div>
+                                <div class="qa-desc">Latihan pernapasan & audio alam</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('chatbot') }}" class="quick-action-link">
+                        <div class="quick-action-item">
+                            <div class="qa-icon indigo"><i class="fa-solid fa-robot"></i></div>
+                            <div>
+                                <div class="qa-title">MindHaven AI</div>
+                                <div class="qa-desc">Curhat & Deteksi Emosi NLP</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('edukasi') }}" class="quick-action-link">
+                        <div class="quick-action-item">
+                            <div class="qa-icon amber"><i class="fa-solid fa-book-open"></i></div>
+                            <div>
+                                <div class="qa-title">Artikel Edukasi</div>
+                                <div class="qa-desc">Baca tips self-care & psikologi</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('layanan') }}" class="quick-action-link">
+                        <div class="quick-action-item">
+                            <div class="qa-icon green"><i class="fa-solid fa-user-doctor"></i></div>
+                            <div>
+                                <div class="qa-title">Layanan Profesional</div>
+                                <div class="qa-desc">Psikolog, konselor, hotline</div>
+                            </div>
+                            <i class="fa-solid fa-chevron-right qa-arrow"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="col-lg-3 anim-fade-up anim-delay-5">
+            <div class="dash-panel" style="display:flex;flex-direction:column;">
+                <div class="dash-panel-title">
+                    <i class="fa-solid fa-clock-rotate-left" style="color:#818cf8;"></i>
+                    Aktivitas Terbaru
+                </div>
+                <div style="flex-grow:1;overflow-y:auto;">
+                    {% if recent_activities %}
+                    <div class="d-flex flex-column">
+                        {% for act in recent_activities %}
+                        <div class="activity-item">
+                            <div class="activity-emoji">{{ act.emoji }}</div>
+                            <div>
+                                <div class="activity-label">{{ act.label }}</div>
+                                <div class="activity-date">{{ act.date }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="dash-empty">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Belum ada riwayat aktivitas</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Hidden chart data -->
+<div id="chart-data" data-emotions='{{ emotion_stats|tojson }}'></div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="application/json" id="timeline-data-json">
+  {{ timeline_stats|tojson|safe }}
+</script>
+<script type="application/json" id="emotion-data-json">
+  {{ emotion_stats|tojson|safe }}
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const chartDefaults = {
+        color: 'rgba(0,0,0,0.6)',
+        borderColor: 'rgba(0,0,0,0.1)',
+        font: { family: 'Poppins', size: 11 }
+    };
+    Chart.defaults.color = chartDefaults.color;
+    Chart.defaults.borderColor = chartDefaults.borderColor;
+    Chart.defaults.font.family = 'Poppins';
+    Chart.defaults.font.size = 11;
+
+    /* --- Timeline Bar Chart --- */
+    let timelineData = [];
+    try {
+        const rawTimeline = document.getElementById('timeline-data-json');
+        if (rawTimeline && rawTimeline.textContent) {
+            timelineData = JSON.parse(rawTimeline.textContent.trim());
+        }
+    } catch (e) {
+        console.error('Error parsing timeline JSON:', e);
+    }
+
+    const timelineCanvas = document.getElementById('userTimelineChart');
+
+    if (timelineCanvas && timelineData && timelineData.length > 0) {
+        const dates = [...new Set(timelineData.map(d => d.date))].sort();
+        const counts = dates.map(date =>
+            timelineData.filter(d => d.date === date).reduce((acc, curr) => acc + curr.count, 0)
+        );
+
+        new Chart(timelineCanvas, {
+            type: 'bar',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Interaksi',
+                    data: counts,
+                    backgroundColor: function(ctx) {
+                        const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 280);
+                        gradient.addColorStop(0, 'rgba(0,181,181,0.85)');
+                        gradient.addColorStop(1, 'rgba(99,102,241,0.4)');
+                        return gradient;
+                    },
+                    borderColor: 'rgba(94,234,212,0.6)',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 1000, easing: 'easeOutQuart' },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { color: 'rgba(255,255,255,0.45)' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, color: 'rgba(255,255,255,0.45)' },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10,15,30,0.9)',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        titleColor: 'rgba(255,255,255,0.8)',
+                        bodyColor: 'rgba(255,255,255,0.6)',
+                        cornerRadius: 10,
+                        padding: 10
+                    }
+                }
+            }
+        });
+    }
+
+    /* --- Emotion Pie Chart --- */
+    let emotionData = [];
+    try {
+        const rawEmotion = document.getElementById('emotion-data-json');
+        if (rawEmotion && rawEmotion.textContent) {
+            emotionData = JSON.parse(rawEmotion.textContent.trim());
+        }
+    } catch (e) {
+        console.error('Error parsing emotion JSON:', e);
+    }
+
+    const emotionCanvas = document.getElementById('userEmotionChart');
+
+    if (emotionCanvas && emotionData && emotionData.length > 0) {
+        const labels = emotionData.map(e => e.label);
+        const data   = emotionData.map(e => e.count);
+        const colors = [
+            '#5eead4','#818cf8','#fbbf24','#34d399','#fb7185',
+            '#60a5fa','#c084fc','#f97316','#a3e635','#38bdf8'
+        ];
+
+        new Chart(emotionCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors.slice(0, data.length),
+                    borderColor: 'rgba(10,15,30,0.8)',
+                    borderWidth: 3,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                animation: { duration: 1000, easing: 'easeOutQuart' },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(255,255,255,0.55)',
+                            padding: 10,
+                            font: { size: 10 },
+                            usePointStyle: true,
+                            pointStyleWidth: 8
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(10,15,30,0.9)',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        titleColor: 'rgba(255,255,255,0.8)',
+                        bodyColor: 'rgba(255,255,255,0.6)',
+                        cornerRadius: 10,
+                        padding: 10
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

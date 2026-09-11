@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+
+{% block title %}Layanan & Konsultasi Kesehatan Mental - MindHaven{% endblock %}
+
+{% block content %}
+<style>
+  /* ============================================================
+     LAYANAN PAGE CUSTOM ELEGANT STYLES
+     ============================================================ */
+  .hero-layanan-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #0f766e 100%);
+    border-radius: 28px;
+    box-shadow: 0 20px 50px rgba(15, 118, 110, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-glow-1 {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.35) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  
+  .hero-glow-2 {
+    position: absolute;
+    bottom: -80px;
+    left: -50px;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .text-gradient-hero {
+    background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Quick Access Service Hub Cards */
+  .hub-card {
+    border-radius: 24px !important;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .hub-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 22px 45px rgba(0, 0, 0, 0.1) !important;
+    border-color: rgba(14, 165, 233, 0.3) !important;
+  }
+
+  .hub-icon-wrapper {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Practitioner Card Styling */
+  .practitioner-card {
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid var(--gray-200);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  }
+
+  .practitioner-card:hover {
+    border-color: var(--primary-400);
+    box-shadow: 0 12px 30px rgba(0, 181, 181, 0.12);
+    transform: translateY(-3px);
+  }
+
+  .avatar-practitioner {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: white;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+  }
+
+  /* Filter nav pills styling */
+  .service-filter-pill .nav-link {
+    border-radius: 12px;
+    padding: 0.5rem 1.1rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
+  }
+
+  .service-filter-pill .nav-link:hover {
+    color: var(--primary-600);
+    background: rgba(0, 181, 181, 0.08);
+  }
+
+  .service-filter-pill .nav-link.active {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    color: white !important;
+    box-shadow: 0 6px 18px rgba(0, 181, 181, 0.3);
+  }
+
+  /* Sticky Booking Form styling */
+  .booking-card-wrapper {
+    border-radius: 24px;
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+    transition: all 0.4s ease;
+  }
+
+  .booking-card-wrapper.highlight-booking {
+    border-color: var(--primary-500) !important;
+    box-shadow: 0 0 0 4px rgba(0, 181, 181, 0.25), 0 20px 45px rgba(0, 181, 181, 0.15) !important;
+  }
+
+  .form-icon-input {
+    position: relative;
+  }
+  
+  .form-icon-input i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    font-size: 1rem;
+    pointer-events: none;
+    transition: color 0.2s ease;
+  }
+
+  .form-icon-input .form-control,
+  .form-icon-input .form-select {
+    padding-left: 42px;
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+    font-size: 0.925rem;
+    transition: all 0.2s ease;
+  }
+
+  .form-icon-input .form-control:focus,
+  .form-icon-input .form-select:focus {
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 4px rgba(0, 181, 181, 0.12);
+  }
+
+  .form-icon-input .form-control:focus + i,
+  .form-icon-input .form-select:focus + i {
+    color: var(--primary-600);
+  }
+
+  .badge-verified {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0284c7;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    font-size: 0.725rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 50px;
+    font-weight: 600;
+  }
+</style>
+
+<!-- Modern Hero Banner Layanan -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card hero-layanan-card p-4 p-md-5 text-white">
+      <div class="hero-glow-1"></div>
+      <div class="hero-glow-2"></div>
+      
+      <div class="row align-items-center position-relative" style="z-index: 2;">
+        <div class="col-lg-8">
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 mb-3 shadow-xs">
+            <span class="pulse-dot bg-info"></span>
+            <span class="small font-weight-bold text-white"><i class="fa-solid fa-sparkles me-1 text-warning"></i> Pusat Layanan &amp; Dukungan Profesional</span>
+          </div>
+          <h1 class="text-white font-weight-bold display-6 mb-3">
+            Pilih Layanan &amp; Konsultasi <span class="text-gradient-hero">Kesehatan Mental</span>
+          </h1>
+          <p class="text-white-50 lead fs-6 mb-4" style="max-width: 640px;">
+            Akses langsung ke bantuan krisis 24/7, teman curhat AI empati, serta jadwalkan sesi konsultasi pribadi bersama psikolog &amp; konselor terverifikasi.
+          </p>
+
+          <!-- Key Highlights Badges -->
+          <div class="d-flex flex-wrap gap-2 gap-md-3">
+            <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 bg-white bg-opacity-10 text-white small backdrop-blur">
+              <i class="fa-solid fa-shield-halved text-success"></i> 100% Kerahasiaan Terjamin
+            </div>
+            <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 bg-white bg-opacity-10 text-white small backdrop-blur">
+              <i class="fa-solid fa-user-check text-info"></i> Praktisi Berlisensi
+            </div>
+            <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 bg-white bg-opacity-10 text-white small backdrop-blur">
+              <i class="fa-solid fa-headset text-warning"></i> Bantuan Siaga 24 Jam
+            </div>
+          </div>
+        </div>
+
+        <!-- Decorative Illustration Icon -->
+        <div class="col-lg-4 d-none d-lg-flex justify-content-end position-relative">
+          <div class="p-4 rounded-circle bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-10 shadow-lg text-center" style="width:180px; height:180px; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-user-doctor text-info" style="font-size: 5rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Main Section: Directory & Booking Form -->
+<div class="row g-4" id="booking-section">
+  <!-- Left Column: Directory of Practitioners -->
+  <div class="col-lg-7">
+    <div class="card glass-card p-4 h-100 border-0 shadow-sm" style="border-radius:24px;">
+      
+      <!-- Title & Search Bar -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+          <h5 class="font-weight-bold text-dark mb-0 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-user-nurse" style="color:var(--primary-500);"></i> Direktori Praktisi &amp; Layanan
+          </h5>
+          <p class="small text-muted mb-0">Temukan psikolog, konselor, atau mitra kesehatan mental yang sesuai.</p>
+        </div>
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1.5 rounded-pill font-weight-bold">
+          {{ services|length }} Terdaftar
+        </span>
+      </div>
+
+      <!-- Live Search Box -->
+      <div class="form-icon-input mb-3">
+        <input type="text" id="searchPractitioner" class="form-control py-2.5" placeholder="Cari nama praktisi, keahlian, atau lokasi..." onkeyup="filterServices()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+
+      <!-- Category Filter Tabs Navigation -->
+      <ul class="nav nav-pills service-filter-pill service-nav-pills mb-4 gap-2" id="serviceTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#tab-all" type="button" role="tab">Semua</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="psikolog-tab" data-bs-toggle="pill" data-bs-target="#tab-psikolog" type="button" role="tab">Psikolog</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="konselor-tab" data-bs-toggle="pill" data-bs-target="#tab-konselor" type="button" role="tab">Konselor</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link text-danger" id="hotline-tab" data-bs-toggle="pill" data-bs-target="#tab-hotline" type="button" role="tab">Hotline Darurat</button>
+        </li>
+      </ul>
+
+      <!-- Tab Content Directory -->
+      <div class="tab-content" id="serviceTabsContent">
+        
+        <!-- Tab: All Services -->
+        <div class="tab-pane fade show active" id="tab-all" role="tabpanel">
+          <div class="d-flex flex-column gap-3" id="allServicesList">
+            {% for s in services %}
+              {% set bg_color = '#0284c7' if s.category == 'Psikolog' else ('#7c3aed' if s.category == 'Konselor' else '#dc2626') %}
+              {% set initials = s.name.replace('Dr.', '').replace('M.Psi.', '').replace('Psikolog', '').strip()[:2].upper() %}
+              
+              <div class="practitioner-card p-3.5 service-item-card fade-in-up" data-name="{{ s.name|lower }}" data-specialty="{{ s.specialty|lower }}" data-address="{{ s.address|lower }}" data-category="{{ s.category }}">
+                <div class="d-flex align-items-start gap-3">
+                  <!-- Avatar -->
+                  <div class="avatar-practitioner" style="background: {{ bg_color }};">
+                    {{ initials if initials else 'MH' }}
+                  </div>
+
+                  <!-- Details -->
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1">
+                      <div class="d-flex align-items-center gap-2">
+                        <h6 class="font-weight-bold text-dark mb-0">{{ s.name }}</h6>
+                        <span class="badge-verified"><i class="fa-solid fa-circle-check text-info me-1"></i>Terverifikasi</span>
+                      </div>
+                      <span class="badge {% if s.category == 'Psikolog' %}bg-primary-subtle text-primary{% elif s.category == 'Konselor' %}bg-purple-subtle text-purple{% else %}bg-danger-subtle text-danger{% endif %} font-weight-bold px-2.5 py-1 rounded-pill small">
+                        {{ s.category }}
+                      </span>
+                    </div>
+
+                    <p class="small mb-1 font-weight-medium text-dark"><i class="fa-solid fa-stethoscope me-1 text-primary"></i> Spesialisasi: {{ s.specialty }}</p>
+                    <p class="small mb-1 text-muted"><i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ s.address }}</p>
+                    <p class="small mb-3 text-muted"><i class="fa-solid fa-phone me-1 text-success"></i> Kontak: <strong>{{ s.contact }}</strong></p>
+
+                    <!-- Quick Action -->
+                    {% if s.category != 'Hotline Darurat' %}
+                      <button type="button" class="btn btn-outline-primary btn-sm rounded-3 font-weight-bold px-3 py-1.5 d-inline-flex align-items-center gap-1.5" onclick="selectPractitionerForBooking('{{ s.id }}', '{{ s.name|escape }}')">
+                        <i class="fa-solid fa-calendar-plus"></i> Jadwalkan Konsultasi
+                      </button>
+                    {% else %}
+                      <a href="tel:{{ s.contact }}" class="btn btn-danger btn-sm rounded-3 font-weight-bold px-3 py-1.5 d-inline-flex align-items-center gap-1.5">
+                        <i class="fa-solid fa-phone"></i> Panggil Sekarang
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-user-slash fs-2 mb-2 opacity-50"></i>
+                <p class="mb-0">Belum ada layanan atau praktisi terdaftar.</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Tab: Psikolog Only -->
+        <div class="tab-pane fade" id="tab-psikolog" role="tabpanel">
+          <div class="d-flex flex-column gap-3">
+            {% for s in services if s.category == 'Psikolog' %}
+              {% set initials = s.name.replace('Dr.', '').replace('M.Psi.', '').replace('Psikolog', '').strip()[:2].upper() %}
+              <div class="practitioner-card p-3.5 service-item-card">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="avatar-practitioner" style="background: #0284c7;">
+                    {{ initials }}
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1">
+                      <h6 class="font-weight-bold text-dark mb-0">{{ s.name }}</h6>
+                      <span class="badge bg-primary-subtle text-primary font-weight-bold px-2.5 py-1 rounded-pill small">Psikolog</span>
+                    </div>
+                    <p class="small mb-1 font-weight-medium text-dark"><i class="fa-solid fa-stethoscope me-1 text-primary"></i> {{ s.specialty }}</p>
+                    <p class="small mb-1 text-muted"><i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ s.address }}</p>
+                    <p class="small mb-3 text-muted"><i class="fa-solid fa-phone me-1 text-success"></i> Kontak: <strong>{{ s.contact }}</strong></p>
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-3 font-weight-bold px-3 py-1.5" onclick="selectPractitionerForBooking('{{ s.id }}', '{{ s.name|escape }}')">
+                      <i class="fa-solid fa-calendar-plus me-1"></i> Jadwalkan Konsultasi
+                    </button>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <p class="text-muted text-center py-4">Belum ada psikolog terdaftar.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Tab: Konselor Only -->
+        <div class="tab-pane fade" id="tab-konselor" role="tabpanel">
+          <div class="d-flex flex-column gap-3">
+            {% for s in services if s.category == 'Konselor' %}
+              {% set initials = s.name.replace('M.Pd.', '').replace('Konselor', '').strip()[:2].upper() %}
+              <div class="practitioner-card p-3.5 service-item-card">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="avatar-practitioner" style="background: #7c3aed;">
+                    {{ initials }}
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1">
+                      <h6 class="font-weight-bold text-dark mb-0">{{ s.name }}</h6>
+                      <span class="badge bg-purple-subtle text-purple font-weight-bold px-2.5 py-1 rounded-pill small" style="background:rgba(124,58,237,0.1); color:#7c3aed;">Konselor</span>
+                    </div>
+                    <p class="small mb-1 font-weight-medium text-dark"><i class="fa-solid fa-stethoscope me-1 text-primary"></i> {{ s.specialty }}</p>
+                    <p class="small mb-1 text-muted"><i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ s.address }}</p>
+                    <p class="small mb-3 text-muted"><i class="fa-solid fa-phone me-1 text-success"></i> Kontak: <strong>{{ s.contact }}</strong></p>
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-3 font-weight-bold px-3 py-1.5" onclick="selectPractitionerForBooking('{{ s.id }}', '{{ s.name|escape }}')">
+                      <i class="fa-solid fa-calendar-plus me-1"></i> Jadwalkan Konsultasi
+                    </button>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <p class="text-muted text-center py-4">Belum ada konselor terdaftar.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Tab: Hotline Darurat -->
+        <div class="tab-pane fade" id="tab-hotline" role="tabpanel">
+          <div class="d-flex flex-column gap-3">
+            {% for s in services if s.category == 'Hotline Darurat' %}
+              <div class="p-4 rounded-4 glass-card fade-in-up" style="background:rgba(220,38,38,0.04); border:1px solid rgba(220,38,38,0.2);">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="badge bg-danger font-weight-bold px-3 py-1 rounded-pill">HOTLINE DARURAT 24 JAM</span>
+                  <i class="fa-solid fa-phone-volume text-danger fs-5 animate-pulse"></i>
+                </div>
+                <h5 class="font-weight-bold text-danger mb-1">{{ s.name }}</h5>
+                <p class="small mb-2 text-muted"><i class="fa-solid fa-location-dot me-1"></i> {{ s.address }}</p>
+                <p class="text-danger font-weight-bold small mb-3"><i class="fa-solid fa-phone me-1"></i> Telepon: {{ s.contact }}</p>
+                <a href="tel:{{ s.contact }}" class="btn btn-danger btn-sm font-weight-bold rounded-3 px-4 py-2">
+                  <i class="fa-solid fa-headset me-1"></i> Hubungi Darurat Sekarang
+                </a>
+              </div>
+            {% else %}
+              <p class="text-muted text-center py-4">Belum ada hotline darurat terdaftar.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column: Interactive Consultation Booking Form -->
+  <div class="col-lg-5">
+    <div class="booking-card-wrapper p-4 sticky-lg-top" id="bookingCard" style="top: 90px; z-index: 10;">
+      
+      <!-- Card Header -->
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <div class="p-2.5 rounded-3 text-white" style="background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);">
+          <i class="fa-solid fa-calendar-check fs-4"></i>
+        </div>
+        <div>
+          <h5 class="font-weight-bold text-dark mb-0">Jadwalkan Konsultasi</h5>
+          <p class="small text-muted mb-0">Ajukan sesi pertemuan pribadi bersama praktisi.</p>
+        </div>
+      </div>
+
+      <div class="p-2.5 mb-3 rounded-3 bg-light border d-flex align-items-center gap-2 text-dark small">
+        <i class="fa-solid fa-circle-info text-primary fs-5"></i>
+        <span>Data &amp; pesan Anda terenkripsi aman dan hanya dapat dibaca oleh praktisi tujuan.</span>
+      </div>
+
+      <form action="{{ url_for('booking_submit') }}" method="POST" class="booking-form">
+        <!-- Input 1: Client Name -->
+        <div class="mb-3">
+          <label for="name" class="form-label font-weight-bold text-dark small mb-1">Nama Lengkap Klien</label>
+          <div class="form-icon-input">
+            <input type="text" class="form-control" id="name" name="name" value="{{ current_user.name }}" required>
+            <i class="fa-solid fa-user"></i>
+          </div>
+        </div>
+        
+        <!-- Input 2: Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label font-weight-bold text-dark small mb-1">Alamat Email Aktif</label>
+          <div class="form-icon-input">
+            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+        </div>
+        
+        <!-- Input 3: Service/Practitioner Selector -->
+        <div class="mb-3">
+          <label for="service_id" class="form-label font-weight-bold text-dark small mb-1">Pilih Praktisi / Layanan</label>
+          <div class="form-icon-input">
+            <select class="form-select" id="service_id" name="service_id" required>
+              <option value="" disabled selected>-- Pilih Psikolog atau Konselor --</option>
+              {% for s in services if s.category != 'Hotline Darurat' %}
+                <option value="{{ s.id }}">{{ s.name }} ({{ s.category }} - {{ s.specialty }})</option>
+              {% endfor %}
+            </select>
+            <i class="fa-solid fa-user-doctor"></i>
+          </div>
+        </div>
+        
+        <!-- Input 4: Date & Time Picker -->
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="booking_date" class="form-label font-weight-bold text-dark small mb-1">Rencana Tanggal Pertemuan</label>
+            <div class="form-icon-input">
+              <input type="date" class="form-control" id="booking_date" name="booking_date" required min="{{ min_date }}">
+              <i class="fa-solid fa-calendar-days"></i>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="booking_time" class="form-label font-weight-bold text-dark small mb-1">Jam Sesi Pertemuan</label>
+            <div class="form-icon-input">
+              <select class="form-select" id="booking_time" name="booking_time" required>
+                <option value="" disabled selected>-- Pilih Jam Sesi --</option>
+                <option value="08:00 WIB">08:00 WIB (Sesi Pagi I)</option>
+                <option value="09:30 WIB">09:30 WIB (Sesi Pagi II)</option>
+                <option value="11:00 WIB">11:00 WIB (Sesi Pagi III)</option>
+                <option value="13:00 WIB">13:00 WIB (Sesi Siang I)</option>
+                <option value="14:30 WIB">14:30 WIB (Sesi Siang II)</option>
+                <option value="16:00 WIB">16:00 WIB (Sesi Sore)</option>
+                <option value="19:00 WIB">19:00 WIB (Sesi Malam)</option>
+              </select>
+              <i class="fa-solid fa-clock"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Input 5: Complaint Details -->
+        <div class="mb-4">
+          <label for="complaint" class="form-label font-weight-bold text-dark small mb-1">Keluhan / Catatan Pertemuan</label>
+          <textarea class="form-control p-3" id="complaint" name="complaint" rows="3.5" placeholder="Tuliskan secara singkat topik atau keluhan yang ingin Anda konsultasikan..." required style="border-radius:12px; border:1px solid var(--gray-200); font-size:0.9rem;"></textarea>
+        </div>
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary-custom w-100 justify-content-center py-2.5 rounded-3 shadow-sm font-weight-bold">
+          <i class="fa-solid fa-paper-plane me-1.5"></i> Kirim Pengajuan Konsultasi
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Filter services by live search input
+  function filterServices() {
+    const input = document.getElementById('searchPractitioner').value.toLowerCase();
+    const cards = document.querySelectorAll('.service-item-card');
+    
+    cards.forEach(card => {
+      const name = card.getAttribute('data-name') || '';
+      const specialty = card.getAttribute('data-specialty') || '';
+      const address = card.getAttribute('data-address') || '';
+      
+      if (name.includes(input) || specialty.includes(input) || address.includes(input)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Smooth scroll and auto select practitioner in booking form
+  function selectPractitionerForBooking(serviceId, serviceName) {
+    const selectElem = document.getElementById('service_id');
+    if (selectElem) {
+      selectElem.value = serviceId;
+    }
+
+    const bookingCard = document.getElementById('bookingCard');
+    if (bookingCard) {
+      bookingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      bookingCard.classList.add('highlight-booking');
+      setTimeout(() => {
+        bookingCard.classList.remove('highlight-booking');
+      }, 2500);
+    }
+  }
+</script>
+{% endblock %}
+

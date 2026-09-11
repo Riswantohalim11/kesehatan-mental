@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MindHaven - Self-Help Kesehatan Mental{% endblock %}</title>
+    <meta name="description" content="Platform Self-Help Kesehatan Mental dengan AI Chatbot dan NLP Emotion Detection.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+    <style>
+        /* ============ AI DISCLAIMER POPUP ============ */
+        #aiDisclaimerOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 30, 0.72);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: disclaimerFadeIn 0.3s ease forwards;
+        }
+
+        @keyframes disclaimerFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        #aiDisclaimerBox {
+            background: #ffffff;
+            border-radius: 20px;
+            max-width: 440px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+            animation: disclaimerSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            position: relative;
+        }
+
+        @keyframes disclaimerSlideUp {
+            from {
+                transform: translateY(20px) scale(0.96);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .disc-header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            color: white;
+        }
+
+        .disc-header h3 {
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .disc-body {
+            padding: 1.25rem 1.5rem;
+        }
+
+        .disc-point {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            padding: 0.6rem 0.8rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .disc-point:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .disc-point-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+
+        .disc-point-icon.blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .disc-point-icon.amber {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .disc-point-icon.red {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .disc-point-text span {
+            font-size: 0.78rem;
+            color: #334155;
+            line-height: 1.4;
+            display: block;
+        }
+
+        .disc-footer {
+            padding: 0 1.5rem 1.25rem;
+        }
+
+        .disc-agree-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            margin-bottom: 0.75rem;
+            font-size: 0.78rem;
+            color: #475569;
+            user-select: none;
+        }
+
+        .disc-agree-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #0ea5e9;
+            flex-shrink: 0;
+        }
+
+        #btnDisclaimerAccept {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #btnDisclaimerAccept.ready {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #btnDisclaimerAccept.ready:hover {
+            opacity: 0.95;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background is handled in CSS body -->
+    <!-- ============================== NAVBAR ============================== -->
+    <nav class="navbar navbar-expand-lg navbar-main">
+        <div class="container-fluid px-4">
+            <!-- Brand -->
+            <a class="navbar-brand text-decoration-none d-flex align-items-center gap-2"
+                href="{{ url_for('dashboard') }}">
+                <div
+                    style="width:36px;height:36px;background:linear-gradient(135deg,#00b5b5,#6366f1);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(0,181,181,0.3);">
+                    <i class="fa-solid fa-heart-pulse text-white" style="font-size:0.9rem;"></i>
+                </div>
+                <span class="navbar-brand-text">MindHaven</span>
+            </a>
+
+            <!-- Hamburger -->
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar">
+                <i class="fa-solid fa-bars" style="color:var(--gray-600);"></i>
+            </button>
+
+            <!-- Links -->
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+                    {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'admin_dashboard' %}active{% endif %}"
+                            href="{{ url_for('admin_dashboard') }}">
+                            <i class="fa-solid fa-gauge-high"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'admin_users' %}active{% endif %}"
+                            href="{{ url_for('admin_users') }}">
+                            <i class="fa-solid fa-users"></i> Pengguna
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'admin_articles' %}active{% endif %}"
+                            href="{{ url_for('admin_articles') }}">
+                            <i class="fa-solid fa-newspaper"></i> Artikel
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if active_page in ['admin_services', 'admin_bookings', 'admin_contact'] %}active{% endif %}"
+                            href="#" id="adminLayananDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-hand-holding-heart"></i> Layanan
+                        </a>
+                        <ul class="dropdown-menu shadow border-0" aria-labelledby="adminLayananDropdown"
+                            style="background:white;border:1px solid var(--gray-200);border-radius:12px;min-width:210px;">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'admin_services' %}active{% endif %}"
+                                    href="{{ url_for('admin_services') }}">
+                                    <i class="fa-solid fa-hand-holding-heart text-primary"></i> Layanan
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'admin_bookings' %}active{% endif %}"
+                                    href="{{ url_for('admin_bookings') }}">
+                                    <i class="fa-solid fa-calendar-check text-success"></i> Booking
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider my-1" style="border-color:var(--gray-100);">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'admin_contact' %}active{% endif %}"
+                                    href="{{ url_for('admin_contact') }}">
+                                    <i class="fa-solid fa-headset text-info"></i> Hubungi Kami &amp; Peta
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}"
+                            href="{{ url_for('dashboard') }}">
+                            <i class="fa-solid fa-house"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'relaksasi' %}active{% endif %}"
+                            href="{{ url_for('relaksasi') }}">
+                            <i class="fa-solid fa-spa"></i> Relaksasi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'chatbot' %}active{% endif %}"
+                            href="{{ url_for('chatbot') }}">
+                            <i class="fa-solid fa-robot"></i> Chatbot AI
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'edukasi' %}active{% endif %}"
+                            href="{{ url_for('edukasi') }}">
+                            <i class="fa-solid fa-book-open"></i> Edukasi
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if active_page in ['layanan', 'bantuan_krisis', 'tentang_kami', 'hubungi_kami'] %}active{% endif %}"
+                            href="#" id="layananDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-hand-holding-heart"></i> Layanan
+                        </a>
+                        <ul class="dropdown-menu shadow border-0" aria-labelledby="layananDropdown"
+                            style="background:white;border:1px solid var(--gray-200);border-radius:12px;min-width:210px;">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 text-danger font-weight-bold py-2"
+                                    href="{{ url_for('bantuan_krisis') }}">
+                                    <i class="fa-solid fa-triangle-exclamation text-danger"></i> Bantuan Krisis 24/7
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                    href="{{ url_for('layanan') }}#booking-section">
+                                    <i class="fa-solid fa-brain text-primary"></i> Menangani Depresi
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider my-1" style="border-color:var(--gray-100);">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                    href="{{ url_for('tentang_kami') }}">
+                                    <i class="fa-solid fa-circle-info text-info"></i> Tentang Kami
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                    href="{{ url_for('hubungi_kami') }}">
+                                    <i class="fa-solid fa-location-dot text-success"></i> Hubungi Kami &amp; Lokasi
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <!-- User/Admin Dropdown -->
+                    <li class="nav-item dropdown ms-lg-2">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
+                            data-bs-toggle="dropdown"
+                            style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:999px;padding:0.4rem 1rem !important;">
+                            <div
+                                style="width:28px;height:28px;background:var(--grad-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;font-weight:700;flex-shrink:0;">
+                                {{ current_user.name[0].upper() }}
+                            </div>
+                            <span
+                                style="font-size:0.82rem;font-weight:600;color:var(--gray-800);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{
+                                current_user.name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0"
+                            style="background:white;border:1px solid var(--gray-200);border-radius:12px;min-width:180px;">
+                            {% if current_user.role != 'admin' %}
+                             <li><a class="dropdown-item d-flex align-items-center gap-2" style="color:var(--gray-700);"
+                                     href="{{ url_for('profil') }}"><i class="fa-solid fa-circle-user"
+                                         style="color:var(--primary-500);"></i> Profil Saya</a></li>
+                             <li><a class="dropdown-item d-flex align-items-center gap-2" style="color:var(--gray-700);"
+                                     href="{{ url_for('booking_saya') }}"><i
+                                         class="fa-solid fa-calendar-check text-warning"></i> Status Booking Saya</a>
+                             </li>
+                            <li>
+                                <hr class="dropdown-divider my-1" style="border-color:var(--gray-100);">
+                            </li>
+                            {% endif %}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 text-danger"
+                                    href="{{ url_for('logout') }}">
+                                    <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'dashboard' %}active{% endif %}"
+                            href="{{ url_for('dashboard') }}">
+                            <i class="fa-solid fa-house"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'relaksasi' %}active{% endif %}"
+                            href="{{ url_for('relaksasi') }}">
+                            <i class="fa-solid fa-spa"></i> Relaksasi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'chatbot' %}active{% endif %}"
+                            href="{{ url_for('chatbot') }}">
+                            <i class="fa-solid fa-robot"></i> Chatbot AI
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_page == 'edukasi' %}active{% endif %}"
+                            href="{{ url_for('edukasi') }}">
+                            <i class="fa-solid fa-book-open"></i> Edukasi
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if active_page in ['layanan', 'bantuan_krisis', 'tentang_kami', 'hubungi_kami'] %}active{% endif %}"
+                            href="#" id="layananDropdownGuest" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="fa-solid fa-hand-holding-heart"></i> Layanan
+                        </a>
+                        <ul class="dropdown-menu shadow border-0" aria-labelledby="layananDropdownGuest"
+                            style="background:white;border:1px solid var(--gray-200);border-radius:12px;min-width:210px;">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 text-danger font-weight-bold py-2"
+                                    href="{{ url_for('bantuan_krisis') }}">
+                                    <i class="fa-solid fa-triangle-exclamation text-danger"></i> Bantuan Krisis 24/7
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                    href="{{ url_for('layanan') }}#booking-section">
+                                    <i class="fa-solid fa-brain text-primary"></i> Menangani Depresi
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider my-1" style="border-color:var(--gray-100);">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                    href="{{ url_for('tentang_kami') }}">
+                                    <i class="fa-solid fa-circle-info text-info"></i> Tentang Kami
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                    href="{{ url_for('hubungi_kami') }}">
+                                    <i class="fa-solid fa-location-dot text-success"></i> Hubungi Kami &amp; Lokasi
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="nav-link" href="{{ url_for('login') }}">Masuk</a>
+                    </li>
+                    <li class="nav-item ms-1">
+                        <a class="btn-primary-custom" href="{{ url_for('register') }}"
+                            style="padding:0.5rem 1.25rem;font-size:0.85rem;">
+                            <i class="fa-solid fa-user-plus"></i> Daftar
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================== MAIN ============================== -->
+    <main class="page-wrapper">
+        <div class="container-fluid px-4">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="row mb-3">
+                <div class="col-12">
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show d-flex align-items-center gap-2"
+                        role="alert">
+                        <i
+                            class="fa-solid {% if category == 'success' %}fa-circle-check text-success{% elif category in ['error','danger'] %}fa-circle-exclamation text-danger{% else %}fa-circle-info text-info{% endif %}"></i>
+                        <span>{{ message }}</span>
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- ============================== FOOTER ============================== -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Col 1: Brand & Slogan -->
+                <div class="col-lg-4 col-md-6 mb-3 mb-lg-0">
+                    <div class="footer-brand-title mb-3">
+                        <div class="footer-brand-icon">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                        <span>MindHaven</span>
+                    </div>
+                    <p class="small mb-3" style="color:#94a3b8;line-height:1.65;max-width:340px;">
+                        Platform Self-Help &amp; Edukasi Kesehatan Mental berbasis AI. Mendampingi langkah pemulihan
+                        emosi Anda dengan aman dan bebas stigma.
+                    </p>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="#" class="footer-social-btn" title="Instagram"><i
+                                class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="footer-social-btn" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="#" class="footer-social-btn" title="LinkedIn"><i
+                                class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="footer-social-btn" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Navigation Links -->
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h5 class="footer-section-title">Navigasi</h5>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                        <li><a href="{{ url_for('relaksasi') }}">Relaksasi</a></li>
+                        <li><a href="{{ url_for('chatbot') }}">Chatbot AI</a></li>
+                        <li><a href="{{ url_for('edukasi') }}">Edukasi</a></li>
+                        <li><a href="{{ url_for('layanan') }}">Layanan Psikolog</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Layanan Spesifik -->
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h5 class="footer-section-title">Layanan Bantuan</h5>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('bantuan_krisis') }}" class="text-danger font-weight-bold"><i
+                                    class="fa-solid fa-triangle-exclamation text-danger me-1"></i> Bantuan Krisis
+                                24/7</a></li>
+                        <li><a href="{{ url_for('tentang_kami') }}">Tentang Kami</a></li>
+                        <li><a href="{{ url_for('hubungi_kami') }}">Hubungi Kami &amp; FAQ</a></li>
+                        <li><a href="{{ url_for('layanan') }}#booking-section">Booking Konsultasi</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Crisis Alert & Contact Info -->
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="footer-section-title">Darurat Jiwa?</h5>
+                    <div class="footer-crisis-box">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="fa-solid fa-phone-volume text-danger fs-6"></i>
+                            <h6 class="mb-0 text-white font-weight-bold">Hotline Kemenkes RI</h6>
+                        </div>
+                        <p class="mb-3 small" style="color:#cbd5e1;font-size:0.8rem;">Bantuan kedaruratan emosional
+                            &amp; krisis 24 jam bebas pulsa.</p>
+                        <a href="tel:119"
+                            class="btn btn-danger btn-sm w-100 font-weight-bold d-flex align-items-center justify-content-center gap-2 py-2 rounded-3 shadow-xs">
+                            <i class="fa-solid fa-phone"></i> Hubungi 119 Ext 8
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom Bar -->
+            <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="small">
+                    &copy; 2026 <strong>MindHaven AI</strong> &mdash; Self-Help &amp; Edukasi Kesehatan Mental.
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('tentang_kami') }}" class="text-decoration-none text-muted small">Tentang
+                        Kami</a>
+                    <a href="{{ url_for('hubungi_kami') }}" class="text-decoration-none text-muted small">Hubungi
+                        Kami</a>
+                    <a href="{{ url_for('bantuan_krisis') }}"
+                        class="text-decoration-none text-danger small font-weight-bold">Bantuan Krisis</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======= AI DISCLAIMER POPUP ======= -->
+    {% if current_user.is_authenticated %}
+    <div id="aiDisclaimerOverlay" style="display:none;" aria-modal="true" role="dialog"
+        aria-labelledby="disclaimerTitle">
+        <div id="aiDisclaimerBox">
+            <div class="disc-header">
+                <h3 id="disclaimerTitle"><i class="fa-solid fa-robot"></i> Disclaimer Layanan AI</h3>
+            </div>
+
+            <div class="disc-body">
+                <div class="disc-point">
+                    <div class="disc-point-icon blue"><i class="fa-solid fa-circle-info"></i></div>
+                    <div class="disc-point-text">
+                        <span>Platform ini menggunakan AI untuk self-help dan edukasi kesehatan mental.</span>
+                    </div>
+                </div>
+                <div class="disc-point">
+                    <div class="disc-point-icon amber"><i class="fa-solid fa-user-doctor"></i></div>
+                    <div class="disc-point-text">
+                        <span><strong>Bukan pengganti medis:</strong> AI tidak memberikan diagnosis atau saran medis
+                            profesional.</span>
+                    </div>
+                </div>
+                <div class="disc-point">
+                    <div class="disc-point-icon red"><i class="fa-solid fa-phone-flip"></i></div>
+                    <div class="disc-point-text">
+                        <span><strong>Kedaruratan:</strong> Dalam kondisi darurat jiwa, hubungi <strong>Hotline 119 ext
+                                8</strong>.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="disc-footer">
+                <label class="disc-agree-label" for="disclaimerCheckbox">
+                    <input type="checkbox" id="disclaimerCheckbox" onchange="toggleDisclaimerBtn(this)">
+                    <span>Saya mengerti dan menyetujui disclaimer ini.</span>
+                </label>
+                <button id="btnDisclaimerAccept" onclick="acceptDisclaimer()">
+                    Saya Mengerti &amp; Lanjutkan
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+
+    {% if current_user.is_authenticated %}
+    <script>
+        (function () {
+            var KEY = 'mh_ai_disclaimer_accepted_{{ current_user.id }}';
+            var overlay = document.getElementById('aiDisclaimerOverlay');
+            if (!sessionStorage.getItem(KEY)) {
+                overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        })();
+
+        function toggleDisclaimerBtn(checkbox) {
+            var btn = document.getElementById('btnDisclaimerAccept');
+            if (checkbox.checked) {
+                btn.classList.add('ready');
+            } else {
+                btn.classList.remove('ready');
+            }
+        }
+
+        function acceptDisclaimer() {
+            var KEY = 'mh_ai_disclaimer_accepted_{{ current_user.id }}';
+            sessionStorage.setItem(KEY, '1');
+            var overlay = document.getElementById('aiDisclaimerOverlay');
+            overlay.style.transition = 'opacity 0.35s ease';
+            overlay.style.opacity = '0';
+            document.body.style.overflow = '';
+            setTimeout(function () { overlay.style.display = 'none'; }, 360);
+        }
+    </script>
+    {% endif %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Status Booking Saya - MindHaven{% endblock %}
+
+{% block content %}
+<style>
+  .booking-hero-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #d97706 100%);
+    border-radius: 28px;
+    box-shadow: 0 20px 45px rgba(217, 119, 6, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .booking-glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .booking-card-modern {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+
+  .booking-card-modern:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  .booking-card-approved {
+    border-left: 6px solid #10b981 !important;
+  }
+
+  .booking-card-pending {
+    border-left: 6px solid #f59e0b !important;
+  }
+
+  .booking-card-cancelled {
+    border-left: 6px solid #ef4444 !important;
+  }
+
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .timeline-dot-active {
+    background-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+  }
+
+  .timeline-dot-pending {
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+    animation: pulse 1.8s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  }
+</style>
+
+<!-- Hero Header Banner -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card booking-hero-banner p-4 p-md-5 text-white">
+      <div class="booking-glow"></div>
+
+      <div class="row align-items-center position-relative" style="z-index:2;">
+        <div class="col-lg-8">
+          <div class="d-inline-flex align-items-center gap-2 px-3.5 py-1.5 rounded-pill bg-white bg-opacity-15 backdrop-blur border border-white border-opacity-20 mb-3 shadow-xs">
+            <span class="small font-weight-bold text-white"><i class="fa-solid fa-calendar-check text-warning me-1"></i> Layanan Konsultasi &amp; Penjadwalan</span>
+          </div>
+          <h1 class="text-white font-weight-bold display-6 mb-2">
+            Status Booking Konsultasi Saya
+          </h1>
+          <p class="text-white-50 lead fs-6 mb-4" style="max-width:640px;">
+            Pantau persetujuan jadwal pertemuan konsultasi kesehatan mental Anda dengan praktisi ahli MindHaven secara real-time.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2 gap-md-3">
+            <a href="{{ url_for('layanan') }}#booking-section" class="btn btn-warning btn-sm px-4 py-2.5 rounded-3 font-weight-bold d-inline-flex align-items-center gap-2 text-dark shadow-sm">
+              <i class="fa-solid fa-plus"></i> Buat Booking Jadwal Baru
+            </a>
+            <a href="{{ url_for('hubungi_kami') }}" class="btn btn-outline-light btn-sm px-3.5 py-2.5 rounded-3 font-weight-bold d-inline-flex align-items-center gap-2">
+              <i class="fa-brands fa-whatsapp"></i> WhatsApp Support Center
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-4 d-none d-lg-flex justify-content-end">
+          <div class="p-4 rounded-circle bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-10 shadow-lg text-center" style="width:160px; height:160px; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-user-doctor text-warning" style="font-size:4.5rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="row g-4">
+  <div class="col-lg-12">
+    <div class="card glass-card p-4 border-0 shadow-sm" style="border-radius:28px; background:white;">
+      
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 pb-3 border-bottom">
+        <div>
+          <h4 class="font-weight-bold text-dark mb-1 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-list-check text-warning"></i> Daftar Pengajuan Booking Jadwal
+          </h4>
+          <p class="small text-muted mb-0">Total: {{ user_bookings|length }} Riwayat Pengajuan Sesi Konsultasi</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <a href="{{ url_for('profil') }}" class="btn btn-outline-secondary btn-sm rounded-pill font-weight-bold px-3">
+            <i class="fa-solid fa-circle-user me-1"></i> Ke Profil Saya
+          </a>
+        </div>
+      </div>
+
+      {% if user_bookings %}
+        <div class="row g-4">
+          {% for b in user_bookings %}
+            <div class="col-lg-6">
+              <div class="booking-card-modern p-4 h-100 d-flex flex-column justify-content-between {% if b.status == 'Approved' %}booking-card-approved{% elif b.status == 'Pending' %}booking-card-pending{% else %}booking-card-cancelled{% endif %}">
+                
+                <div>
+                  <!-- Service Category & Status -->
+                  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <div>
+                      <span class="badge bg-primary-subtle text-primary font-weight-bold px-2.5 py-1 rounded-pill small mb-1">
+                        <i class="fa-solid fa-stethoscope me-1"></i> {{ b.service.category }}
+                      </span>
+                      <h5 class="font-weight-bold text-dark mb-0 mt-1">
+                        {{ b.service.name }}
+                      </h5>
+                      <span class="small text-muted font-weight-bold">{{ b.service.specialty or 'Praktisi Kesehatan Mental' }}</span>
+                    </div>
+
+                    <div>
+                      {% if b.status == 'Approved' %}
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-success-subtle text-success border border-success-subtle font-weight-bold small shadow-xs">
+                          <span class="timeline-dot timeline-dot-active"></span>
+                          <i class="fa-solid fa-circle-check"></i> JADWAL DISETUJUI
+                        </div>
+                      {% elif b.status == 'Cancelled' %}
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-danger-subtle text-danger border border-danger-subtle font-weight-bold small">
+                          <i class="fa-solid fa-circle-xmark"></i> DIBATALKAN
+                        </div>
+                      {% else %}
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-warning-subtle text-warning border border-warning-subtle font-weight-bold small">
+                          <span class="timeline-dot timeline-dot-pending"></span>
+                          <i class="fa-solid fa-clock"></i> MENUNGGU PERSETUJUAN
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <!-- Date & Time Grid -->
+                  <div class="row g-2 p-3 bg-light rounded-4 mb-3 border">
+                    <div class="col-6">
+                      <div class="small text-muted font-weight-bold mb-0.5"><i class="fa-solid fa-calendar-day text-primary me-1"></i> Tanggal Pertemuan:</div>
+                      <div class="font-weight-bold text-dark small">{{ b.booking_date.strftime('%d %B %Y') }}</div>
+                    </div>
+                    <div class="col-6">
+                      <div class="small text-muted font-weight-bold mb-0.5"><i class="fa-solid fa-clock text-warning me-1"></i> Jam Sesi:</div>
+                      <div class="font-weight-bold text-dark small">{{ b.booking_time or '09:00 WIB' }}</div>
+                    </div>
+                  </div>
+
+                  <!-- User Complaint -->
+                  <div class="mb-3">
+                    <span class="small font-weight-bold text-dark d-block mb-1"><i class="fa-solid fa-comment-dots text-secondary me-1"></i> Keluhan / Catatan Anda:</span>
+                    <div class="p-3 bg-white rounded-3 border text-secondary small" style="line-height:1.6; font-style:italic;">
+                      "{{ b.complaint }}"
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Footer Action & Notice -->
+                <div class="pt-3 border-top mt-3">
+                  {% if b.status == 'Approved' %}
+                    <div class="small text-success font-weight-bold mb-2">
+                      <i class="fa-solid fa-circle-info me-1"></i> Jadwal Anda terkonfirmasi! Silakan datang atau hubungi center kami.
+                    </div>
+                    <a href="https://wa.me/{{ contact_setting.whatsapp_number if contact_setting else '6281234567890' }}" target="_blank" rel="noopener" class="btn btn-sm btn-success w-100 font-weight-bold rounded-3 py-2 shadow-xs">
+                      <i class="fa-brands fa-whatsapp me-1"></i> Hubungi WhatsApp Praktisi / Center
+                    </a>
+                  {% elif b.status == 'Cancelled' %}
+                    <div class="small text-muted mb-2">Jadwal dibatalkan oleh admin/sistem. Anda dapat membuat booking baru.</div>
+                    <a href="{{ url_for('layanan') }}#booking-section" class="btn btn-sm btn-outline-primary w-100 font-weight-bold rounded-3 py-2">
+                      <i class="fa-solid fa-rotate-right me-1"></i> Jadwalkan Ulang Sekarang
+                    </a>
+                  {% else %}
+                    <div class="small text-warning font-weight-bold mb-2">
+                      <i class="fa-solid fa-hourglass-half me-1"></i> Permintaan Anda dalam antrean verifikasi Admin (Estimasi 1x24 jam).
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 rounded-pill small font-weight-bold">Tahap 1 dari 2</span>
+                      <a href="{{ url_for('hubungi_kami') }}" class="small text-primary font-weight-bold text-decoration-none">Ada Kendala?</a>
+                    </div>
+                  {% endif %}
+                </div>
+
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-5 px-4 bg-light rounded-4 border">
+          <div class="p-4 rounded-circle bg-white shadow-xs d-inline-flex align-items-center justify-content-center mb-3" style="width:80px; height:80px;">
+            <i class="fa-solid fa-calendar-xmark text-muted fs-1"></i>
+          </div>
+          <h4 class="font-weight-bold text-dark mb-1">Belum Ada Pengajuan Booking</h4>
+          <p class="small text-muted mb-4" style="max-width:450px; margin:0 auto;">
+            Anda belum memiliki riwayat pengajuan jadwal konsultasi dengan praktisi kesehatan mental MindHaven.
+          </p>
+          <a href="{{ url_for('layanan') }}#booking-section" class="btn btn-warning font-weight-bold rounded-pill px-4 py-2.5 shadow-sm text-dark">
+            <i class="fa-solid fa-plus me-1"></i> Jadwalkan Konsultasi Sekarang
+          </a>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

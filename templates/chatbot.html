@@ -1,0 +1,2431 @@
+{% extends "base.html" %}
+
+{% block title %}MindHaven AI — Chatbot Kesehatan Mental{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ============================================================
+     CHATBOT PAGE — LIGHT MODERN PREMIUM SYSTEM
+     ============================================================ */
+  html,
+  body {
+    height: 100vh !important;
+    overflow: hidden !important;
+    background: var(--gray-50) !important;
+  }
+
+  .site-footer {
+    display: none !important;
+  }
+
+  .navbar-main {
+    background: white !important;
+    border-bottom: 1px solid var(--gray-200) !important;
+    box-shadow: var(--shadow-sm) !important;
+  }
+
+  .navbar-main .nav-link {
+    color: var(--gray-600) !important;
+  }
+
+  .navbar-main .nav-link:hover,
+  .navbar-main .nav-link.active {
+    color: var(--primary-600) !important;
+    background: var(--primary-50) !important;
+  }
+
+  .navbar-brand-text {
+    background: var(--grad-primary) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  .page-wrapper {
+    height: calc(100vh - 74px) !important;
+    padding: 0.85rem !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-wrapper > .container-fluid {
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-wrapper > .container-fluid > .row {
+    height: 100% !important;
+    flex: 1;
+  }
+
+  .page-wrapper > .container-fluid > .row > div {
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---- Wrapper ---- */
+  .chat-wrapper {
+    display: flex;
+    height: 100% !important;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+
+  /* ---- Sidebar ---- */
+  .chat-sidebar {
+    width: 290px;
+    background: var(--gray-50);
+    border-right: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    z-index: 90;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .chat-sidebar-header {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chat-sidebar-header h6 {
+    color: var(--gray-800);
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-new-chat {
+    background: white;
+    border: 1px solid var(--primary-200);
+    color: var(--primary-600);
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-new-chat:hover {
+    background: var(--primary-50);
+    color: var(--primary-700);
+  }
+
+  .chat-sidebar-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.85rem;
+  }
+
+  .chat-sidebar-body::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .chat-sidebar-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chat-sidebar-body::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 10px;
+  }
+
+  .history-item {
+    padding: 0.8rem 0.95rem;
+    border-radius: 12px;
+    background: white;
+    margin-bottom: 0.45rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .history-item:hover {
+    background: var(--gray-50);
+    border-color: var(--primary-300);
+  }
+
+  .history-item.active {
+    background: var(--primary-50);
+    border-color: var(--primary-400);
+  }
+
+  .history-item.active .hist-text {
+    color: var(--primary-700);
+    font-weight: 600;
+  }
+
+  .hist-text {
+    font-size: 0.82rem;
+    color: var(--gray-700);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hist-meta {
+    font-size: 0.7rem;
+    color: var(--gray-400);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .btn-del-session {
+    background: none;
+    border: none;
+    padding: 2px 5px;
+    color: var(--gray-400);
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 0.75rem;
+  }
+
+  .btn-del-session:hover {
+    color: var(--danger);
+  }
+
+  /* ---- Main Chat Area ---- */
+  .chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    position: relative;
+  }
+
+  .chat-header {
+    padding: 0.95rem 1.5rem;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    z-index: 10;
+  }
+
+  .chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .chat-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .bot-avatar-dark {
+    width: 42px;
+    height: 42px;
+    background: var(--grad-primary);
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.15rem;
+    box-shadow: 0 4px 16px rgba(0, 181, 181, 0.25);
+    animation: bot-pulse 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes bot-pulse {
+    from {
+      box-shadow: 0 4px 14px rgba(0, 181, 181, 0.15);
+    }
+    to {
+      box-shadow: 0 4px 20px rgba(0, 181, 181, 0.35);
+    }
+  }
+
+  .bot-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 0.1rem;
+  }
+
+  .bot-status {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.74rem;
+    color: var(--gray-500);
+  }
+
+  .status-dot-live {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 6px var(--success);
+    animation: pulse-live 2s infinite;
+  }
+
+  @keyframes pulse-live {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .btn-screening-nav {
+    background: linear-gradient(135deg, rgba(0, 181, 181, 0.1), rgba(0, 181, 181, 0.2));
+    border: 1.5px solid var(--primary-300);
+    color: var(--primary-700);
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-screening-nav:hover {
+    background: var(--grad-primary);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 181, 181, 0.25);
+  }
+
+  /* ---- Messages ---- */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    background: white;
+  }
+
+  .chat-messages::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chat-messages::-webkit-scrollbar-thumb {
+    background: var(--gray-200);
+    border-radius: 10px;
+  }
+
+  /* Welcome box */
+  .chat-welcome {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    padding: 1.75rem;
+    text-align: center;
+    animation: fade-up-chat 0.4s ease both;
+  }
+
+  @keyframes fade-up-chat {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .chat-welcome-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--grad-primary);
+    border-radius: 50%;
+    margin: 0 auto 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0, 181, 181, 0.25);
+  }
+
+  .chat-welcome h4 {
+    color: var(--gray-800);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+
+  .chat-welcome p {
+    color: var(--gray-600);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    max-width: 480px;
+    margin: 0 auto 1.25rem;
+  }
+
+  /* Welcome Screening CTA */
+  .screening-cta-card {
+    background: white;
+    border: 1.5px solid var(--primary-200);
+    border-radius: 16px;
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    text-align: left;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s;
+  }
+
+  .screening-cta-card:hover {
+    border-color: var(--primary-400);
+    box-shadow: 0 6px 18px rgba(0, 181, 181, 0.12);
+  }
+
+  .scta-left {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .scta-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--primary-50);
+    color: var(--primary-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .scta-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gray-800);
+  }
+
+  .scta-desc {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    margin-top: 0.15rem;
+  }
+
+  .btn-scta {
+    background: var(--grad-primary);
+    color: white;
+    border: none;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 181, 181, 0.25);
+  }
+
+  .btn-scta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 181, 181, 0.35);
+  }
+
+  .chip-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-500);
+    margin: 1.25rem 0 0.65rem;
+  }
+
+  .chip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.55rem;
+  }
+
+  .prompt-chip-dark {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .prompt-chip-dark i {
+    color: var(--primary-500);
+    font-size: 0.85rem;
+  }
+
+  .prompt-chip-dark:hover {
+    background: var(--primary-50);
+    border-color: var(--primary-300);
+    color: var(--primary-700);
+    transform: translateY(-2px);
+  }
+
+  /* Bubbles */
+  .chat-bubble {
+    max-width: 78%;
+    display: flex;
+    flex-direction: column;
+    animation: bubble-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  @keyframes bubble-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .chat-bubble.bot {
+    align-self: flex-start;
+  }
+
+  .chat-bubble.user {
+    align-self: flex-end;
+  }
+
+  .msg-bubble {
+    padding: 0.85rem 1.15rem;
+    border-radius: 18px;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    word-break: break-word;
+  }
+
+  .chat-bubble.bot .msg-bubble {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    color: var(--gray-800);
+    border-bottom-left-radius: 4px;
+  }
+
+  .chat-bubble.user .msg-bubble {
+    background: var(--grad-primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 16px rgba(0, 181, 181, 0.15);
+  }
+
+  .msg-ts {
+    font-size: 0.68rem;
+    color: var(--gray-400);
+    margin-top: 0.3rem;
+    padding: 0 0.25rem;
+  }
+
+  .chat-bubble.user .msg-ts {
+    text-align: right;
+  }
+
+  .emotion-tag-dark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: var(--primary-50);
+    border: 1px solid var(--primary-200);
+    color: var(--primary-600);
+    margin-top: 0.35rem;
+    align-self: flex-end;
+  }
+
+  /* In-chat screening card */
+  .screening-result-card {
+    background: white;
+    border: 1.5px solid var(--primary-200);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0, 181, 181, 0.1);
+    color: var(--gray-800);
+    font-size: 0.83rem;
+    text-align: left;
+    margin: 0.25rem 0;
+  }
+
+  .src-head {
+    background: linear-gradient(135deg, rgba(0, 181, 181, 0.12), rgba(0, 181, 181, 0.04));
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--primary-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .src-title {
+    font-weight: 700;
+    color: var(--primary-700);
+    font-size: 0.86rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .src-body {
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .src-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .src-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-400);
+  }
+
+  .src-val {
+    font-weight: 600;
+    color: var(--gray-700);
+  }
+
+  .src-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .src-tag {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 8px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    background: var(--primary-50);
+    color: var(--primary-700);
+    border: 1px solid var(--primary-200);
+  }
+
+  .src-tag-phys {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+
+  .src-scale-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: white;
+  }
+
+  .scale-bg-low { background: linear-gradient(135deg, #10b981, #059669); }
+  .scale-bg-mid { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .scale-bg-high { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .scale-bg-crit { background: linear-gradient(135deg, #881337, #4c0519); }
+
+  /* Typing Indicator Modern */
+  .typing-indicator {
+    display: none;
+    align-items: center;
+    gap: 0.65rem;
+    background: #ffffff;
+    border: 1.5px solid var(--primary-200);
+    padding: 0.65rem 1.1rem;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    box-shadow: 0 4px 14px rgba(0, 181, 181, 0.1);
+    animation: bubble-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    margin-bottom: 0.5rem;
+  }
+
+  .typing-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--grad-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    box-shadow: 0 2px 8px rgba(0, 181, 181, 0.3);
+  }
+
+  .typing-text {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--gray-600);
+  }
+
+  .typing-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 2px;
+  }
+
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: typing-bounce 1.5s infinite ease-in-out both;
+  }
+
+  .typing-dot:nth-child(1) { background: #00b5b5; animation-delay: 0s; }
+  .typing-dot:nth-child(2) { background: #38bdf8; animation-delay: 0.22s; }
+  .typing-dot:nth-child(3) { background: #6366f1; animation-delay: 0.44s; }
+
+  @keyframes typing-bounce {
+    0%, 80%, 100% { transform: translateY(0) scale(0.7); opacity: 0.35; }
+    40% { transform: translateY(-5px) scale(1.18); opacity: 1; }
+  }
+
+  /* Streaming Token Cursor */
+  .streaming-cursor {
+    display: inline-block;
+    width: 6px;
+    height: 15px;
+    background: var(--primary-500);
+    margin-left: 3px;
+    vertical-align: middle;
+    border-radius: 2px;
+    animation: cursor-blink 0.7s infinite;
+  }
+
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Input */
+  .chat-input-area {
+    padding: 0.85rem 1.5rem 1.1rem;
+    background: white;
+    border-top: 1px solid var(--gray-200);
+  }
+
+  .chat-input-wrapper {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 999px;
+    padding: 0.35rem 0.35rem 0.35rem 1.2rem;
+    transition: all 0.25s;
+  }
+
+  .chat-input-wrapper:focus-within {
+    background: white;
+    border-color: var(--primary-400);
+    box-shadow: 0 0 0 3px rgba(0, 181, 181, 0.08);
+  }
+
+  #chat-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 0.45rem 0;
+    font-size: 0.88rem;
+    color: var(--gray-800);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  #chat-input:focus { outline: none; }
+  #chat-input::placeholder { color: var(--gray-400); }
+
+  .btn-send {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--grad-primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.88rem;
+    transition: all 0.25s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 181, 181, 0.2);
+  }
+
+  .btn-send:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 16px rgba(0, 181, 181, 0.3);
+  }
+
+  /* Mobile sidebar */
+  .btn-sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--gray-500);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .btn-sidebar-toggle:hover {
+    background: var(--gray-100);
+    color: var(--gray-700);
+  }
+
+  .sidebar-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 85;
+  }
+
+  /* ============================================================
+     SKRINING AWAL MODAL — 5 TAHAP KLINIS LENGKAP
+     ============================================================ */
+  .screening-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: screening-fade-in 0.3s ease both;
+  }
+
+  @keyframes screening-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .screening-modal {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 640px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: modal-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  }
+
+  @keyframes modal-pop {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .screening-header {
+    background: linear-gradient(135deg, var(--gray-50), white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 1.5rem 1.75rem 1rem;
+    position: relative;
+  }
+
+  .btn-modal-close {
+    position: absolute;
+    top: 1.1rem;
+    right: 1.1rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gray-100);
+    border: none;
+    color: var(--gray-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .btn-modal-close:hover {
+    background: var(--gray-200);
+    color: var(--gray-800);
+  }
+
+  .screening-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .screening-logo-mini {
+    width: 38px;
+    height: 38px;
+    background: var(--grad-primary);
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 181, 181, 0.25);
+  }
+
+  .screening-brand h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--gray-900);
+  }
+
+  .screening-brand p {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--gray-500);
+  }
+
+  /* Stepper dots */
+  .screening-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    margin-top: 0.75rem;
+    padding: 0 0.5rem;
+  }
+
+  .step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--gray-100);
+    border: 2px solid var(--gray-300);
+    color: var(--gray-500);
+    font-size: 0.74rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.25s;
+    user-select: none;
+  }
+
+  .step-dot.active {
+    background: var(--primary-500);
+    border-color: var(--primary-500);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(0, 181, 181, 0.18);
+    transform: scale(1.1);
+  }
+
+  .step-dot.done {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+  }
+
+  .screening-progress-track {
+    height: 3px;
+    background: var(--gray-200);
+    width: 100%;
+    margin-top: 0.6rem;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .screening-progress-bar-fill {
+    height: 100%;
+    background: var(--grad-primary);
+    border-radius: 999px;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Body */
+  .screening-body {
+    padding: 1.5rem 1.75rem;
+    overflow-y: auto;
+    flex: 1;
+    max-height: calc(92vh - 200px);
+  }
+
+  .screening-body::-webkit-scrollbar {
+    width: 4px;
+  }
+  .screening-body::-webkit-scrollbar-thumb {
+    background: var(--gray-300);
+    border-radius: 10px;
+  }
+
+  .screening-step-pane {
+    display: none;
+    animation: step-fade 0.28s ease both;
+  }
+
+  .screening-step-pane.active {
+    display: block;
+  }
+
+  @keyframes step-fade {
+    from { opacity: 0; transform: translateX(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .sk-modal-opt-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 1rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .sk-modal-opt-item:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+  .sk-modal-opt-item.selected {
+    background: #eff6ff;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18);
+  }
+  .sk-modal-opt-item.selected-risk-high {
+    background: #fff1f2;
+    border-color: #f43f5e;
+    box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.18);
+  }
+
+  .step-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--primary-600);
+    background: var(--primary-50);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 0.6rem;
+  }
+
+  .step-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 0.3rem;
+  }
+
+  .step-subtitle {
+    font-size: 0.82rem;
+    color: var(--gray-500);
+    margin-bottom: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* Step 1: Scale Track */
+  .scale-track {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+
+  .scale-btn {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .scale-btn:hover {
+    border-color: var(--primary-400);
+    background: var(--primary-50);
+    color: var(--primary-700);
+    transform: translateY(-2px);
+  }
+
+  .scale-btn.selected {
+    border-color: transparent;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  }
+
+  .scale-btn.selected.lvl-low  { background: linear-gradient(135deg, #10b981, #059669); }
+  .scale-btn.selected.lvl-mid  { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .scale-btn.selected.lvl-high { background: linear-gradient(135deg, #ef4444, #dc2626); }
+  .scale-btn.selected.lvl-crit { background: linear-gradient(135deg, #991b1b, #450a0a); }
+
+  .scale-legend {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: var(--gray-400);
+    margin-top: 0.6rem;
+    padding: 0 0.2rem;
+  }
+
+  .scale-feedback {
+    margin-top: 1.25rem;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    text-align: center;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  /* Step 2: Emotion Grid */
+  .emotion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .emotion-chip {
+    padding: 0.6rem 0.75rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .emotion-chip:hover {
+    background: var(--primary-50);
+    border-color: var(--primary-300);
+    color: var(--primary-700);
+    transform: translateY(-1px);
+  }
+
+  .emotion-chip.selected {
+    background: var(--primary-50);
+    border-color: var(--primary-500);
+    color: var(--primary-700);
+    box-shadow: 0 2px 8px rgba(0, 181, 181, 0.18);
+  }
+
+  .emotion-chip .chip-check {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--gray-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: white;
+    transition: all 0.2s;
+  }
+
+  .emotion-chip.selected .chip-check {
+    background: var(--primary-500);
+    border-color: var(--primary-500);
+  }
+
+  /* Step 3, 4, 5: Check & Radio lists */
+  .option-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .option-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1.5px solid var(--gray-200);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    color: var(--gray-700);
+    font-weight: 500;
+    user-select: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .option-item:hover {
+    background: var(--primary-50);
+    border-color: var(--primary-300);
+    color: var(--primary-800);
+  }
+
+  .option-item.selected {
+    background: var(--primary-50);
+    border-color: var(--primary-500);
+    color: var(--primary-800);
+    font-weight: 600;
+  }
+
+  .item-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    border: 2px solid var(--gray-300);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 0.65rem;
+    color: white;
+  }
+
+  .option-item.selected .item-box {
+    background: var(--primary-500);
+    border-color: var(--primary-500);
+  }
+
+  .item-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-300);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .item-radio::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .option-item.selected .item-radio {
+    background: var(--primary-500);
+    border-color: var(--primary-500);
+  }
+
+  .option-item.selected .item-radio::after {
+    opacity: 1;
+  }
+
+  /* Step 6 Review Box */
+  .review-box {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 16px;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .review-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .review-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-500);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .review-edit-link {
+    color: var(--primary-600);
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: none;
+  }
+
+  .review-val {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  /* Footer */
+  .screening-footer {
+    padding: 1rem 1.75rem 1.25rem;
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background: var(--gray-50);
+  }
+
+  .btn-sc-prev {
+    background: white;
+    border: 1px solid var(--gray-300);
+    color: var(--gray-600);
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .btn-sc-prev:hover {
+    background: var(--gray-100);
+    color: var(--gray-800);
+  }
+
+  .btn-sc-prev:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .btn-sc-next {
+    background: var(--grad-primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.6rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.86rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 14px rgba(0, 181, 181, 0.25);
+  }
+
+  .btn-sc-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 181, 181, 0.35);
+  }
+
+  .btn-sc-next:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-sc-skip {
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    font-size: 0.78rem;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    transition: color 0.2s;
+    font-weight: 500;
+  }
+
+  .btn-sc-skip:hover {
+    color: var(--gray-600);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 991.98px) {
+    .chat-sidebar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      transform: translateX(-100%);
+      box-shadow: none;
+      background: white;
+    }
+
+    .chat-sidebar.active {
+      transform: translateX(0);
+      box-shadow: 15px 0 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-sidebar-toggle {
+      display: block;
+    }
+
+    .chat-wrapper {
+      height: calc(100vh - 110px);
+    }
+
+    .chat-messages {
+      padding: 1rem;
+    }
+
+    .chat-input-area {
+      padding: 0.75rem 1rem 0.9rem;
+    }
+
+    .scale-track {
+      gap: 0.25rem;
+    }
+
+    .scale-btn {
+      font-size: 0.85rem;
+      border-radius: 8px;
+    }
+
+    .screening-cta-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .btn-scta {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="screening-overlay" id="screeningOverlay">
+  <div class="screening-modal">
+
+    <!-- Header -->
+    <div class="screening-header">
+      <button class="btn-modal-close" id="btnCloseScreening" title="Tutup">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="screening-brand">
+        <div class="screening-logo-mini"><i class="fa-solid fa-heart-pulse"></i></div>
+        <div>
+          <h3 id="modalHeadTitle">Sebelum Memulai Percakapan</h3>
+          <p id="modalHeadSubtitle" style="font-size:0.8rem; color:var(--gray-500); line-height: 1.4; margin-top: 0.2rem;">Untuk membantu memahami kondisi emosional Anda saat ini, silakan jawab beberapa pertanyaan berikut berdasarkan apa yang Anda rasakan dalam <strong>2 minggu terakhir</strong>.</p>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mt-2 mb-1" id="mProgressHeader">
+        <span class="step-badge" id="mQNumText" style="margin-bottom:0;"><i class="fa-solid fa-clipboard-question me-1"></i> Pertanyaan 1 dari 20</span>
+        <span class="small text-muted fw-bold" id="mPctText">5%</span>
+      </div>
+      <div class="screening-progress-track" id="mProgressTrack">
+        <div class="screening-progress-bar-fill" id="scProgress" style="width: 5%;"></div>
+      </div>
+    </div>
+
+    <!-- Body Questions -->
+    <div class="screening-body" style="padding: 1.5rem 1.75rem;">
+
+      <!-- ==========================================
+           PANE 1: 20 PERTANYAAN EMOSIONAL (STEP 1 - 20)
+           ========================================== -->
+      <div id="mPaneQuestions">
+        <div class="d-flex align-items-center gap-1.5 text-muted mb-2" style="font-size: 0.78rem;">
+          <i class="fa-regular fa-calendar-check text-primary"></i> <span>Periode: <strong>Dalam 2 minggu terakhir</strong></span>
+        </div>
+        <h4 class="fw-bold text-dark mb-3" id="mQTitle" style="font-size: 1.12rem; line-height: 1.5; min-height: 3rem;">
+          1. Saya merasa sedih atau murung tanpa alasan yang jelas.
+        </h4>
+
+        <div class="sk-options-list" id="mOptionsList" style="display: flex; flex-direction: column; gap: 0.6rem;">
+          <div class="sk-modal-opt-item" data-val="0" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2.5">
+              <span style="font-size: 1.25rem;">🙂</span>
+              <span class="fw-semibold text-dark">0 = Tidak Pernah</span>
+            </div>
+            <span class="badge bg-light text-secondary border">0</span>
+          </div>
+
+          <div class="sk-modal-opt-item" data-val="1" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2.5">
+              <span style="font-size: 1.25rem;">😐</span>
+              <span class="fw-semibold text-dark">1 = Jarang</span>
+            </div>
+            <span class="badge bg-light text-secondary border">1</span>
+          </div>
+
+          <div class="sk-modal-opt-item" data-val="2" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2.5">
+              <span style="font-size: 1.25rem;">😕</span>
+              <span class="fw-semibold text-dark">2 = Kadang-kadang</span>
+            </div>
+            <span class="badge bg-light text-secondary border">2</span>
+          </div>
+
+          <div class="sk-modal-opt-item" data-val="3" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2.5">
+              <span style="font-size: 1.25rem;">😟</span>
+              <span class="fw-semibold text-dark">3 = Sering</span>
+            </div>
+            <span class="badge bg-light text-secondary border">3</span>
+          </div>
+
+          <div class="sk-modal-opt-item" data-val="4" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2.5">
+              <span style="font-size: 1.25rem;">😫</span>
+              <span class="fw-semibold text-dark">4 = Sangat Sering</span>
+            </div>
+            <span class="badge bg-light text-secondary border">4</span>
+          </div>
+        </div>
+
+        <div class="alert alert-danger py-2 px-3 small mt-2 mb-0 d-none" id="mValAlert">
+          <i class="fa-solid fa-circle-exclamation me-1"></i> Silakan pilih salah satu jawaban di atas untuk melanjutkan.
+        </div>
+      </div>
+
+      <!-- ==========================================
+           PANE 2: RISK CHECK / PEMERIKSAAN KESELAMATAN
+           ========================================== -->
+      <div id="mPaneRisk" style="display: none;">
+        <div class="badge bg-danger-subtle text-danger border border-danger-subtle mb-2 px-2.5 py-1">
+          <i class="fa-solid fa-shield-heart me-1"></i> Pemeriksaan Keselamatan
+        </div>
+        <h4 class="fw-bold text-danger mb-2" style="font-size: 1.12rem; line-height: 1.5;">
+          Dalam 2 minggu terakhir, apakah Anda pernah memiliki pikiran untuk menyakiti diri sendiri atau merasa bahwa Anda tidak ingin hidup?
+        </h4>
+        <p class="text-muted small mb-3">
+          <i class="fa-solid fa-circle-info"></i> Pertanyaan ini diajukan untuk memastikan keselamatan dan kenyamanan Anda, serta <strong>tidak dimasukkan ke dalam perhitungan skor 20 pertanyaan</strong>.
+        </p>
+
+        <div class="sk-options-list" id="mRiskOptionsList" style="display: flex; flex-direction: column; gap: 0.6rem;">
+          <div class="sk-modal-opt-item" data-risk="Tidak pernah" data-is-high="false" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2">
+              <span style="font-size: 1.2rem;">🌱</span>
+              <span class="fw-semibold text-dark">1. Tidak pernah</span>
+            </div>
+            <i class="fa-regular fa-circle text-muted"></i>
+          </div>
+
+          <div class="sk-modal-opt-item" data-risk="Pernah terpikir, tetapi tidak serius" data-is-high="false" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2">
+              <span style="font-size: 1.2rem;">⛅</span>
+              <span class="fw-semibold text-dark">2. Pernah terpikir, tetapi tidak serius</span>
+            </div>
+            <i class="fa-regular fa-circle text-muted"></i>
+          </div>
+
+          <div class="sk-modal-opt-item" data-risk="Sering terpikir" data-is-high="true" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2">
+              <span style="font-size: 1.2rem;">🌧️</span>
+              <span class="fw-semibold text-danger">3. Sering terpikir</span>
+            </div>
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle small">Perlu Dukungan</span>
+          </div>
+
+          <div class="sk-modal-opt-item" data-risk="Sangat sering / saat ini saya merasa berisiko" data-is-high="true" role="button" tabindex="0">
+            <div class="d-flex align-items-center gap-2">
+              <span style="font-size: 1.2rem;">⚠️</span>
+              <span class="fw-semibold text-danger">4. Sangat sering / saat ini saya merasa berisiko</span>
+            </div>
+            <span class="badge bg-danger text-white small">Risiko Tinggi</span>
+          </div>
+        </div>
+
+        <!-- Crisis Alert Box -->
+        <div class="alert alert-danger py-2.5 px-3 small mt-3 mb-0 d-none" id="mCrisisBox" style="line-height: 1.6;">
+          <h6 class="fw-bold text-danger mb-1 d-flex align-items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation"></i> Crisis Alert &amp; Pendampingan
+          </h6>
+          <p class="mb-2">Anda tidak sendirian. Keselamatan dan hidup Anda sangat berharga. Kontak darurat 24/7 selalu siap mendengarkan:</p>
+          <ul class="mb-2 ps-3 small">
+            <li><strong>Hotline Kemenkes RI:</strong> 119 (ext. 8)</li>
+            <li><strong>Layanan SEJIWA:</strong> 119 ext. 8</li>
+            <li><strong>Into The Light:</strong> Edukasi pencegahan bunuh diri</li>
+          </ul>
+          <a href="{{ url_for('bantuan_krisis') }}" class="btn btn-sm btn-danger font-weight-bold" target="_blank">
+            <i class="fa-solid fa-phone me-1"></i> Buka Layanan Bantuan Krisis
+          </a>
+        </div>
+
+        <div class="alert alert-danger py-2 px-3 small mt-2 mb-0 d-none" id="mRiskValAlert">
+          <i class="fa-solid fa-circle-exclamation me-1"></i> Silakan pilih salah satu opsi keselamatan untuk melanjutkan.
+        </div>
+      </div>
+
+      <!-- ==========================================
+           PANE 3: HASIL SKRINING
+           ========================================== -->
+      <div id="mPaneResult" style="display: none; text-align: center; padding: 0.75rem 0;">
+        <div class="d-inline-flex p-3 rounded-circle bg-success-subtle text-success mb-2">
+          <i class="fa-solid fa-circle-check fa-2x"></i>
+        </div>
+        <h3 class="fw-bold text-dark mb-1">Skrining Awal Selesai</h3>
+        <p class="text-muted small mb-3">Gambaran awal kondisi emosional Anda sebelum berinteraksi dengan chatbot.</p>
+
+        <div class="p-3 bg-light rounded-4 mb-3 border d-inline-block px-4">
+          <div class="text-muted small text-uppercase fw-bold">Skor Anda</div>
+          <div class="fs-1 fw-bold text-dark"><span id="mTotalScoreVal">0</span> <span class="fs-5 text-muted">/ 80</span></div>
+          <div class="badge bg-primary-subtle text-primary px-3 py-1.5 rounded-pill mt-1" id="mIndicationLabel">Indikasi Beban Emosional</div>
+        </div>
+
+        <div class="p-3 rounded-3 mb-3 border text-start" style="background:#f8fafc; font-size:0.85rem; line-height:1.5;">
+          <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-1">
+            <i class="fa-solid fa-circle-info text-primary"></i> Penafian
+          </div>
+          Hasil ini merupakan gambaran awal kondisi emosional Anda dan <strong>bukan diagnosis medis atau psikologis</strong>.
+        </div>
+
+        <div class="d-grid gap-2 mt-2">
+          <button type="button" class="btn btn-primary font-weight-bold py-2.5 rounded-3 d-flex align-items-center justify-content-center gap-2" id="btnStartChat" style="background: linear-gradient(135deg, #0d9488 0%, #0284c7 100%); border:none; box-shadow: 0 4px 14px rgba(13, 148, 136, 0.3);">
+            <i class="fa-solid fa-comments"></i> Mulai Percakapan
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /screening-body -->
+
+    <!-- Footer Buttons (Untuk Pane 1 & 2) -->
+    <div class="screening-footer" id="mFooter">
+      <button class="btn-sc-prev" id="btnMPrev" disabled>
+        <i class="fa-solid fa-arrow-left"></i> Sebelumnya
+      </button>
+      <button class="btn-sc-next" id="btnMNext">
+        Berikutnya <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     CHATBOT MAIN UI
+     ============================================================ -->
+<div id="chatDataConfig" 
+     data-history-empty="{{ 'true' if not chat_history else 'false' }}" 
+     data-session-id="{{ selected_session_id }}" 
+     data-api-chat-url="{{ url_for('api_chat') }}"
+     data-chatbot-url="{{ url_for('chatbot') }}"
+     data-auto-screening="{{ 'true' if auto_screening else 'false' }}"
+     data-recent-score="{{ recent_screening.score if recent_screening else '' }}"
+     data-recent-indication="{{ recent_screening.category_result if recent_screening else '' }}"
+     data-recent-risk="{{ recent_screening.risk_response if recent_screening else '' }}"></div>
+<div class="row justify-content-center">
+  <div class="col-12 col-xl-11">
+    <div class="chat-wrapper">
+
+      <!-- Sidebar overlay -->
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+      <!-- Sidebar history -->
+      <div class="chat-sidebar" id="chat-sidebar">
+        <div class="chat-sidebar-header">
+          <h6><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary-500);"></i> Riwayat</h6>
+          <a href="{{ url_for('chatbot', new='true') }}" class="btn-new-chat">
+            <i class="fa-solid fa-plus"></i> Sesi Baru
+          </a>
+        </div>
+        <div class="chat-sidebar-body" id="sidebar-history-list">
+          {% for session in chat_sessions %}
+          <div class="history-item {% if session.session_id == selected_session_id %}active{% endif %}"
+            data-session-id="{{ session.session_id }}">
+            <div class="d-flex justify-content-between align-items-center w-100">
+              <a href="{{ url_for('chatbot', session_id=session.session_id) }}" class="text-decoration-none flex-grow-1"
+                style="min-width:0;">
+                <div class="hist-text">{{ session.title }}</div>
+                <div class="hist-meta">
+                  <span>{{ session.created_at.strftime('%d %b %Y, %H:%M') }}</span>
+                </div>
+              </a>
+              <button class="btn-del-session" data-session-id="{{ session.session_id }}" title="Hapus sesi">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+          {% else %}
+          <p style="text-align:center;color:var(--gray-400);font-size:0.78rem;margin-top:2rem;">Belum ada riwayat obrolan.</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Main Chat Area -->
+      <div class="chat-main">
+        <!-- Header -->
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <button class="btn-sidebar-toggle" id="btn-sidebar-toggle">
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="bot-avatar-dark"><i class="fa-solid fa-heart-pulse"></i></div>
+            <div>
+              <div class="bot-name">MindHaven AI</div>
+              <div class="bot-status">
+                <span class="status-dot-live"></span> Aktif · Analisis Emosi NLP & Skrining Klinis
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-header-actions">
+            <button type="button" class="btn-screening-nav" id="btnOpenScreening" title="Buka Skrining Awal (20 Pertanyaan)">
+              <i class="fa-solid fa-clipboard-check"></i>
+              <span>Skrining Awal</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="chat-messages" id="chat-messages">
+          <!-- Welcome box (hanya tampil saat belum ada history) -->
+          {% if not chat_history %}
+          <div class="chat-welcome" id="chatWelcomeBox">
+            <div class="chat-welcome-icon"><i class="fa-solid fa-face-smile-beam"></i></div>
+            <h4>Selamat Datang di MindHaven AI 🤗</h4>
+            <p>Teman curhat dan pendamping kesehatan mental yang siap mendengarkan cerita Anda, menganalisis emosi secara real-time, dan memberikan solusi personal.</p>
+
+            <!-- Skrining Awal Banner CTA -->
+            <div class="screening-cta-card">
+              <div class="scta-left">
+                <div class="scta-icon"><i class="fa-solid fa-notes-medical"></i></div>
+                <div>
+                  <div class="scta-title">Mulai dengan Skrining Awal (20 Pertanyaan)</div>
+                  <div class="scta-desc">Check-in kondisi emosional 2 minggu terakhir sebelum memulai percakapan bersama AI Chatbot.</div>
+                </div>
+              </div>
+              <button type="button" class="btn-scta" id="btnWelcomeScreening">
+                <i class="fa-solid fa-play"></i> Mulai Skrining
+              </button>
+            </div>
+
+            <div class="chip-title">Atau mulai dengan ide topik berikut</div>
+            <div class="chip-grid">
+              <div class="prompt-chip-dark"
+                data-prompt="Saya merasa sangat cemas dan kepikiran terus akhir-akhir ini tanpa alasan yang jelas">
+                <i class="fa-solid fa-brain"></i> <span>Mengatasi rasa cemas</span>
+              </div>
+              <div class="prompt-chip-dark"
+                data-prompt="Bantu saya mengelola stres karena tumpukan tugas kuliah atau pekerjaan">
+                <i class="fa-solid fa-briefcase"></i> <span>Stres tugas / kerja</span>
+              </div>
+              <div class="prompt-chip-dark"
+                data-prompt="Saya merasa sedih, kecewa, dan merasa tidak dihargai oleh orang sekitar">
+                <i class="fa-solid fa-heart-crack"></i> <span>Merasa tidak dihargai</span>
+              </div>
+              <div class="prompt-chip-dark"
+                data-prompt="Bisakah kamu memandu latihan pernapasan dan relaksasi sekarang?">
+                <i class="fa-solid fa-wind"></i> <span>Relaksasi instan</span>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Historic Messages -->
+          {% for chat in chat_history %}
+          <div class="chat-bubble {% if chat.sender == 'user' %}user{% else %}bot{% endif %}">
+            <div class="msg-bubble">{{ chat.message|replace('\n','<br>')|safe }}</div>
+            {% if chat.sender == 'user' and chat.emotion_label %}
+            <div class="emotion-tag-dark">
+              {% if chat.emotion_label == 'Marah' %}😠
+              {% elif chat.emotion_label == 'Kecewa' %}😞
+              {% elif chat.emotion_label == 'Sedih' %}😢
+              {% elif chat.emotion_label == 'Cemas' %}😰
+              {% elif chat.emotion_label == 'Takut' %}😨
+              {% elif chat.emotion_label == 'Frustasi' %}😩
+              {% elif chat.emotion_label == 'Kesepian' %}🏝️
+              {% elif chat.emotion_label == 'Senang' %}😊
+              {% elif chat.emotion_label == 'Netral' %}💬
+              {% elif chat.emotion_label == 'Putus asa' %}😭
+              {% elif chat.emotion_label == 'Tidak berharga' %}🥀
+              {% elif chat.emotion_label == 'Risiko Tinggi' %}⚠️
+              {% else %}😐{% endif %}
+              {{ chat.emotion_label }} ({{ (chat.emotion_confidence * 100)|round|int }}%)
+            </div>
+            {% endif %}
+            <span class="msg-ts">{{ chat.created_at.strftime('%H:%M') }}</span>
+          </div>
+          {% endfor %}
+
+          <!-- Typing indicator -->
+          <div class="typing-indicator" id="typing-indicator">
+            <div class="typing-avatar"><i class="fa-solid fa-heart-pulse"></i></div>
+            <span class="typing-text">sedang mengetik</span>
+            <div class="typing-dots">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+          <form id="chat-form">
+            <div class="chat-input-wrapper">
+              <input type="text" id="chat-input" placeholder="Tulis pesan atau cerita Anda..." autocomplete="off" required>
+              <button type="submit" class="btn-send" id="btn-send" title="Kirim Pesan">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div><!-- /chat-main -->
+    </div><!-- /chat-wrapper -->
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  /* ============================================================
+     SKRINING AWAL CHATBOT (Check-in 20 Pertanyaan & Risk Check)
+     ============================================================ */
+  const overlay = document.getElementById('screeningOverlay');
+  const btnOpenScreening = document.getElementById('btnOpenScreening');
+  const btnWelcomeScreening = document.getElementById('btnWelcomeScreening');
+  const btnCloseScreening = document.getElementById('btnCloseScreening');
+  const btnMPrev = document.getElementById('btnMPrev');
+  const btnMNext = document.getElementById('btnMNext');
+  const btnStartChat = document.getElementById('btnStartChat');
+  const scProgress = document.getElementById('scProgress');
+  const mQNumText = document.getElementById('mQNumText');
+  const mPctText = document.getElementById('mPctText');
+  const mQTitle = document.getElementById('mQTitle');
+  const mValAlert = document.getElementById('mValAlert');
+  const mRiskValAlert = document.getElementById('mRiskValAlert');
+  const mCrisisBox = document.getElementById('mCrisisBox');
+
+  const mPaneQuestions = document.getElementById('mPaneQuestions');
+  const mPaneRisk = document.getElementById('mPaneRisk');
+  const mPaneResult = document.getElementById('mPaneResult');
+  const mFooter = document.getElementById('mFooter');
+
+  const chatConfig = document.getElementById('chatDataConfig');
+  const isHistoryEmpty = chatConfig ? chatConfig.dataset.historyEmpty === 'true' : false;
+  const selectedSessionId = chatConfig ? chatConfig.dataset.sessionId : '';
+  const apiChatUrl = chatConfig ? chatConfig.dataset.apiChatUrl : '/api/chat';
+
+  // 20 Pertanyaan Verbatim
+  const questions20 = [
+    "Saya merasa sedih atau murung tanpa alasan yang jelas.",
+    "Saya merasa cemas atau khawatir terhadap sesuatu secara berlebihan.",
+    "Saya merasa sulit menenangkan pikiran ketika sedang menghadapi masalah.",
+    "Saya merasa tertekan oleh berbagai masalah atau tuntutan yang sedang dihadapi.",
+    "Saya kehilangan minat atau kesenangan terhadap aktivitas yang biasanya saya sukai.",
+    "Saya merasa mudah lelah meskipun tidak melakukan aktivitas yang berat.",
+    "Saya mengalami kesulitan untuk tidur atau mendapatkan tidur yang cukup.",
+    "Saya merasa sulit berkonsentrasi ketika belajar, bekerja, atau melakukan aktivitas sehari-hari.",
+    "Saya merasa mudah tersinggung atau emosional.",
+    "Saya merasa kewalahan ketika menghadapi masalah sehari-hari.",
+    "Saya merasa kurang percaya diri dalam menghadapi situasi yang sedang saya alami.",
+    "Saya cenderung menghindari aktivitas atau situasi karena merasa tidak nyaman atau khawatir.",
+    "Saya merasa sulit menikmati waktu bersama orang lain.",
+    "Saya merasa sendirian meskipun berada di sekitar orang lain.",
+    "Saya mengalami perubahan nafsu makan yang cukup terasa.",
+    "Saya merasa sulit mengendalikan pikiran negatif yang muncul.",
+    "Saya merasa tidak memiliki energi atau motivasi untuk melakukan aktivitas sehari-hari.",
+    "Saya merasa masalah yang saya hadapi sulit untuk diselesaikan.",
+    "Saya merasa membutuhkan seseorang untuk mendengarkan atau memahami apa yang sedang saya alami.",
+    "Saya merasa kondisi emosional saya mengganggu aktivitas sehari-hari."
+  ];
+
+  // State
+  let currentQuestionIdx = 0; // 0..19
+  let currentStage = 'questions'; // 'questions', 'risk', 'result'
+  const userAnswers = new Array(20).fill(null);
+  let selectedRiskResponse = null;
+  let isRiskHigh = false;
+  let calculatedScore = 0;
+  let emotionalIndication = 'Indikasi Beban Emosional';
+
+  function openScreeningModal() {
+    if (!overlay) return;
+    currentQuestionIdx = 0;
+    currentStage = 'questions';
+    renderQuestion(0);
+    if (mPaneQuestions) mPaneQuestions.style.display = 'block';
+    if (mPaneRisk) mPaneRisk.style.display = 'none';
+    if (mPaneResult) mPaneResult.style.display = 'none';
+    if (mFooter) mFooter.style.display = 'flex';
+    const progHead = document.getElementById('mProgressHeader');
+    const progTrack = document.getElementById('mProgressTrack');
+    if (progHead) progHead.style.display = 'flex';
+    if (progTrack) progTrack.style.display = 'block';
+    const headTitle = document.getElementById('modalHeadTitle');
+    const headSub = document.getElementById('modalHeadSubtitle');
+    if (headTitle) headTitle.textContent = 'Sebelum Memulai Percakapan';
+    if (headSub) headSub.innerHTML = 'Untuk membantu memahami kondisi emosional Anda saat ini, silakan jawab beberapa pertanyaan berikut berdasarkan apa yang Anda rasakan dalam <strong>2 minggu terakhir</strong>.';
+    overlay.style.display = 'flex';
+  }
+
+  function closeScreeningModal() {
+    if (!overlay) return;
+    overlay.style.display = 'none';
+  }
+
+  function renderQuestion(idx) {
+    currentQuestionIdx = idx;
+    if (mValAlert) mValAlert.classList.add('d-none');
+    if (mQNumText) mQNumText.innerHTML = `<i class="fa-solid fa-clipboard-question me-1"></i> Pertanyaan ${idx + 1} dari 20`;
+    const pct = Math.round(((idx + 1) / 20) * 100);
+    if (mPctText) mPctText.textContent = `${pct}%`;
+    if (scProgress) scProgress.style.width = `${pct}%`;
+    if (mQTitle) mQTitle.textContent = `${idx + 1}. ${questions20[idx]}`;
+
+    // Update selected state of options
+    const savedVal = userAnswers[idx];
+    document.querySelectorAll('#mOptionsList .sk-modal-opt-item').forEach(opt => {
+      const optVal = parseInt(opt.dataset.val);
+      if (savedVal !== null && optVal === savedVal) {
+        opt.classList.add('selected');
+      } else {
+        opt.classList.remove('selected');
+      }
+    });
+
+    if (btnMPrev) btnMPrev.disabled = (idx === 0);
+    if (btnMNext) {
+      if (idx === 19) {
+        btnMNext.innerHTML = 'Pemeriksaan Keselamatan <i class="fa-solid fa-shield-heart ms-1"></i>';
+      } else {
+        btnMNext.innerHTML = 'Berikutnya <i class="fa-solid fa-arrow-right ms-1"></i>';
+      }
+    }
+  }
+
+  // Click on 20 questions options
+  document.querySelectorAll('#mOptionsList .sk-modal-opt-item').forEach(opt => {
+    opt.addEventListener('click', function() {
+      const val = parseInt(this.dataset.val);
+      userAnswers[currentQuestionIdx] = val;
+      document.querySelectorAll('#mOptionsList .sk-modal-opt-item').forEach(o => o.classList.remove('selected'));
+      this.classList.add('selected');
+      if (mValAlert) mValAlert.classList.add('d-none');
+    });
+  });
+
+  // Click on Risk Check options
+  document.querySelectorAll('#mRiskOptionsList .sk-modal-opt-item').forEach(opt => {
+    opt.addEventListener('click', function() {
+      selectedRiskResponse = this.dataset.risk;
+      isRiskHigh = this.dataset.isHigh === 'true';
+      document.querySelectorAll('#mRiskOptionsList .sk-modal-opt-item').forEach(o => o.classList.remove('selected', 'selected-risk-high'));
+      if (isRiskHigh) {
+        this.classList.add('selected-risk-high');
+        if (mCrisisBox) mCrisisBox.classList.remove('d-none');
+      } else {
+        this.classList.add('selected');
+        if (mCrisisBox) mCrisisBox.classList.add('d-none');
+      }
+      if (mRiskValAlert) mRiskValAlert.classList.add('d-none');
+    });
+  });
+
+  // Next / Continue button logic
+  if (btnMNext) {
+    btnMNext.addEventListener('click', () => {
+      if (currentStage === 'questions') {
+        if (userAnswers[currentQuestionIdx] === null) {
+          if (mValAlert) mValAlert.classList.remove('d-none');
+          return;
+        }
+        if (currentQuestionIdx < 19) {
+          renderQuestion(currentQuestionIdx + 1);
+        } else {
+          // Switch to Risk Check
+          currentStage = 'risk';
+          if (mPaneQuestions) mPaneQuestions.style.display = 'none';
+          if (mPaneRisk) mPaneRisk.style.display = 'block';
+          if (btnMPrev) btnMPrev.disabled = false;
+          btnMNext.innerHTML = 'Lihat Hasil Skrining <i class="fa-solid fa-square-poll-vertical ms-1"></i>';
+          if (mQNumText) mQNumText.innerHTML = `<i class="fa-solid fa-shield-heart me-1"></i> Pemeriksaan Keselamatan`;
+          if (mPctText) mPctText.textContent = `100%`;
+          if (scProgress) scProgress.style.width = `100%`;
+        }
+      } else if (currentStage === 'risk') {
+        if (!selectedRiskResponse) {
+          if (mRiskValAlert) mRiskValAlert.classList.remove('d-none');
+          return;
+        }
+        showResults();
+      }
+    });
+  }
+
+  // Previous button logic
+  if (btnMPrev) {
+    btnMPrev.addEventListener('click', () => {
+      if (currentStage === 'questions') {
+        if (currentQuestionIdx > 0) {
+          renderQuestion(currentQuestionIdx - 1);
+        }
+      } else if (currentStage === 'risk') {
+        currentStage = 'questions';
+        if (mPaneRisk) mPaneRisk.style.display = 'none';
+        if (mPaneQuestions) mPaneQuestions.style.display = 'block';
+        renderQuestion(19);
+      }
+    });
+  }
+
+  function showResults() {
+    currentStage = 'result';
+    if (mPaneRisk) mPaneRisk.style.display = 'none';
+    if (mPaneQuestions) mPaneQuestions.style.display = 'none';
+    if (mPaneResult) mPaneResult.style.display = 'block';
+    if (mFooter) mFooter.style.display = 'none';
+    const progHead = document.getElementById('mProgressHeader');
+    const progTrack = document.getElementById('mProgressTrack');
+    if (progHead) progHead.style.display = 'none';
+    if (progTrack) progTrack.style.display = 'none';
+
+    // Total Skor = jumlah nilai pertanyaan 1-20
+    calculatedScore = userAnswers.reduce((a, b) => a + (b || 0), 0);
+    const scoreValEl = document.getElementById('mTotalScoreVal');
+    if (scoreValEl) scoreValEl.textContent = calculatedScore;
+
+    // Indikasi umum (bukan diagnosis)
+    if (calculatedScore <= 20) {
+      emotionalIndication = 'Indikasi Beban Rendah / Stabil';
+    } else if (calculatedScore <= 40) {
+      emotionalIndication = 'Indikasi Beban Emosional Ringan - Sedang';
+    } else if (calculatedScore <= 60) {
+      emotionalIndication = 'Indikasi Beban Emosional Cukup Tinggi';
+    } else {
+      emotionalIndication = 'Indikasi Beban Emosional Sangat Tinggi';
+    }
+    const indEl = document.getElementById('mIndicationLabel');
+    if (indEl) indEl.textContent = emotionalIndication;
+
+    // Simpan ke database melalui API
+    fetch('/api/skrining/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        session_id: selectedSessionId,
+        score: calculatedScore,
+        category_result: emotionalIndication,
+        description: 'Skrining awal 20 pertanyaan kondisi emosional dalam 2 minggu terakhir.',
+        recommendation: 'Check-in awal sebelum berinteraksi dengan AI chatbot.',
+        risk_response: selectedRiskResponse,
+        is_risk_high: isRiskHigh,
+        answers: userAnswers
+      })
+    }).catch(err => console.error('Error saving screening:', err));
+  }
+
+  // Click [Mulai Percakapan]
+  if (btnStartChat) {
+    btnStartChat.addEventListener('click', () => {
+      // 1. Simpan tanda bahwa sesi ini sudah menyelesaikan skrining
+      sessionStorage.setItem('screening_done_' + selectedSessionId, 'true');
+      
+      // 2. Tutup modal skrining langsung
+      closeScreeningModal();
+
+      // 3. Jika riwayat chat masih kosong, kirim hasil skrining sebagai pembuka ke chatbot
+      if (isHistoryEmpty) {
+        const welcomeBriefing =
+`[HASIL SKRINING AWAL MINDHAVEN]
+- Total Skor 20 Pertanyaan : ${calculatedScore} / 80
+- Indikasi Kondisi Emosional: ${emotionalIndication}
+- Pemeriksaan Keselamatan   : ${selectedRiskResponse}
+- Catatan                   : Skrining ini adalah check-in awal kondisi emosional dan bukan diagnosis medis.
+
+Halo MindHaven, saya baru saja menyelesaikan skrining awal dengan skor ${calculatedScore}/80 (${emotionalIndication}). Tolong berikan sambutan hangat, dengarkan apa yang sedang saya rasakan, dan bantu saya memulai percakapan ini.`;
+        if (typeof sendMessage === 'function') {
+          sendMessage(welcomeBriefing, false);
+        }
+      }
+
+      // 4. Fokuskan ke input chat agar pengguna langsung siap mengetik
+      const cInput = document.getElementById('chat-input');
+      if (cInput) cInput.focus();
+    });
+  }
+
+  // Auto-open modal on first arrival if session is new and not yet screened
+  if (isHistoryEmpty) {
+    window.addEventListener('DOMContentLoaded', () => {
+      const alreadyDone = sessionStorage.getItem('screening_done_' + selectedSessionId);
+      if (!alreadyDone) {
+        setTimeout(() => openScreeningModal(), 350);
+      }
+    });
+  }
+
+  if (btnOpenScreening) btnOpenScreening.addEventListener('click', () => openScreeningModal());
+  if (btnWelcomeScreening) btnWelcomeScreening.addEventListener('click', () => openScreeningModal());
+  if (btnCloseScreening) btnCloseScreening.addEventListener('click', () => {
+    sessionStorage.setItem('screening_done_' + selectedSessionId, 'true');
+    closeScreeningModal();
+  });
+
+  /* ============================================================
+     CHAT LOGIC & MESSAGE RENDERING
+     ============================================================ */
+  const chatMessages = document.getElementById('chat-messages');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  const typingIndicator = document.getElementById('typing-indicator');
+  const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
+  const chatSidebar = document.getElementById('chat-sidebar');
+  const sidebarOverlay = document.getElementById('sidebar-overlay');
+  const welcomeBox = document.getElementById('chatWelcomeBox');
+
+  function scrollToBottom() {
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+  scrollToBottom();
+
+  // Helper to format screening raw text into rich card
+  function formatScreeningMessage(msgText) {
+    if (!msgText.includes('[HASIL SKRINING AWAL') && !msgText.includes('Skala beban perasaan') && !msgText.includes('Total Skor 20 Pertanyaan')) {
+      return msgText.replace(/\n/g, '<br>');
+    }
+
+    // Cek format 20 pertanyaan baru
+    const score20Match = msgText.match(/Total Skor (?:20 Pertanyaan)?\s*:\s*([^\n\r]+)/i);
+    const indMatch     = msgText.match(/Indikasi Kondisi[^\:]*:\s*([^\n\r]+)/i);
+    const riskMatch    = msgText.match(/Pemeriksaan Keselamatan\s*:\s*([^\n\r]+)/i);
+    const noteMatch    = msgText.match(/Catatan[^\:]*:\s*([^\n\r]+)/i);
+
+    if (score20Match) {
+      const scoreVal = score20Match[1].trim();
+      const numMatch = scoreVal.match(/(\d+)/);
+      const num = numMatch ? parseInt(numMatch[1]) : 0;
+      const cls = num <= 20 ? 'scale-bg-low' : num <= 40 ? 'scale-bg-mid' : num <= 60 ? 'scale-bg-high' : 'scale-bg-crit';
+      const indication = indMatch ? indMatch[1].trim() : 'Indikasi Beban Emosional';
+      const risk = riskMatch ? riskMatch[1].trim() : 'Tidak pernah';
+      const isHigh = risk.toLowerCase().includes('sering') || risk.toLowerCase().includes('berisiko') || risk.toLowerCase().includes('tinggi');
+
+      return `
+        <div class="screening-result-card">
+          <div class="src-head">
+            <div class="src-title"><i class="fa-solid fa-clipboard-check"></i> Hasil Skrining Awal (20 Pertanyaan)</div>
+            <span class="src-scale-badge ${cls}">${scoreVal}</span>
+          </div>
+          <div class="src-body">
+            <div class="src-row">
+              <span class="src-label">Indikasi Kondisi</span>
+              <span class="src-val fw-bold ${isHigh ? 'text-danger' : 'text-primary'}">${indication}</span>
+            </div>
+            <div class="src-row">
+              <span class="src-label">Pemeriksaan Keselamatan</span>
+              <span class="src-val ${isHigh ? 'text-danger fw-bold' : ''}">${risk}</span>
+            </div>
+            <div class="src-row">
+              <span class="src-label">Status Catatan</span>
+              <span class="src-val text-muted small">Check-in awal emosional (Bukan diagnosis medis)</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    const scaleMatch = msgText.match(/Skala beban perasaan\s*:\s*([^\n\r]+)/i);
+    const condMatch  = msgText.match(/Masalah \/ Kondisi\s*:\s*([^\n\r]+)/i);
+    const histMatch  = msgText.match(/Riwayat penyakit[^\:]*:\s*([^\n\r]+)/i);
+    const treatMatch = msgText.match(/Status penanganan[^\:]*:\s*([^\n\r]+)/i);
+    const physMatch  = msgText.match(/Tanda masalah fisik\s*:\s*([^\n\r]+)/i);
+
+    const scaleVal = scaleMatch ? scaleMatch[1].trim() : '-';
+    const conds = condMatch ? condMatch[1].split(',').map(s => s.trim()).filter(Boolean) : [];
+    const hists = histMatch ? histMatch[1].split(',').map(s => s.trim()).filter(Boolean) : [];
+    const treat = treatMatch ? treatMatch[1].trim() : '-';
+    const phys = physMatch ? physMatch[1].split(',').map(s => s.trim()).filter(Boolean) : [];
+
+    const numMatch = scaleVal.match(/(\d+)/);
+    const num = numMatch ? parseInt(numMatch[1]) : 5;
+    const cls = num <= 3 ? 'scale-bg-low' : num <= 6 ? 'scale-bg-mid' : num <= 8 ? 'scale-bg-high' : 'scale-bg-crit';
+
+    return `
+      <div class="screening-result-card">
+        <div class="src-head">
+          <div class="src-title"><i class="fa-solid fa-clipboard-check"></i> Hasil Skrining Awal MindHaven</div>
+          <span class="src-scale-badge ${cls}">${scaleVal}</span>
+        </div>
+        <div class="src-body">
+          <div class="src-row">
+            <span class="src-label">Kondisi / Emosi</span>
+            <div class="src-tags">${conds.map(c => `<span class="src-tag">${c}</span>`).join('')}</div>
+          </div>
+          <div class="src-row">
+            <span class="src-label">Riwayat Kondisi</span>
+            <div class="src-tags">${hists.map(h => `<span class="src-tag">${h}</span>`).join('')}</div>
+          </div>
+          <div class="src-row">
+            <span class="src-label">Status Penanganan</span>
+            <span class="src-val">${treat}</span>
+          </div>
+          <div class="src-row">
+            <span class="src-label">Tanda Fisik Somatik</span>
+            <div class="src-tags">${phys.map(p => `<span class="src-tag src-tag-phys">${p}</span>`).join('')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Format existing messages on load if they contain screening header
+  document.querySelectorAll('.chat-bubble.user .msg-bubble').forEach(bubble => {
+    if (bubble.innerHTML.includes('[HASIL SKRINING AWAL')) {
+      const text = bubble.innerText || bubble.textContent;
+      bubble.innerHTML = formatScreeningMessage(text);
+    }
+  });
+
+  // Mobile sidebar toggle
+  if (btnSidebarToggle && chatSidebar && sidebarOverlay) {
+    btnSidebarToggle.addEventListener('click', () => {
+      chatSidebar.classList.add('active');
+      sidebarOverlay.style.display = 'block';
+    });
+    sidebarOverlay.addEventListener('click', () => {
+      chatSidebar.classList.remove('active');
+      sidebarOverlay.style.display = 'none';
+    });
+  }
+
+  // Prompt chips
+  document.querySelectorAll('.prompt-chip-dark').forEach(chip => {
+    chip.addEventListener('click', function() {
+      chatInput.value = this.dataset.prompt;
+      chatForm.dispatchEvent(new Event('submit'));
+    });
+  });
+
+  // Delete session
+  document.querySelectorAll('.btn-del-session').forEach(btn => {
+    btn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const sid = this.dataset.sessionId;
+      if (!confirm('Hapus obrolan ini beserta riwayatnya?')) return;
+      try {
+        const res = await fetch(`/api/chat/delete/${sid}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          if (sid === selectedSessionId) {
+            window.location.href = chatbotUrl;
+          } else {
+            this.closest('.history-item')?.remove();
+          }
+        } else {
+          alert('Gagal menghapus obrolan.');
+        }
+      } catch {
+        alert('Terjadi kesalahan saat menghapus.');
+      }
+    });
+  });
+
+  // Send message
+  async function sendMessage(message, isScreening = false) {
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Hide welcome box on first message
+    if (welcomeBox) welcomeBox.style.display = 'none';
+
+    // Add user bubble
+    const userBubble = document.createElement('div');
+    userBubble.className = 'chat-bubble user';
+    const formattedContent = message.includes('[HASIL SKRINING AWAL MINDHAVEN]')
+      ? formatScreeningMessage(message)
+      : `<div class="msg-bubble">${message.replace(/\n/g, '<br>')}</div>`;
+
+    userBubble.innerHTML = `
+      ${formattedContent.startsWith('<div class="screening-result-card') ? formattedContent : formattedContent}
+      <span class="msg-ts">${time}</span>
+    `;
+    chatMessages.insertBefore(userBubble, typingIndicator);
+
+    chatInput.value = '';
+    typingIndicator.style.display = 'flex';
+    scrollToBottom();
+
+    try {
+      const startTime = Date.now();
+      const res = await fetch(apiChatUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, session_id: selectedSessionId })
+      });
+      const data = await res.json();
+
+      // Penundaan alami agar typing indicator tampil nyaman (min 1.25 detik)
+      const elapsed = Date.now() - startTime;
+      const minTypingDuration = 1250; 
+      if (elapsed < minTypingDuration) {
+        await new Promise(r => setTimeout(r, minTypingDuration - elapsed));
+      }
+
+      typingIndicator.style.display = 'none';
+
+      // Emotion tag on user bubble
+      if (data.emotion) {
+        const lastUser = chatMessages.querySelectorAll('.chat-bubble.user');
+        const lastBubble = lastUser[lastUser.length - 1];
+        if (lastBubble) {
+          let emoIcon = '💬';
+          if (data.emotion === 'Marah') emoIcon = '😠';
+          else if (data.emotion === 'Kecewa') emoIcon = '😞';
+          else if (data.emotion === 'Sedih') emoIcon = '😢';
+          else if (data.emotion === 'Cemas') emoIcon = '😰';
+          else if (data.emotion === 'Takut') emoIcon = '😨';
+          else if (data.emotion === 'Frustasi') emoIcon = '😩';
+          else if (data.emotion === 'Kesepian') emoIcon = '🏝️';
+          else if (data.emotion === 'Putus asa') emoIcon = '😭';
+          else if (data.emotion === 'Tidak berharga') emoIcon = '🥀';
+          else if (data.emotion === 'Risiko Tinggi') emoIcon = '⚠️';
+
+          const tag = document.createElement('div');
+          tag.className = 'emotion-tag-dark';
+          tag.innerHTML = `${emoIcon} ${data.emotion} (${Math.round(data.confidence * 100)}%)`;
+          lastBubble.insertBefore(tag, lastBubble.lastElementChild);
+        }
+      }
+
+      // Bot reply bubble container
+      const botBubble = document.createElement('div');
+      botBubble.className = 'chat-bubble bot';
+      
+      let hotlinesHtml = '';
+      if (data.hotlines && data.hotlines.length > 0) {
+        hotlinesHtml = `
+          <div class="mt-3 p-2 rounded bg-danger bg-opacity-10 border border-danger border-opacity-25" style="font-size:0.8rem;">
+            <div class="fw-bold text-danger mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Layanan Bantuan Darurat:</div>
+            ${data.hotlines.map(h => `<div class="text-dark"><strong>${h.name}:</strong> ${h.contact}</div>`).join('')}
+          </div>
+        `;
+      }
+
+      const msgBubble = document.createElement('div');
+      msgBubble.className = 'msg-bubble';
+      
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'msg-ts';
+      timeSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      botBubble.appendChild(msgBubble);
+      botBubble.appendChild(timeSpan);
+      chatMessages.insertBefore(botBubble, typingIndicator);
+      scrollToBottom();
+
+      // Token-by-Token Typewriter Streaming Rendering
+      const formattedText = data.reply.replace(/\n/g, '<br>');
+      const tokens = formattedText.match(/<[^>]+>|[^\s<]+|\s+/g) || [formattedText];
+      
+      let currentContent = '';
+      const cursorSpan = '<span class="streaming-cursor"></span>';
+
+      for (let i = 0; i < tokens.length; i++) {
+        currentContent += tokens[i];
+        msgBubble.innerHTML = currentContent + cursorSpan;
+        scrollToBottom();
+
+        const isTag = tokens[i].startsWith('<');
+        const delay = isTag ? 0 : Math.min(30, Math.max(10, tokens[i].length * 5));
+        if (delay > 0) {
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
+
+      // Finalize: Remove cursor & append hotlines if any
+      msgBubble.innerHTML = currentContent + hotlinesHtml;
+      scrollToBottom();
+
+      // Refresh sidebar if this was the first user message
+      const totalUserBubbles = chatMessages.querySelectorAll('.chat-bubble.user').length;
+      if (totalUserBubbles <= 1) {
+        // Soft reload session list or page title if needed
+      }
+
+    } catch (err) {
+      console.error(err);
+      typingIndicator.style.display = 'none';
+      const errBubble = document.createElement('div');
+      errBubble.className = 'chat-bubble bot';
+      errBubble.innerHTML = `
+        <div class="msg-bubble text-danger">Maaf, terjadi kesalahan saat menghubungi server AI. Silakan coba lagi.</div>
+        <span class="msg-ts">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      `;
+      chatMessages.insertBefore(errBubble, typingIndicator);
+      scrollToBottom();
+    }
+  }
+
+  // Chat form submit
+  if (chatForm) {
+    chatForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const msg = chatInput.value.trim();
+      if (!msg) return;
+      await sendMessage(msg, false);
+    });
+  }
+</script>
+{% endblock %}

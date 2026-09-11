@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Kelola Layanan & Praktisi - MindHaven Admin{% endblock %}
+
+{% block content %}
+<style>
+  .admin-panel-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  }
+</style>
+
+<!-- Header & Actions -->
+<div class="row mb-4">
+  <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h2 class="font-weight-bold text-dark mb-1 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-user-doctor text-primary"></i> Manajemen Layanan &amp; Praktisi
+      </h2>
+      <p class="text-muted small mb-0">Kelola direktori psikolog, konselor, serta nomor hotline kedaruratan.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      {% if form_mode %}
+        <a href="{{ url_for('admin_services') }}" class="btn btn-outline-secondary btn-sm rounded-3 font-weight-bold">
+          <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Daftar Layanan
+        </a>
+      {% else %}
+        <a href="{{ url_for('admin_services_add') }}" class="btn btn-primary btn-sm rounded-3 font-weight-bold shadow-xs">
+          <i class="fa-solid fa-plus me-1"></i> Tambah Layanan Baru
+        </a>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-3 font-weight-bold">
+          <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if form_mode %}
+  <!-- Create / Edit Form -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="admin-panel-card p-4 p-md-5 mb-5">
+        <h4 class="font-weight-bold text-dark mb-4 d-flex align-items-center gap-2">
+          {% if service %}
+            <i class="fa-solid fa-pen-to-square text-warning"></i> Edit Layanan: <span class="text-primary">{{ service.name }}</span>
+          {% else %}
+            <i class="fa-solid fa-circle-plus text-primary"></i> Buat Data Layanan Baru
+          {% endif %}
+        </h4>
+        
+        <form action="{% if service %}{{ url_for('admin_services_edit', service_id=service.id) }}{% else %}{{ url_for('admin_services_add') }}{% endif %}" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label font-weight-bold text-dark small mb-1">Nama Praktisi / Lembaga / Hotline</label>
+            <div class="form-icon-input">
+              <input type="text" class="form-control" id="name" name="name" value="{{ service.name if service else '' }}" placeholder="Nama Psikolog, Konselor, atau Layanan..." required>
+              <i class="fa-solid fa-user-nurse"></i>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="category" class="form-label font-weight-bold text-dark small mb-1">Kategori Layanan</label>
+              <div class="form-icon-input">
+                <select class="form-select" id="category" name="category" required>
+                  <option value="" disabled selected>-- Pilih Kategori --</option>
+                  <option value="Psikolog" {% if service and service.category == 'Psikolog' %}selected{% endif %}>Psikolog</option>
+                  <option value="Konselor" {% if service and service.category == 'Konselor' %}selected{% endif %}>Konselor</option>
+                  <option value="Hotline Darurat" {% if service and service.category == 'Hotline Darurat' %}selected{% endif %}>Hotline Darurat</option>
+                </select>
+                <i class="fa-solid fa-layer-group"></i>
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="specialty" class="form-label font-weight-bold text-dark small mb-1">Spesialisasi / Keahlian Utama</label>
+              <div class="form-icon-input">
+                <input type="text" class="form-control" id="specialty" name="specialty" value="{{ service.specialty if service else '' }}" placeholder="E.g., Spesialis Kecemasan & Stres" required>
+                <i class="fa-solid fa-stethoscope"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="contact" class="form-label font-weight-bold text-dark small mb-1">Kontak / Nomor Telepon</label>
+            <div class="form-icon-input">
+              <input type="text" class="form-control" id="contact" name="contact" value="{{ service.contact if service else '' }}" placeholder="E.g., 0812-3456-7890 / 119 Ext 8" required>
+              <i class="fa-solid fa-phone"></i>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label for="address" class="form-label font-weight-bold text-dark small mb-1">Alamat / Lokasi Praktik</label>
+            <textarea class="form-control p-3" id="address" name="address" rows="3" placeholder="Masukkan alamat lengkap atau keterangan ketersediaan..." required style="border-radius:12px; border:1px solid var(--gray-200); font-size:0.9rem;">{{ service.address if service else '' }}</textarea>
+          </div>
+          
+          <div class="d-flex justify-content-end gap-2">
+            <a href="{{ url_for('admin_services') }}" class="btn btn-outline-secondary rounded-3 px-4 font-weight-bold">Batal</a>
+            <button type="submit" class="btn btn-primary rounded-3 px-4 font-weight-bold shadow-xs">
+              <i class="fa-solid fa-floppy-disk me-1.5"></i> Simpan Layanan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <!-- Services Directory Table -->
+  <div class="row">
+    <div class="col-12">
+      <div class="admin-panel-card p-4">
+        
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="py-3 px-3">No</th>
+                <th class="py-3">Nama Praktisi / Layanan</th>
+                <th class="py-3">Kategori</th>
+                <th class="py-3">Spesialisasi</th>
+                <th class="py-3">Alamat / Lokasi</th>
+                <th class="py-3">Kontak</th>
+                <th class="py-3 text-end">Aksi Tindakan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in services %}
+                <tr>
+                  <td class="px-3 font-weight-bold text-muted">{{ loop.index }}</td>
+                  <td class="font-weight-bold text-dark small">{{ s.name }}</td>
+                  <td>
+                    <span class="badge {% if s.category == 'Psikolog' %}bg-primary-subtle text-primary{% elif s.category == 'Konselor' %}bg-purple-subtle text-purple{% else %}bg-danger-subtle text-danger{% endif %} font-weight-bold px-2.5 py-1 rounded-pill small">
+                      {{ s.category }}
+                    </span>
+                  </td>
+                  <td class="small text-muted font-weight-medium">{{ s.specialty }}</td>
+                  <td class="small text-muted text-truncate" style="max-width: 180px;" title="{{ s.address }}">{{ s.address }}</td>
+                  <td class="small text-dark font-weight-bold">{{ s.contact }}</td>
+                  <td class="text-end">
+                    <div class="d-inline-flex gap-1.5">
+                      <a href="{{ url_for('admin_services_edit', service_id=s.id) }}" class="btn btn-sm btn-outline-warning rounded-3 px-2.5 py-1 font-weight-bold">
+                        <i class="fa-solid fa-pen-to-square me-1"></i> Edit
+                      </a>
+                      <form action="{{ url_for('admin_services_delete', service_id=s.id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus layanan {{ s.name|escape }}?');" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-3 px-2.5 py-1 font-weight-bold">
+                          <i class="fa-solid fa-trash me-1"></i> Hapus
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="7" class="text-center py-5 text-muted">Belum ada praktisi atau layanan terdaftar.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+

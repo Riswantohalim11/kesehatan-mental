@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Riwayat Tes Screening - MindHaven{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2 class="font-weight-bold text-dark mb-1">Riwayat Tes Screening Anda</h2>
+        <p style="color:var(--gray-600);">Di bawah ini adalah daftar hasil screening kesehatan mental yang pernah Anda lakukan.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card glass-card p-4" style="background:white; border:1px solid var(--gray-200);">
+            <div class="table-responsive">
+                <table class="table table-borderless bg-transparent align-middle">
+                    <thead style="border-bottom: 1px solid var(--gray-200);">
+                        <tr>
+                            <th style="background:transparent;color:var(--gray-600);">No</th>
+                            <th style="background:transparent;color:var(--gray-600);">Kategori Tes</th>
+                            <th style="background:transparent;color:var(--gray-600);">Tanggal & Waktu</th>
+                            <th style="background:transparent;color:var(--gray-600);">Skor</th>
+                            <th style="background:transparent;color:var(--gray-600);">Tingkat Hasil</th>
+                            <th class="text-end" style="background:transparent;color:var(--gray-600);">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in results %}
+                            <tr style="border-bottom: 1px solid var(--gray-100);">
+                                <td style="background:transparent;color:var(--gray-900);">{{ loop.index }}</td>
+                                <td style="background:transparent;">
+                                    <span class="font-weight-bold text-dark">
+                                        {% if r.test_category == 'Stres' %}
+                                            <i class="fa-solid fa-brain me-2" style="color:#fbbf24;"></i>
+                                        {% elif r.test_category == 'Kecemasan' %}
+                                            <i class="fa-solid fa-arrows-spin me-2" style="color:#a78bfa;"></i>
+                                        {% else %}
+                                            <i class="fa-solid fa-cloud-showers-water text-danger me-2"></i>
+                                        {% endif %}
+                                        {{ r.test_category }}
+                                    </span>
+                                </td>
+                                <td style="background:transparent;color:var(--gray-600);">{{ r.created_at.strftime('%d %B %Y - %H:%M') }}</td>
+                                <td style="background:transparent;color:var(--gray-900);"><span class="fs-5 font-weight-bold">{{ r.score }}</span> <small style="color:var(--gray-500);">/ 80</small></td>
+                                <td style="background:transparent;">
+                                    <span class="badge px-3 py-2 rounded-pill {% if r.category_result == 'Berat' %}bg-danger{% elif r.category_result == 'Sedang' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                        {{ r.category_result }}
+                                    </span>
+                                </td>
+                                <td class="text-end" style="background:transparent;">
+                                    <a href="{{ url_for('test_detail', result_id=r.id) }}" class="btn btn-xs px-3 py-1" style="border:1px solid var(--primary-400); color:var(--primary-600);">
+                                        <i class="fa-solid fa-eye"></i> Detail Hasil
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4" style="background:transparent;color:var(--gray-500);">
+                                    <i class="fa-solid fa-clipboard-list fa-3x mb-3 d-block" style="opacity:0.3;"></i>
+                                    Anda belum pernah melakukan tes screening kesehatan mental.
+                                    <div class="mt-3">
+                                        <a href="{{ url_for('test') }}" class="btn-primary-custom d-inline-flex px-4" style="border:none;">
+                                            Mulai Tes Sekarang
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindHaven - Platform Self-Help Kesehatan Mental</title>
+    <meta name="description"
+        content="Platform Self-Help Kesehatan Mental dengan AI Chatbot, Pengukuran Emosi NLP, dan Screening Mandiri. Mulai perjalanan menuju kesehatan mental yang lebih baik.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        /* Landing-specific overrides */
+        .navbar-landing {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.25rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-landing.scrolled {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-landing .nav-link {
+            color: var(--gray-600) !important;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+            padding: 0.4rem 0.875rem !important;
+        }
+
+        .navbar-landing .nav-link:hover {
+            color: var(--primary-600) !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================== NAVBAR ============================== -->
+    <nav class="navbar-landing" id="mainNav">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a href="/" class="text-decoration-none d-flex align-items-center gap-2">
+                <div
+                    style="width:38px;height:38px;background:linear-gradient(135deg,#00b5b5,#6366f1);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <i class="fa-solid fa-heart-pulse text-white" style="font-size:1rem;"></i>
+                </div>
+                <span
+                    style="font-size:1.35rem;font-weight:800;background:var(--grad-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">MindHaven</span>
+            </a>
+
+            <div class="d-none d-md-flex align-items-center gap-1">
+                <a href="#features" class="nav-link">Fitur</a>
+                <a href="#emotions" class="nav-link">Deteksi Emosi</a>
+                <a href="#how" class="nav-link">Cara Kerja</a>
+                <a href="{{ url_for('dashboard') }}" class="nav-link"
+                    style="color: var(--primary-600) !important; font-weight: 700;">
+                    <i class="fa-solid fa-chart-pie me-1"></i> Dashboard
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('login') }}" class="btn-ghost-white"
+                    style="padding:0.5rem 1.25rem;font-size:0.85rem;">Masuk</a>
+                <a href="{{ url_for('register') }}" class="btn-primary-custom"
+                    style="padding:0.5rem 1.25rem;font-size:0.85rem;">Daftar</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================== HERO ============================== -->
+    <section class="landing-hero" id="hero">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-orb hero-orb-3"></div>
+
+        <div class="container">
+            <div class="row align-items-center min-vh-100 py-5">
+                <div class="col-lg-7 hero-content animate-slide-up">
+                    <div class="hero-badge mb-3">
+                        <i class="fa-solid fa-star" style="color:var(--warning);font-size:0.7rem;"></i>
+                        Platform Self-Help Kesehatan Mental Berbasis AI & NLP
+                    </div>
+
+                    <h1 class="hero-title">
+                        Kenali Dirimu,<br>
+                        Rawat <span class="highlight">Kesehatan Mental</span><br>
+                        Lebih Baik
+                    </h1>
+
+                    <p class="hero-desc">
+                        Platform cerdas yang menggabungkan <strong style="color:var(--primary-600);">AI
+                            Chatbot</strong>, pengukuran emosi dengan
+                        <strong style="color:var(--accent-600);">Natural Language Processing</strong>, dan screening
+                        kesehatan mental mandiri.
+                        Mulai perjalanan menuju kesejahteraan jiwa Anda hari ini, gratis.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <a href="{{ url_for('register') }}" class="btn-primary-custom"
+                            style="font-size:1rem;padding:0.8rem 2rem;">
+                            <i class="fa-solid fa-rocket"></i> Mulai Sekarang — Gratis
+                        </a>
+                        <a href="#features" class="btn-ghost-white" style="font-size:1rem;padding:0.8rem 2rem;">
+                            <i class="fa-solid fa-play-circle"></i> Pelajari Fitur
+                        </a>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="hero-stat-item">
+                            <span class="hero-stat-num">19+</span>
+                            <span class="hero-stat-label">Kategori Emosi</span>
+                        </div>
+                        <div class="hero-stat-item" style="border-left:1px solid rgba(0,0,0,0.1);padding-left:2.5rem;">
+                            <span class="hero-stat-num">3</span>
+                            <span class="hero-stat-label">Jenis Tes Screening</span>
+                        </div>
+                        <div class="hero-stat-item" style="border-left:1px solid rgba(0,0,0,0.1);padding-left:2.5rem;">
+                            <span class="hero-stat-num">NLP</span>
+                            <span class="hero-stat-label">Naive Bayes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Visual Right -->
+                <div class="col-lg-5 d-none d-lg-block" style="position:relative;">
+                    <div style="position:relative;padding:1.5rem;">
+                        <!-- Floating Chat Bubbles Mock -->
+                        <div
+                            style="position:absolute;top:-20px;right:0;width:280px;background:rgba(255,255,255,0.8);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.9);border-radius:1.25rem;padding:1.25rem;box-shadow:var(--shadow-lg);animation:slide-up 0.8s ease 0.3s both;">
+                            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem;">
+                                <div
+                                    style="width:36px;height:36px;background:var(--grad-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:white;">
+                                    🤖</div>
+                                <div>
+                                    <div style="color:var(--gray-800);font-size:0.8rem;font-weight:700;">MindHaven AI
+                                    </div>
+                                    <div style="color:var(--success);font-size:0.68rem;">● Online</div>
+                                </div>
+                            </div>
+                            <div
+                                style="background:var(--primary-50);border-radius:0.75rem;padding:0.75rem;color:var(--gray-700);font-size:0.8rem;line-height:1.5;border:1px solid var(--primary-100);">
+                                Halo! Saya MindHaven AI, teman curhat Anda. Bagaimana perasaan Anda hari ini? 💙
+                            </div>
+                        </div>
+
+                        <!-- Emotion Detection Mock -->
+                        <div
+                            style="position:absolute;bottom:20px;left:-20px;width:260px;background:rgba(255,255,255,0.8);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.9);border-radius:1.25rem;padding:1.25rem;box-shadow:var(--shadow-lg);animation:slide-up 0.8s ease 0.6s both;">
+                            <div
+                                style="color:var(--gray-500);font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">
+                                <i class="fa-solid fa-brain" style="color:var(--accent-500);margin-right:0.3rem;"></i>
+                                Deteksi Emosi NLP
+                            </div>
+                            <div
+                                style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+                                <span style="color:var(--gray-800);font-size:0.9rem;font-weight:700;">😢 Sedih</span>
+                                <span style="color:var(--primary-600);font-weight:800;font-size:0.9rem;">88%</span>
+                            </div>
+                            <div style="height:6px;background:var(--gray-200);border-radius:10px;overflow:hidden;">
+                                <div style="height:100%;width:88%;background:var(--grad-primary);border-radius:10px;">
+                                </div>
+                            </div>
+                            <div
+                                style="margin-top:0.75rem;display:flex;align-items:center;justify-content:space-between;">
+                                <span style="color:var(--gray-800);font-size:0.9rem;font-weight:700;">😰 Cemas</span>
+                                <span style="color:var(--accent-500);font-weight:800;font-size:0.9rem;">72%</span>
+                            </div>
+                            <div
+                                style="height:6px;background:var(--gray-200);border-radius:10px;overflow:hidden;margin-top:0.25rem;">
+                                <div
+                                    style="height:100%;width:72%;background:linear-gradient(90deg,var(--accent-500),var(--accent-400));border-radius:10px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Center big icon -->
+                        <div style="display:flex;align-items:center;justify-content:center;height:400px;">
+                            <div
+                                style="width:200px;height:200px;background:linear-gradient(135deg,rgba(0,181,181,0.2),rgba(99,102,241,0.2));border:1px solid rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(16px);animation:bot-float 4s ease-in-out infinite;">
+                                <i class="fa-solid fa-heart-pulse"
+                                    style="font-size:5rem;background:linear-gradient(135deg,#5eead4,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================== FEATURES ============================== -->
+    <section class="feature-section" id="features">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="section-label">Fitur Unggulan</div>
+                <h2 class="section-title">Semua yang Anda Butuhkan<br>untuk Kesehatan Mental</h2>
+                <p class="section-desc">Dirancang khusus untuk membantu Anda memahami kondisi emosional dan mental
+                    secara mandiri dengan teknologi terkini.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrap icon-teal">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <h4>Chatbot AI Cerdas</h4>
+                        <p>Berbincang dengan asisten AI "MindHaven" yang siap mendengarkan, memberikan dukungan
+                            emosional, dan saran self-help berbasis NLP 24/7.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrap icon-indigo">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h4>Pengukuran Emosi NLP</h4>
+                        <p>Setiap pesan dianalisis secara otomatis menggunakan TF-IDF Vectorizer & Multinomial Naive
+                            Bayes untuk mendeteksi 19 kategori emosi.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrap icon-rose">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <h4>Screening Kesehatan Mental</h4>
+                        <p>Tes mandiri untuk Stres, Kecemasan, dan Depresi dengan 20 pertanyaan terstandar. Dapatkan
+                            skor, interpretasi, dan rekomendasi self-help.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrap icon-amber">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <h4>Statistik & Grafik Emosi</h4>
+                        <p>Dashboard interaktif menampilkan riwayat emosi dan tren hasil tes kesehatan mental Anda
+                            secara visual menggunakan Chart.js.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrap icon-green">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <h4>Layanan Profesional</h4>
+                        <p>Direktori psikolog, konselor, dan hotline darurat. Booking konsultasi langsung melalui
+                            platform tanpa antrian rumit.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrap icon-teal">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <h4>Artikel Edukasi Pilihan</h4>
+                        <p>Ribuan artikel tentang manajemen stres, kecemasan, depresi, dan self-care. Lengkap dengan
+                            fitur pencarian, filter kategori, dan bookmark.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================== EMOTION DETECT ============================== -->
+    <section class="feature-section-alt" id="emotions">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5">
+                    <div class="section-label">Teknologi NLP</div>
+                    <h2 class="section-title text-start">Deteksi 19 Emosi<br>secara Real-time</h2>
+                    <p style="color:var(--gray-500);line-height:1.7;margin-bottom:1.5rem;">
+                        Sistem NLP kami memproses setiap pesan melalui pipeline: <strong>Case Folding → Tokenization →
+                            Stopword Removal → Stemming Bahasa Indonesia → TF-IDF → Naive Bayes Classification</strong>.
+                    </p>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div
+                                style="width:36px;height:36px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:0.875rem;flex-shrink:0;">
+                                <i class="fa-solid fa-check"></i></div>
+                            <span style="color:var(--gray-700);font-size:0.9rem;">Deteksi krisis otomatis (kata kunci
+                                bunuh diri, menyakiti diri)</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div
+                                style="width:36px;height:36px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:0.875rem;flex-shrink:0;">
+                                <i class="fa-solid fa-check"></i></div>
+                            <span style="color:var(--gray-700);font-size:0.9rem;">Persentase keyakinan model per deteksi
+                                emosi</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div
+                                style="width:36px;height:36px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:0.875rem;flex-shrink:0;">
+                                <i class="fa-solid fa-check"></i></div>
+                            <span style="color:var(--gray-700);font-size:0.9rem;">Stemming Bahasa Indonesia via
+                                PySastrawi</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div
+                                style="width:36px;height:36px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:0.875rem;flex-shrink:0;">
+                                <i class="fa-solid fa-check"></i></div>
+                            <span style="color:var(--gray-700);font-size:0.9rem;">Riwayat emosi tersimpan &
+                                divisualisasikan di dashboard</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="emotion-showcase">
+                        {% set emotions = [
+                        ('😠','Marah','90%'), ('😞','Kecewa','85%'), ('😢','Terluka','88%'),
+                        ('😡','Dendam','82%'), ('💔','Sakit Hati','87%'), ('😑','Tersinggung','84%'),
+                        ('🤬','Benci','91%'), ('🥺','Menyesal','86%'), ('😩','Frustasi','89%'),
+                        ('😰','Takut','88%'), ('😰','Cemas','85%'), ('😳','Malu','83%'),
+                        ('👤','Kesepian','92%'), ('😢','Sedih','90%'), ('😔','Tdk Mampu','81%'),
+                        ('😭','Putus Asa','93%'), ('🥀','Tdk Berharga','87%'), ('🥺','Merasa Kecil','84%'),
+                        ('🖤','Tdk Diinginkan','86%')
+                        ] %}
+                        {% for emoji, label, pct in emotions %}
+                        <div class="emotion-pill">
+                            <span class="emoji">{{ emoji }}</span>
+                            <span class="label">{{ label }}</span>
+                            <span class="pct">{{ pct }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================== HOW IT WORKS ============================== -->
+    <section class="feature-section" id="how">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="section-label">Cara Penggunaan</div>
+                <h2 class="section-title">Mulai dalam 3 Langkah Mudah</h2>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4 text-center">
+                    <div
+                        style="width:72px;height:72px;background:linear-gradient(135deg,#00b5b5,#6366f1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.75rem;font-weight:800;color:white;box-shadow:0 8px 24px rgba(0,181,181,0.3);">
+                        1</div>
+                    <h5 style="font-weight:700;margin-bottom:0.5rem;">Daftar Akun Gratis</h5>
+                    <p style="color:var(--gray-500);font-size:0.875rem;line-height:1.65;">Buat akun dalam 30 detik.
+                        Tidak perlu kartu kredit. Langsung akses semua fitur platform.</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div
+                        style="width:72px;height:72px;background:linear-gradient(135deg,#6366f1,#818cf8);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.75rem;font-weight:800;color:white;box-shadow:0 8px 24px rgba(99,102,241,0.3);">
+                        2</div>
+                    <h5 style="font-weight:700;margin-bottom:0.5rem;">Lakukan Screening Awal</h5>
+                    <p style="color:var(--gray-500);font-size:0.875rem;line-height:1.65;">Ambil tes stres, kecemasan,
+                        atau depresi. Dapatkan skor, interpretasi, dan rekomendasi dalam hitungan menit.</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div
+                        style="width:72px;height:72px;background:linear-gradient(135deg,#f43f5e,#f59e0b);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.75rem;font-weight:800;color:white;box-shadow:0 8px 24px rgba(244,63,94,0.3);">
+                        3</div>
+                    <h5 style="font-weight:700;margin-bottom:0.5rem;">Curhat & Pantau Emosi</h5>
+                    <p style="color:var(--gray-500);font-size:0.875rem;line-height:1.65;">Berbincang dengan MindHaven
+                        AI. Sistem secara otomatis mendeteksi dan merekam emosi Anda di setiap sesi.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================== CTA ============================== -->
+    <section style="background:var(--grad-hero);padding:5rem 0;position:relative;overflow:hidden;">
+        <div
+            style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(59, 130, 246, 0.1),transparent 70%);border-radius:50%;">
+        </div>
+        <div
+            style="position:absolute;bottom:-80px;left:5%;width:300px;height:300px;background:radial-gradient(circle,rgba(14, 165, 233, 0.1),transparent 70%);border-radius:50%;">
+        </div>
+        <div class="container text-center" style="position:relative;z-index:1;">
+            <div
+                style="width:70px;height:70px;background:rgba(255,255,255,0.7);border:2px solid rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:1.75rem;backdrop-filter:blur(8px);">
+                💙</div>
+            <h2 style="color:var(--gray-900);font-size:2.5rem;font-weight:800;margin-bottom:1rem;">Mulai Perjalanan
+                Menuju<br>Kesehatan Mental yang Lebih Baik</h2>
+            <p style="color:var(--gray-700);font-size:1.05rem;max-width:560px;margin:0 auto 2rem;line-height:1.7;">
+                Bergabung sekarang dan mulai memahami diri Anda dengan lebih baik. Gratis, aman, dan terpercaya.</p>
+            <div class="d-flex justify-content-center flex-wrap gap-3">
+                <a href="{{ url_for('register') }}" class="btn-primary-custom"
+                    style="font-size:1rem;padding:0.875rem 2.25rem;box-shadow:0 8px 24px rgba(14,165,233,0.3);">
+                    <i class="fa-solid fa-user-plus"></i> Daftar Akun Gratis
+                </a>
+                <a href="{{ url_for('login') }}" class="btn-primary-custom"
+                    style="font-size:1rem;padding:0.875rem 2.25rem;background:white;color:var(--gray-900);border:1px solid var(--gray-200);box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sudah Punya Akun? Masuk
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================== FOOTER ============================== -->
+    <footer style="background:white;padding:2rem 0;text-align:center;border-top:1px solid rgba(0,0,0,0.05);">
+        <div class="container">
+            <div style="font-size:1.1rem;font-weight:800;color:var(--gray-800);margin-bottom:0.5rem;">
+                <i class="fa-solid fa-heart-pulse text-primary"></i> MindHaven
+            </div>
+            <p style="color:var(--gray-500);font-size:0.8rem;margin:0;">
+                &copy; 2026 Implementasi Website Self-Help Kesehatan Mental dengan AI Chatbot & NLP. Semua Hak
+                Dilindungi.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Smooth scroll for anchors
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                const target = document.querySelector(a.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

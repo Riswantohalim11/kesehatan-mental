@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Kelola Pengguna - MindHaven Admin{% endblock %}
+
+{% block content %}
+<style>
+  .admin-panel-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  }
+</style>
+
+<!-- Header & Title -->
+<div class="row mb-4">
+  <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h2 class="font-weight-bold text-dark mb-1 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-users-gear text-primary"></i> Manajemen Pengguna
+      </h2>
+      <p class="text-muted small mb-0">Kelola akun terdaftar, pantau peran (User/Admin), serta data demografis pengguna.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-outline-secondary btn-sm rounded-3 font-weight-bold" onclick="window.print()">
+        <i class="fa-solid fa-print me-1"></i> Cetak Laporan
+      </button>
+      <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1.5 rounded-pill font-weight-bold">
+        Total {{ users|length }} Akun
+      </span>
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-3 font-weight-bold">
+        <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Main Table Card -->
+<div class="row">
+  <div class="col-12">
+    <div class="admin-panel-card p-4">
+      
+      <!-- Filter Tabs & Search Bar -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+        <div class="d-flex align-items-center gap-1.5 flex-wrap">
+          <button class="btn btn-sm btn-primary rounded-pill px-3 font-weight-bold role-tab-btn active" onclick="filterByRole('all', this)">Semua Peran</button>
+          <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 font-weight-bold role-tab-btn" onclick="filterByRole('user', this)">User Klien</button>
+          <button class="btn btn-sm btn-outline-primary rounded-pill px-3 font-weight-bold role-tab-btn" onclick="filterByRole('admin', this)">Administrator</button>
+        </div>
+
+        <div class="form-icon-input" style="max-width: 340px;">
+          <input type="text" id="searchUser" class="form-control py-2" placeholder="Cari nama pengguna atau email..." onkeyup="filterUsersTable()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="usersTable">
+          <thead class="table-light">
+            <tr>
+              <th class="py-3 px-3">No</th>
+              <th class="py-3">Pengguna</th>
+              <th class="py-3">Alamat Email</th>
+              <th class="py-3">Gender</th>
+              <th class="py-3">Umur</th>
+              <th class="py-3">Role Peran</th>
+              <th class="py-3">Terdaftar</th>
+              <th class="py-3 text-end">Aksi Tindakan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+              {% set initials = u.name[:2].upper() %}
+              <tr class="user-row-item" data-name="{{ u.name|lower }}" data-email="{{ u.email|lower }}" data-role="{{ u.role|lower }}">
+                <td class="px-3 font-weight-bold text-muted">{{ loop.index }}</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-user-init {% if u.role == 'admin' %}bg-primary{% else %}bg-info{% endif %}">
+                      {{ initials }}
+                    </div>
+                    <div>
+                      <h6 class="font-weight-bold text-dark mb-0 small">{{ u.name }}</h6>
+                    </div>
+                  </div>
+                </td>
+                <td class="small text-dark">{{ u.email }}</td>
+                <td class="small text-muted">{{ u.gender or '-' }}</td>
+                <td class="small text-muted">{{ (u.age ~ ' Th') if u.age else '-' }}</td>
+                <td>
+                  <span class="badge {% if u.role == 'admin' %}bg-primary-subtle text-primary{% else %}bg-secondary-subtle text-secondary{% endif %} font-weight-bold px-2.5 py-1 rounded-pill small">
+                    {{ u.role|upper }}
+                  </span>
+                </td>
+                <td class="small text-muted">{{ u.created_at.strftime('%d %b %Y - %H:%M') }}</td>
+                <td class="text-end">
+                  {% if u.id != current_user.id %}
+                    <form action="{{ url_for('admin_users_delete', user_id=u.id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna {{ u.name|escape }}? Seluruh riwayat skrining, chat, dan booking pengguna ini juga akan terhapus.');" class="d-inline">
+                      <button type="submit" class="btn btn-sm btn-outline-danger rounded-3 px-3 py-1 font-weight-bold">
+                        <i class="fa-solid fa-trash me-1"></i> Hapus Akun
+                      </button>
+                    </form>
+                  {% else %}
+                    <span class="badge bg-light text-muted border px-2.5 py-1 rounded-pill small">Akun Anda</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% else %}
+              <tr>
+                <td colspan="8" class="text-center py-5 text-muted">Belum ada data pengguna terdaftar.</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentRoleFilter = 'all';
+
+  function filterByRole(role, btn) {
+    currentRoleFilter = role;
+    document.querySelectorAll('.role-tab-btn').forEach(b => {
+      b.classList.remove('btn-primary');
+      b.classList.add('btn-outline-secondary');
+    });
+    btn.classList.remove('btn-outline-secondary', 'btn-outline-primary');
+    btn.classList.add('btn-primary');
+
+    applyUserFilters();
+  }
+
+  function filterUsersTable() {
+    applyUserFilters();
+  }
+
+  function applyUserFilters() {
+    const input = document.getElementById('searchUser').value.toLowerCase();
+    const rows = document.querySelectorAll('.user-row-item');
+    
+    rows.forEach(row => {
+      const name = row.getAttribute('data-name') || '';
+      const email = row.getAttribute('data-email') || '';
+      const role = row.getAttribute('data-role') || '';
+      
+      const matchesSearch = name.includes(input) || email.includes(input);
+      const matchesRole = (currentRoleFilter === 'all') || (role === currentRoleFilter);
+      
+      if (matchesSearch && matchesRole) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}
+

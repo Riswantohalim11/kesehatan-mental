@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Tes Screening Kesehatan Mental - MindHaven{% endblock %}
+
+{% block content %}
+<style>
+    .question-card {
+        background: white;
+        border-radius: 1.25rem;
+        padding: 2rem 2.5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--gray-200);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .question-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--gray-300);
+    }
+    .question-number {
+        position: absolute;
+        top: -20px;
+        left: -10px;
+        font-size: 8rem;
+        font-weight: 900;
+        color: var(--gray-100);
+        line-height: 1;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .question-text {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        margin-bottom: 1.75rem;
+        position: relative;
+        z-index: 2;
+        line-height: 1.6;
+    }
+    .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    .option-label {
+        cursor: pointer;
+        display: block;
+        position: relative;
+        height: 100%;
+        margin: 0;
+    }
+    .option-label input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .option-box {
+        background: var(--gray-50);
+        border: 2px solid var(--gray-200);
+        border-radius: 1rem;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .option-box .emoji {
+        font-size: 2rem;
+        margin-bottom: 0.25rem;
+        filter: grayscale(100%) opacity(0.5);
+        transition: all 0.3s ease;
+    }
+    .option-box .text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--gray-600);
+        transition: all 0.2s ease;
+    }
+    .option-label:hover .option-box {
+        border-color: var(--primary-300);
+        background: var(--primary-50);
+        transform: translateY(-2px);
+    }
+    .option-label input[type="radio"]:checked + .option-box {
+        background: var(--primary-50);
+        border-color: var(--primary-500);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+    }
+    .option-label input[type="radio"]:checked + .option-box .emoji {
+        filter: grayscale(0%) opacity(1);
+        transform: scale(1.15);
+    }
+    .option-label input[type="radio"]:checked + .option-box .text {
+        color: var(--primary-600);
+    }
+    
+    .test-header-card {
+        background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+        border-radius: 1.5rem;
+        padding: 3rem 2rem;
+        color: white;
+        margin-bottom: 3rem;
+        box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .test-header-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 40%);
+        pointer-events: none;
+    }
+    .test-header-icon {
+        width: 80px; height: 80px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2.5rem;
+        backdrop-filter: blur(5px);
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12 mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="font-weight-bold text-dark mb-1">Tes Screening Mandiri</h2>
+            <p class="mb-0" style="color:var(--gray-600);">Lakukan penilaian mandiri secara jujur demi memantau kondisi kesehatan emosional Anda.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('test_history') }}" class="btn btn-custom btn-custom-outline">
+                <i class="fa-solid fa-clock-rotate-left"></i> Lihat Riwayat Tes
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if not selected_category %}
+    <!-- Category Selection Cards -->
+    <div class="row g-4 justify-content-center">
+        <!-- Stress Test -->
+        <div class="col-md-4">
+            <div class="card glass-card text-center p-4 h-100 d-flex flex-column justify-content-between shadow-sm" style="background:white; border:1px solid var(--gray-200);">
+                <div>
+                    <div class="bg-warning bg-opacity-10 p-4 rounded-circle d-inline-flex mb-3" style="color:#fbbf24;">
+                        <i class="fa-solid fa-brain fa-2xl"></i>
+                    </div>
+                    <h4 class="font-weight-bold text-dark mb-2">Tes Stres</h4>
+                    <p class="small" style="color:var(--gray-600);">Mengukur tingkat tekanan psikologis yang sedang Anda alami dalam kehidupan sehari-hari akibat beban pekerjaan, kuliah, atau sosial.</p>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('test', category='Stres') }}" class="btn-primary-custom w-100 justify-content-center d-flex align-items-center" style="border:none;">
+                        Mulai Tes Stres <i class="fa-solid fa-chevron-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anxiety Test -->
+        <div class="col-md-4">
+            <div class="card glass-card text-center p-4 h-100 d-flex flex-column justify-content-between shadow-sm" style="background:white; border:1px solid var(--gray-200);">
+                <div>
+                    <div class="bg-secondary bg-opacity-10 p-4 rounded-circle d-inline-flex mb-3" style="color:var(--primary-400);">
+                        <i class="fa-solid fa-arrows-spin fa-2xl"></i>
+                    </div>
+                    <h4 class="font-weight-bold text-dark mb-2">Tes Kecemasan</h4>
+                    <p class="small" style="color:var(--gray-600);">Mengukur tingkat kekhawatiran berlebih, kegelisahan fisik, ketegangan motorik, dan reaksi kecemasan situasional Anda.</p>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('test', category='Kecemasan') }}" class="btn-secondary-custom w-100 justify-content-center d-flex align-items-center" style="border:none;">
+                        Mulai Tes Kecemasan <i class="fa-solid fa-chevron-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Depression Test -->
+        <div class="col-md-4">
+            <div class="card glass-card text-center p-4 h-100 d-flex flex-column justify-content-between shadow-sm" style="background:white; border:1px solid var(--gray-200);">
+                <div>
+                    <div class="bg-danger bg-opacity-10 p-4 rounded-circle d-inline-flex mb-3" style="color:#ef4444;">
+                        <i class="fa-solid fa-cloud-showers-water fa-2xl"></i>
+                    </div>
+                    <h4 class="font-weight-bold text-dark mb-2">Tes Depresi</h4>
+                    <p class="small" style="color:var(--gray-600);">Mengukur tingkat kemurungan hati, hilangnya minat, perasaan bersalah, penurunan energi, dan gejala-gejala klinis depresi lainnya.</p>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('test', category='Depresi') }}" class="btn-danger-custom w-100 justify-content-center d-flex align-items-center" style="border:none;">
+                        Mulai Tes Depresi <i class="fa-solid fa-chevron-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <!-- Active Question Sheet -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            
+            <div class="test-header-card">
+                <div class="test-header-icon">
+                    {% if selected_category == 'Stres' %}
+                        <i class="fa-solid fa-brain"></i>
+                    {% elif selected_category == 'Kecemasan' %}
+                        <i class="fa-solid fa-arrows-spin"></i>
+                    {% else %}
+                        <i class="fa-solid fa-cloud-showers-water"></i>
+                    {% endif %}
+                </div>
+                <h2 class="font-weight-bold mb-2 text-white">Tes Screening {{ selected_category }}</h2>
+                <p class="mb-0 text-white opacity-75" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">Jawablah 20 pertanyaan berikut dengan memilih kondisi yang paling menggambarkan perasaan Anda dalam 2 minggu terakhir.</p>
+            </div>
+            
+            <form action="{{ url_for('test_submit', category=selected_category) }}" method="POST">
+                {% for q in questions %}
+                    <div class="question-card">
+                        <div class="question-number">{{ loop.index }}</div>
+                        <div class="question-text">{{ loop.index }}. {{ q.text }}</div>
+                        
+                        <div class="options-grid">
+                            <label class="option-label">
+                                <input type="radio" name="q_{{ q.id }}" value="0" required>
+                                <div class="option-box">
+                                    <span class="emoji">🙂</span>
+                                    <span class="text">Tidak Pernah</span>
+                                </div>
+                            </label>
+                            
+                            <label class="option-label">
+                                <input type="radio" name="q_{{ q.id }}" value="1" required>
+                                <div class="option-box">
+                                    <span class="emoji">😐</span>
+                                    <span class="text">Jarang</span>
+                                </div>
+                            </label>
+                            
+                            <label class="option-label">
+                                <input type="radio" name="q_{{ q.id }}" value="2" required>
+                                <div class="option-box">
+                                    <span class="emoji">😕</span>
+                                    <span class="text">Kadang-kadang</span>
+                                </div>
+                            </label>
+                            
+                            <label class="option-label">
+                                <input type="radio" name="q_{{ q.id }}" value="3" required>
+                                <div class="option-box">
+                                    <span class="emoji">😟</span>
+                                    <span class="text">Sering</span>
+                                </div>
+                            </label>
+                            
+                            <label class="option-label">
+                                <input type="radio" name="q_{{ q.id }}" value="4" required>
+                                <div class="option-box">
+                                    <span class="emoji">😫</span>
+                                    <span class="text">Sangat Sering</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                <div class="card glass-card p-4 text-center mb-5" style="background:white; border:1px solid var(--gray-200);">
+                    <p style="color:var(--gray-600);">Pastikan Anda telah mengisi seluruh 20 pertanyaan dengan jujur sebelum mengirimkan jawaban.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-2">
+                        <a href="{{ url_for('test') }}" class="btn-secondary-custom d-inline-flex align-items-center px-4" style="border:none;">
+                            <i class="fa-solid fa-xmark me-2"></i> Batalkan
+                        </a>
+                        <button type="submit" class="btn-primary-custom d-inline-flex align-items-center px-4" style="border:none;">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Kirim & Hitung Skor Hasil
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
