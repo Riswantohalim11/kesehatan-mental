@@ -27,10 +27,28 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'mindhaven-secret-key-120481230')
 # 2. Initialize Flask App
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
+
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CA_CERT_PATH = os.path.join(BASE_DIR, 'ca.pem')
+
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}"
     f"@{MYSQL_HOST}:{MYSQL_PORT}/{DB_NAME}"
 )
+
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'connect_args': {
+        'ssl': {
+            'ca': CA_CERT_PATH
+        }
+    },
+    'pool_pre_ping': True,
+    'pool_recycle': 280
+}
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Recommended production session settings.
