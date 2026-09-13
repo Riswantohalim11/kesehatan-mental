@@ -8,9 +8,10 @@
      BANTUAN KRISIS PAGE CUSTOM STYLES
      ============================================================ */
   .crisis-hero-card {
-    background: linear-gradient(135deg, #450a0a 0%, #881337 45%, #1e1b4b 100%);
+    background: #ffffff;
+    border: 1px solid var(--gray-200);
     border-radius: 28px;
-    box-shadow: 0 20px 50px rgba(136, 19, 55, 0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
     position: relative;
     overflow: hidden;
   }
@@ -21,13 +22,23 @@
     right: -60px;
     width: 320px;
     height: 320px;
-    background: radial-gradient(circle, rgba(244, 63, 94, 0.35) 0%, rgba(0, 0, 0, 0) 70%);
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
   }
 
+  .crisis-hero-glow-2 {
+    position: absolute;
+    bottom: -80px;
+    left: 10%;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, var(--primary-100) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
   .text-gradient-danger {
-    background: linear-gradient(135deg, #ffffff 30%, #fca5a5 70%, #fda4af 100%);
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -104,35 +115,36 @@
 <!-- Hero Banner Bantuan Krisis -->
 <div class="row mb-4">
   <div class="col-12">
-    <div class="card crisis-hero-card p-4 p-md-5 text-white">
+    <div class="card crisis-hero-card p-4 p-md-5">
       <div class="crisis-hero-glow"></div>
+      <div class="crisis-hero-glow-2"></div>
       
       <div class="row align-items-center position-relative" style="z-index: 2;">
         <div class="col-lg-8">
-          <div class="d-inline-flex align-items-center gap-2 px-3.5 py-1.5 rounded-pill bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 mb-3 shadow-xs">
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3" style="background:#fef2f2;border:1px solid #fee2e2;">
             <span class="pulse-dot bg-danger"></span>
-            <span class="small font-weight-bold text-white"><i class="fa-solid fa-triangle-exclamation text-warning me-1"></i> Penanganan Darurat 24 Jam Siaga</span>
+            <span class="small font-weight-bold text-danger"><i class="fa-solid fa-triangle-exclamation text-danger me-1"></i> Penanganan Darurat 24 Jam Siaga</span>
           </div>
-          <h1 class="text-white font-weight-bold display-6 mb-3">
+          <h1 class="font-weight-bold display-6 mb-3" style="color:var(--gray-900);">
             Anda Tidak Sendirian. <span class="text-gradient-danger">Kami Ada di Sini</span>
           </h1>
-          <p class="text-white-50 lead fs-6 mb-4" style="max-width: 650px;">
+          <p class="lead fs-6 mb-4" style="color:var(--gray-600); max-width: 650px; line-height: 1.7;">
             Jika Anda mengalami krisis kecemasan hebat, depresi mendalam, panik berlebih, atau memiliki pikiran menyakiti diri, dapatkan bantuan langsung bebas pulsa di bawah ini.
           </p>
 
           <div class="d-flex flex-wrap gap-3">
-            <a href="tel:119" class="btn btn-danger btn-lg px-4 font-weight-bold shadow-lg d-inline-flex align-items-center gap-2 py-3 pulse-ring-danger" style="border-radius:16px;">
+            <a href="tel:119" class="btn btn-danger btn-lg px-4 font-weight-bold shadow-sm d-inline-flex align-items-center gap-2 py-3 pulse-ring-danger" style="border-radius:16px;">
               <i class="fa-solid fa-phone-volume fs-5"></i> Hubungi Hotline 119 Ext 8
             </a>
-            <a href="https://wa.me/628111922000" target="_blank" class="btn btn-success btn-lg px-4 font-weight-bold shadow-lg d-inline-flex align-items-center gap-2 py-3" style="border-radius:16px;">
+            <a href="https://wa.me/628111922000" target="_blank" class="btn btn-success btn-lg px-4 font-weight-bold shadow-sm d-inline-flex align-items-center gap-2 py-3" style="border-radius:16px;">
               <i class="fa-brands fa-whatsapp fs-5"></i> Chat Sehat Jiwa Kemenkes
             </a>
           </div>
         </div>
 
         <div class="col-lg-4 d-none d-lg-flex justify-content-end">
-          <div class="p-4 rounded-circle bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-10 shadow-lg text-center" style="width:180px; height:180px; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-heart-pulse text-danger" style="font-size: 5rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));"></i>
+          <div class="p-4 rounded-circle shadow-sm text-center" style="width:180px; height:180px; display:flex; align-items:center; justify-content:center; background:#fef2f2; border:1px solid #fecaca;">
+            <i class="fa-solid fa-heart-pulse text-danger" style="font-size: 5rem; filter: drop-shadow(0 8px 16px rgba(239, 68, 68, 0.2));"></i>
           </div>
         </div>
       </div>
@@ -226,13 +238,13 @@
 <div class="row g-4">
   <div class="col-md-6">
     <div class="card glass-card p-4 h-100 d-flex flex-row align-items-center gap-3 border-0 shadow-sm" style="border-radius:20px;">
-      <div class="p-3 bg-info text-white rounded-4 shadow-xs flex-shrink-0">
-        <i class="fa-solid fa-robot fs-3"></i>
+      <div class="p-3 text-white rounded-4 shadow-xs flex-shrink-0" style="background:var(--grad-primary);">
+        <i class="fa-solid fa-comments fs-3"></i>
       </div>
       <div>
-        <h5 class="font-weight-bold text-dark mb-1">Curhat dengan Chatbot AI</h5>
+        <h5 class="font-weight-bold text-dark mb-1">Konsultasi dengan AI</h5>
         <p class="small text-muted mb-2">Butuh teman bicara instan tanpa penghakiman? AI MindHaven siap mendengarkan 24/7.</p>
-        <a href="{{ url_for('chatbot') }}" class="btn btn-sm btn-info text-white font-weight-bold px-3 py-1.5 rounded-3">Buka Chatbot AI</a>
+        <a href="{{ url_for('chatbot') }}" class="btn btn-sm btn-primary-custom px-3 py-1.5 rounded-3">Mulai Konsultasi AI</a>
       </div>
     </div>
   </div>
