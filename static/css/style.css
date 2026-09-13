@@ -2125,16 +2125,21 @@ footer.site-footer .footer-brand {
   border-radius: 10px;
   font-weight: 500;
   font-size: 0.88rem;
+  color: var(--gray-700);
   transition: var(--t-fast);
   padding: 0.6rem 0.9rem !important;
 }
 
-.dropdown-item:hover {
+.dropdown-item:hover,
+.dropdown-item.active,
+.dropdown-item:active {
   background: var(--primary-50) !important;
+  color: var(--primary-600) !important;
   transform: translateX(3px);
 }
 
-.dropdown-item.text-danger:hover {
+.dropdown-item.text-danger:hover,
+.dropdown-item.text-danger.active {
   background: #fef2f2 !important;
   color: #dc2626 !important;
 }
