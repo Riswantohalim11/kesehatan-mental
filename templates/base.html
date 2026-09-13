@@ -291,32 +291,32 @@
                             <i class="fa-solid fa-hand-holding-heart"></i> Layanan
                         </a>
                         <ul class="dropdown-menu shadow border-0" aria-labelledby="layananDropdown"
-                            style="background:white;border:1px solid var(--gray-200);border-radius:12px;min-width:210px;">
+                            style="background:white;border:1px solid var(--gray-200);border-radius:12px;min-width:215px;padding:0.4rem;">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2 text-danger font-weight-bold py-2"
+                                <a class="dropdown-item d-flex align-items-center gap-2 text-danger font-weight-bold py-2 {% if active_page == 'bantuan_krisis' %}active{% endif %}"
                                     href="{{ url_for('bantuan_krisis') }}">
                                     <i class="fa-solid fa-triangle-exclamation text-danger"></i> Bantuan Krisis 24/7
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'layanan' %}active{% endif %}"
                                     href="{{ url_for('layanan') }}#booking-section">
-                                    <i class="fa-solid fa-brain text-primary"></i> Menangani Depresi
+                                    <i class="fa-solid fa-brain" style="color:var(--primary-500);"></i> Layanan &amp; Booking
                                 </a>
                             </li>
                             <li>
                                 <hr class="dropdown-divider my-1" style="border-color:var(--gray-100);">
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'tentang_kami' %}active{% endif %}"
                                     href="{{ url_for('tentang_kami') }}">
-                                    <i class="fa-solid fa-circle-info text-info"></i> Tentang Kami
+                                    <i class="fa-solid fa-circle-info" style="color:var(--info);"></i> Tentang Kami
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'hubungi_kami' %}active{% endif %}"
                                     href="{{ url_for('hubungi_kami') }}">
-                                    <i class="fa-solid fa-location-dot text-success"></i> Hubungi Kami &amp; Lokasi
+                                    <i class="fa-solid fa-location-dot" style="color:var(--success);"></i> Hubungi Kami &amp; Lokasi
                                 </a>
                             </li>
                         </ul>
@@ -389,32 +389,32 @@
                             <i class="fa-solid fa-hand-holding-heart"></i> Layanan
                         </a>
                         <ul class="dropdown-menu shadow border-0" aria-labelledby="layananDropdownGuest"
-                            style="background:white;border:1px solid var(--gray-200);border-radius:12px;min-width:210px;">
+                            style="background:white;border:1px solid var(--gray-200);border-radius:12px;min-width:215px;padding:0.4rem;">
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2 text-danger font-weight-bold py-2"
+                                <a class="dropdown-item d-flex align-items-center gap-2 text-danger font-weight-bold py-2 {% if active_page == 'bantuan_krisis' %}active{% endif %}"
                                     href="{{ url_for('bantuan_krisis') }}">
                                     <i class="fa-solid fa-triangle-exclamation text-danger"></i> Bantuan Krisis 24/7
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'layanan' %}active{% endif %}"
                                     href="{{ url_for('layanan') }}#booking-section">
-                                    <i class="fa-solid fa-brain text-primary"></i> Menangani Depresi
+                                    <i class="fa-solid fa-brain" style="color:var(--primary-500);"></i> Layanan &amp; Booking
                                 </a>
                             </li>
                             <li>
                                 <hr class="dropdown-divider my-1" style="border-color:var(--gray-100);">
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'tentang_kami' %}active{% endif %}"
                                     href="{{ url_for('tentang_kami') }}">
-                                    <i class="fa-solid fa-circle-info text-info"></i> Tentang Kami
+                                    <i class="fa-solid fa-circle-info" style="color:var(--info);"></i> Tentang Kami
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                <a class="dropdown-item d-flex align-items-center gap-2 py-2 {% if active_page == 'hubungi_kami' %}active{% endif %}"
                                     href="{{ url_for('hubungi_kami') }}">
-                                    <i class="fa-solid fa-location-dot text-success"></i> Hubungi Kami &amp; Lokasi
+                                    <i class="fa-solid fa-location-dot" style="color:var(--success);"></i> Hubungi Kami &amp; Lokasi
                                 </a>
                             </li>
                         </ul>
