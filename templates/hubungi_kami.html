@@ -5,9 +5,10 @@
 {% block content %}
 <style>
   .hero-contact-card {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4338ca 100%);
+    background: #ffffff;
+    border: 1px solid var(--gray-200);
     border-radius: 28px;
-    box-shadow: 0 20px 50px rgba(67, 56, 202, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
     position: relative;
     overflow: hidden;
   }
@@ -18,9 +19,25 @@
     right: -50px;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(0, 0, 0, 0) 70%);
+    background: radial-gradient(circle, var(--primary-100) 0%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
+  }
+
+  .contact-glow-2 {
+    position: absolute;
+    bottom: -80px;
+    left: 10%;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .text-gradient-hero {
+    background: var(--grad-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .contact-item-card {
@@ -63,26 +80,27 @@
 <!-- Hero Section Hubungi Kami -->
 <div class="row mb-4">
   <div class="col-12">
-    <div class="card hero-contact-card p-4 p-md-5 text-white">
+    <div class="card hero-contact-card p-4 p-md-5">
       <div class="contact-glow"></div>
+      <div class="contact-glow-2"></div>
       
       <div class="row align-items-center position-relative" style="z-index: 2;">
         <div class="col-lg-8">
-          <div class="d-inline-flex align-items-center gap-2 px-3.5 py-1.5 rounded-pill bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-20 mb-3 shadow-xs">
-            <i class="fa-solid fa-headset text-warning"></i>
-            <span class="small font-weight-bold text-white">PUSAT DUKUNGAN &amp; BANTUAN</span>
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3" style="background:var(--primary-50);border:1px solid var(--primary-100);">
+            <i class="fa-solid fa-headset" style="color:var(--primary-500);"></i>
+            <span class="small font-weight-bold" style="color:var(--primary-600);">PUSAT DUKUNGAN &amp; BANTUAN</span>
           </div>
-          <h1 class="text-white font-weight-bold display-6 mb-3">
+          <h1 class="font-weight-bold display-6 mb-3" style="color:var(--gray-900);">
             Kami Siap <span class="text-gradient-hero">Mendengarkan &amp; Membantu</span>
           </h1>
-          <p class="text-white-50 lead fs-6 mb-0" style="max-width: 680px;">
+          <p class="lead fs-6 mb-0" style="color:var(--gray-600); max-width: 680px; line-height: 1.7;">
             Punya pertanyaan seputar layanan konsultasi, kendala teknis aplikasi, atau saran untuk pengembangan MindHaven? Tim customer support kami siap merespons cepat.
           </p>
         </div>
 
         <div class="col-lg-4 d-none d-lg-flex justify-content-end">
-          <div class="p-4 rounded-circle bg-white bg-opacity-10 backdrop-blur border border-white border-opacity-10 shadow-lg text-center" style="width:170px; height:170px; display:flex; align-items:center; justify-content:center;">
-            <i class="fa-solid fa-comments text-info" style="font-size: 4.8rem;"></i>
+          <div class="p-4 rounded-circle shadow-sm text-center" style="width:170px; height:170px; display:flex; align-items:center; justify-content:center; background:var(--primary-50); border:1px solid var(--primary-100);">
+            <i class="fa-solid fa-comments" style="color:var(--primary-500); font-size: 4.8rem; filter: drop-shadow(0 10px 20px rgba(0, 181, 181, 0.2));"></i>
           </div>
         </div>
       </div>
